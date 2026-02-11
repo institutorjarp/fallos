@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instituto de Recursos Judiciales, Argumentación y Razonamiento Probatorio - Sistema de Carga de Fallos Judiciales</title>
+    <title>Instituto de Recursos Judiciales, Argumentación y Razonamiento Probatorio - Sistema de Carga de Fallos</title>
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Variables y Reset - TAMAÑOS REDUCIDOS */
+        /* ===== VARIABLES Y RESET ===== */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #34495e;
@@ -20,10 +20,10 @@
             --light-color: #ecf0f1;
             --dark-color: #2c3e50;
             --border-color: #bdc3c7;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --border-radius: 6px;
+            --shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            --border-radius: 4px;
             --transition: all 0.2s ease;
+            --gray-600: #718096;
         }
         
         * {
@@ -46,30 +46,313 @@
             margin: 0 auto;
         }
         
-        /* Header - MÁS COMPACTO */
+        /* ===== HEADER PROFESIONAL ===== */
         .header {
-            text-align: center;
             margin-bottom: 25px;
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
+            padding: 0;
             border-radius: var(--border-radius);
+            overflow: hidden;
             box-shadow: var(--shadow);
         }
         
-        .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
+        .header-top {
+            background: linear-gradient(135deg, #1a2634, #2c3e50);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            border-bottom: 3px solid var(--accent-color);
         }
         
-        .header p {
-            font-size: 0.95rem;
+        .instituto-nombre {
+            font-size: 1.3rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+            opacity: 0.95;
+        }
+        
+        .sistema-titulo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .sistema-titulo i {
+            color: var(--accent-color);
+            font-size: 1.8rem;
+        }
+        
+        .header-subtitle {
+            font-size: 1rem;
             opacity: 0.9;
             max-width: 700px;
             margin: 0 auto;
+            font-style: italic;
         }
         
-        /* Form Sections - MÁS COMPACTAS */
+        .header-footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .badge {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        
+        /* ===== PANEL DE RESUMEN - DOS COLUMNAS CON ENCABEZADO ===== */
+        .resumen-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid #e9ecef;
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .resumen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #edf2f7;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .resumen-badge {
+            background: var(--light-color);
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--primary-color);
+        }
+        
+        /* ENCABEZADO DEL FALLO */
+        .resumen-encabezado {
+            background: linear-gradient(to right, #f8fafc, #ffffff);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .resumen-encabezado-icono {
+            background: var(--accent-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .resumen-encabezado-contenido {
+            flex: 1;
+        }
+        
+        .resumen-encabezado-titulo {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .resumen-encabezado-detalle {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+        
+        .resumen-encabezado-detalle i {
+            color: var(--accent-color);
+            margin-right: 6px;
+        }
+        
+        .resumen-encabezado-badge {
+            background: #e6f7e6;
+            color: var(--success-color);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* CONTENIDO A DOS COLUMNAS */
+        .resumen-columnas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 5px;
+        }
+        
+        .resumen-columna {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .resumen-seccion {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px 18px;
+            border: 1px solid #edf2f7;
+        }
+        
+        .resumen-seccion-titulo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .resumen-seccion-titulo i {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+        }
+        
+        .resumen-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #edf2f7;
+        }
+        
+        .resumen-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .resumen-icono {
+            width: 24px;
+            color: var(--accent-color);
+            margin-right: 12px;
+            text-align: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .resumen-label {
+            font-weight: 600;
+            color: var(--secondary-color);
+            min-width: 110px;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+        
+        .resumen-valor {
+            color: #2d3748;
+            word-break: break-word;
+            flex: 1;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+        
+        .resumen-chip {
+            display: inline-block;
+            background: #edf2f7;
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            margin: 2px 6px 2px 0;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+            transition: all 0.1s ease;
+        }
+        
+        .resumen-chip i {
+            margin-right: 5px;
+            color: var(--accent-color);
+            font-size: 0.7rem;
+        }
+        
+        .resumen-chip:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e0;
+        }
+        
+        .resumen-vacio {
+            color: var(--gray-600);
+            font-style: italic;
+            padding: 30px;
+            text-align: center;
+            background: #f8fafc;
+            border-radius: 8px;
+            grid-column: 1 / -1;
+        }
+        
+        .resumen-footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #edf2f7;
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .resumen-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .resumen-footer-left i {
+            color: var(--accent-color);
+        }
+        
+        .resumen-footer-right {
+            font-weight: 600;
+            color: var(--accent-color);
+            background: #e6f0fa;
+            padding: 5px 15px;
+            border-radius: 30px;
+        }
+        
+        /* ===== FORMULARIOS ===== */
         .form-section {
             background: white;
             border-radius: var(--border-radius);
@@ -80,7 +363,7 @@
         }
         
         .form-section:hover {
-            box-shadow: var(--shadow-hover);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         
         .section-title {
@@ -99,7 +382,6 @@
             font-size: 1.2rem;
         }
         
-        /* Form Layout - MÁS COMPACTO */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -120,7 +402,6 @@
             font-weight: 500;
             color: var(--secondary-color);
             font-size: 0.95rem;
-            font-family: 'Roboto', sans-serif;
         }
         
         .required::after {
@@ -136,8 +417,7 @@
             padding: 10px 12px;
             border: 1.5px solid var(--border-color);
             border-radius: var(--border-radius);
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.90rem;
             transition: var(--transition);
             background-color: white;
         }
@@ -148,16 +428,14 @@
         select:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.15);
+            box-shadow: 0 0 0 2px rgba(52,152,219,0.1);
         }
         
-        /* Estilo especial para selects con opción "Otro" */
         select option[value="otro"] {
             font-style: italic;
             color: #666;
         }
         
-        /* Estilo para campos de texto cuando se selecciona "Otro" */
         .custom-input {
             margin-top: 10px;
             animation: fadeIn 0.3s ease;
@@ -173,7 +451,6 @@
             resize: vertical;
         }
         
-        /* Radio and Checkbox Groups - MÁS COMPACTOS */
         .option-group {
             background: #f8f9fa;
             padding: 15px;
@@ -238,14 +515,12 @@
             font-size: 0.9rem;
         }
         
-        /* Specific Styles for Methodological Sections */
         .method-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 10px;
         }
         
-        /* Collapsible Sections - MÁS COMPACTOS */
         .collapsible {
             margin-bottom: 15px;
         }
@@ -291,7 +566,6 @@
             display: block;
         }
         
-        /* Conditional Sections */
         .conditional-section {
             border-left: 4px solid var(--accent-color);
             padding-left: 15px;
@@ -308,7 +582,6 @@
             animation: fadeIn 0.3s ease;
         }
         
-        /* Sub-secciones */
         .sub-section {
             background: #f0f2f5;
             padding: 15px;
@@ -327,7 +600,6 @@
             font-size: 0.95rem;
         }
         
-        /* Buttons - MÁS COMPACTOS */
         .buttons-container {
             display: flex;
             justify-content: center;
@@ -358,8 +630,8 @@
         
         .btn-submit:hover {
             background: #219653;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
         
         .btn-reset {
@@ -369,22 +641,11 @@
         
         .btn-reset:hover {
             background: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
         
-        .btn-export {
-            background: var(--accent-color);
-            color: white;
-        }
-        
-        .btn-export:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
-        
-        /* Responsive Design */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -392,16 +653,48 @@
             }
             
             .header {
-                padding: 15px;
-                margin-bottom: 20px;
+                padding: 0;
             }
             
-            .header h1 {
+            .header-top {
+                padding: 20px 15px;
+            }
+            
+            .instituto-nombre {
+                font-size: 1rem;
+            }
+            
+            .sistema-titulo {
                 font-size: 1.5rem;
             }
             
-            .header p {
-                font-size: 0.85rem;
+            .header-footer {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
+            }
+            
+            .resumen-columnas {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .resumen-encabezado {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .resumen-item {
+                flex-direction: column;
+            }
+            
+            .resumen-icono {
+                display: none;
+            }
+            
+            .resumen-label {
+                min-width: 100%;
+                margin-bottom: 4px;
             }
             
             .form-grid {
@@ -432,11 +725,9 @@
                 width: 100%;
                 max-width: 250px;
                 padding: 10px 20px;
-                font-size: 0.9rem;
             }
         }
         
-        /* Status Messages - MÁS COMPACTOS */
         .status-message {
             padding: 12px 15px;
             border-radius: var(--border-radius);
@@ -458,7 +749,6 @@
             border: 1px solid #f5c6cb;
         }
         
-        /* Footer - MÁS COMPACTO */
         .footer {
             text-align: center;
             margin-top: 35px;
@@ -468,7 +758,6 @@
             border-top: 1px solid var(--border-color);
         }
         
-        /* Helper Text - MÁS COMPACTO */
         .helper-text {
             font-size: 0.8rem;
             color: #7f8c8d;
@@ -476,7 +765,6 @@
             font-style: italic;
         }
         
-        /* Scrollbar más delgada para ahorrar espacio visual */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -498,69 +786,86 @@
 </head>
 <body>
     <div class="container">
+        <!-- ===== HEADER ===== -->
         <header class="header">
-            <h1><i class="fas fa-gavel"></i> Sistema de Carga de Fallos Judiciales</h1>
-            <p>Complete el formulario para registrar y analizar fallos judiciales de manera sistemática</p>
+            <div class="header-top">
+                <div class="instituto-nombre">
+                    <i class="fas fa-university"></i> Instituto de Recursos Judiciales, Argumentación y Razonamiento Probatorio
+                </div>
+                <h1 class="sistema-titulo">
+                    <i class="fas fa-gavel"></i> Sistema de Carga de Fallos Judiciales
+                </h1>
+                <p class="header-subtitle">Análisis sistematizado de jurisprudencia penal y constitucional</p>
+            </div>
+            <div class="header-footer">
+                <span><i class="fas fa-balance-scale"></i> Especialización en Derecho Penal y Procesal Penal</span>
+                <span class="badge"><i class="fas fa-file-alt"></i> Formulario de análisis crítico</span>
+            </div>
         </header>
+        
+        <!-- ===== PANEL DE RESUMEN - DOS COLUMNAS CON ENCABEZADO ===== -->
+        <div class="resumen-panel" id="resumenPanel">
+            <div class="resumen-header">
+                <span><i class="fas fa-file-alt"></i> RESUMEN DEL FALLO - ACTUALIZACIÓN EN TIEMPO REAL</span>
+                <span class="resumen-badge" id="resumenBadge">Sin datos</span>
+            </div>
+            <div class="resumen-contenido" id="resumenContenido">
+                <span class="resumen-vacio">Complete el formulario para ver el resumen del fallo...</span>
+            </div>
+            <div class="resumen-footer" id="resumenFooter"></div>
+        </div>
         
         <div id="statusMessage" class="status-message"></div>
         
         <form id="fallosForm">
-            <!-- SECCIÓN 1: IDENTIFICACIÓN DEL FALLO -->
+            <!-- SECCIÓN 1: IDENTIFICACIÓN -->
             <section class="form-section">
                 <h2 class="section-title"><i class="fas fa-id-card"></i> 1. Identificación del fallo</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="caratula" class="required">Carátula</label>
-                        <input type="text" id="caratula" name="caratula" required placeholder="Ej: 'Pérez, Juan c/ Estado Nacional'">
+                        <input type="text" id="caratula" name="caratula" required placeholder="Ej: 'Pérez, Juan c/ Estado Nacional'" onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()">
                     </div>
-                    
                     <div class="form-group">
                         <label for="fallos" class="required">Fallos (tomo/página)</label>
-                        <input type="text" id="fallos" name="fallos" required placeholder="Ej: 'Fallos: 336:1234'">
+                        <input type="text" id="fallos" name="fallos" required placeholder="Ej: 'Fallos: 336:1234'" onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()">
                     </div>
-                    
                     <div class="form-group">
                         <label for="fecha" class="required">Fecha</label>
-                        <input type="date" id="fecha" name="fecha" required>
+                        <input type="date" id="fecha" name="fecha" required onchange="actualizarResumenEnTiempoReal()">
                     </div>
                 </div>
             </section>
             
-            <!-- SECCIÓN 2: COMPOSICIÓN DEL TRIBUNAL -->
+            <!-- SECCIÓN 2: TRIBUNAL -->
             <section class="form-section">
                 <h2 class="section-title"><i class="fas fa-gavel"></i> 2. Composición del Tribunal</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="integracion" class="required">Integración de la Corte</label>
-                        <textarea id="integracion" name="integracion" required placeholder="Liste los miembros del tribunal..."></textarea>
+                        <textarea id="integracion" name="integracion" required placeholder="Liste los miembros del tribunal..." onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()"></textarea>
                     </div>
-                    
                     <div class="form-group">
                         <label class="required">Voto</label>
                         <div class="option-group">
                             <div class="options-container">
                                 <div class="radio-option">
-                                    <input type="radio" id="voto-unanimidad" name="voto" value="unanimidad" required onclick="toggleDisidencias(false)">
+                                    <input type="radio" id="voto-unanimidad" name="voto" value="unanimidad" required onclick="toggleDisidencias(false); actualizarResumenEnTiempoReal()">
                                     <label for="voto-unanimidad">Unanimidad</label>
                                 </div>
-                                
                                 <div class="radio-option">
-                                    <input type="radio" id="voto-mayoria" name="voto" value="mayoria" onclick="toggleDisidencias(false)">
+                                    <input type="radio" id="voto-mayoria" name="voto" value="mayoria" onclick="toggleDisidencias(false); actualizarResumenEnTiempoReal()">
                                     <label for="voto-mayoria">Mayoría</label>
                                 </div>
-                                
                                 <div class="radio-option">
-                                    <input type="radio" id="voto-disidencias" name="voto" value="disidencias" onclick="toggleDisidencias(true)">
+                                    <input type="radio" id="voto-disidencias" name="voto" value="disidencias" onclick="toggleDisidencias(true); actualizarResumenEnTiempoReal()">
                                     <label for="voto-disidencias">Disidencias (indicar cuáles)</label>
                                 </div>
                             </div>
                         </div>
-                        
                         <div id="disidenciasContainer" class="conditional-section">
                             <label for="detalleDisidencias" class="required">Detalle de las disidencias</label>
-                            <textarea id="detalleDisidencias" name="detalleDisidencias" required placeholder="Indique qué jueces disentieron y los fundamentos de sus disidencias..."></textarea>
-                            <div class="helper-text">Ej: "El juez Martínez disiente en el considerando 5 sobre la interpretación del artículo 14..."</div>
+                            <textarea id="detalleDisidencias" name="detalleDisidencias" required placeholder="Indique qué jueces disentieron y los fundamentos..." onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()"></textarea>
                         </div>
                     </div>
                 </div>
@@ -568,75 +873,162 @@
             
             <!-- SECCIÓN 3: TEMA JURÍDICO CENTRAL -->
             <section class="form-section">
-                <h2 class="section-title"><i class="fas fa-book"></i> 3. Tema jurídico central</h2>
+                <h2 class="section-title"><i class="fas fa-balance-scale"></i> 3. Tema jurídico central</h2>
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label for="materia" class="required">Materia principal</label>
-                        <select id="materia" name="materia" required onchange="toggleCustomMateria(this)">
-                            <option value="" disabled selected>Seleccione una materia</option>
-                            <option value="derecho_civil">Derecho Civil</option>
-                            <option value="derecho_comercial">Derecho Comercial</option>
-                            <option value="derecho_penal">Derecho Penal</option>
-                            <option value="derecho_laboral">Derecho Laboral</option>
-                            <option value="derecho_administrativo">Derecho Administrativo</option>
-                            <option value="derecho_constitucional">Derecho Constitucional</option>
-                            <option value="derecho_internacional">Derecho Internacional</option>
-                            <option value="derecho_tributario">Derecho Tributario</option>
-                            <option value="derecho_procesal">Derecho Procesal</option>
-                            <option value="derecho_ambiental">Derecho Ambiental</option>
-                            <option value="derecho_de_familia">Derecho de Familia</option>
-                            <option value="derecho_sucesorio">Derecho Sucesorio</option>
-                            <option value="derecho_consumidor">Derecho del Consumidor</option>
-                            <option value="derecho_minero">Derecho Minero</option>
-                            <option value="derecho_agrario">Derecho Agrario</option>
-                            <option value="otro">Otro (especificar)</option>
-                        </select>
-                        <div id="customMateriaContainer" class="custom-input">
-                            <label for="customMateria" class="required">Especifique la materia:</label>
-                            <input type="text" id="customMateria" name="customMateria" placeholder="Ingrese la materia principal...">
+                    <div class="form-group full-width">
+                        <label class="required">Materia principal:</label>
+                        <div class="option-group">
+                            <div class="options-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                                <div style="grid-column: 1 / -1; margin-bottom: 5px;">
+                                    <div class="checkbox-option" style="background: #e8f0fe; border-left: 3px solid var(--accent-color);">
+                                        <input type="checkbox" id="materia-arbitrariedad" name="materiaPrincipal" value="arbitrariedad_sentencia" onclick="toggleArbitrariedadSubopciones(this); actualizarResumenEnTiempoReal()">
+                                        <label for="materia-arbitrariedad"><strong>Arbitrariedad de sentencia</strong></label>
+                                    </div>
+                                </div>
+                                <div id="arbitrariedadSubopcionesContainer" style="display: none; grid-column: 1 / -1; margin-left: 25px; margin-bottom: 15px;">
+                                    <div class="options-container" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+                                        <div class="checkbox-option" style="background: #f8f9fa;">
+                                            <input type="checkbox" id="arbitrariedad-normativa" name="causalesArbitrariedad" value="normativa" onclick="actualizarResumenEnTiempoReal()">
+                                            <label for="arbitrariedad-normativa">Normativa</label>
+                                        </div>
+                                        <div class="checkbox-option" style="background: #f8f9fa;">
+                                            <input type="checkbox" id="arbitrariedad-clasica" name="causalesArbitrariedad" value="clasica" onclick="actualizarResumenEnTiempoReal()">
+                                            <label for="arbitrariedad-clasica">Clásica</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="materia-afectacion-derechos" name="materiaPrincipal" value="afectacion_derechos_constitucion" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="materia-afectacion-derechos">Afectación de derechos garantizados por la Constitución</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="materia-tratados" name="materiaPrincipal" value="interpretacion_tratados" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="materia-tratados">Interpretación de tratados internacionales</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="materia-leyes-federales" name="materiaPrincipal" value="interpretacion_leyes_federales" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="materia-leyes-federales">Interpretación de leyes federales</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="materia-penal-economico" name="materiaPrincipal" value="penal_economico" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="materia-penal-economico">Fuero penal económico</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="materia-otro" name="materiaPrincipal" value="otro" onclick="toggleCustomMateriaPrincipal(this); actualizarResumenEnTiempoReal()">
+                                    <label for="materia-otro"><strong>Otro...</strong></label>
+                                </div>
+                            </div>
+                            <div id="customMateriaPrincipalContainer" class="custom-input" style="display: none;">
+                                <label for="customMateriaPrincipal">Especifique la materia principal:</label>
+                                <input type="text" id="customMateriaPrincipal" name="customMateriaPrincipal" placeholder="Ingrese la materia..." onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()">
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="subtema">Subtema</label>
-                        <select id="subtema" name="subtema" onchange="toggleCustomSubtema(this)">
-                            <option value="" selected>Seleccione un subtema (opcional)</option>
-                            <option value="responsabilidad_civil">Responsabilidad Civil</option>
-                            <option value="daños_perjuicios">Daños y Perjuicios</option>
-                            <option value="contratos">Contratos</option>
-                            <option value="propiedad">Propiedad</option>
-                            <option value="obligaciones">Obligaciones</option>
-                            <option value="derechos_reales">Derechos Reales</option>
-                            <option value="derecho_sucesiones">Sucesiones</option>
-                            <option value="derecho_familia">Familia</option>
-                            <option value="derecho_patrimonial">Patrimonial</option>
-                            <option value="acciones_colectivas">Acciones Colectivas</option>
-                            <option value="amparo">Amparo</option>
-                            <option value="habeas_corpus">Habeas Corpus</option>
-                            <option value="proceso_ejecutivo">Proceso Ejecutivo</option>
-                            <option value="proceso_cautelar">Proceso Cautelar</option>
-                            <option value="recursos">Recursos</option>
-                            <option value="prueba">Prueba</option>
-                            <option value="prescripcion">Prescripción</option>
-                            <option value="caducidad">Caducidad</option>
+                    <div class="form-group full-width">
+                        <label for="subtema">Subtema:</label>
+                        <select id="subtema" name="subtema" class="form-control" onchange="toggleCustomSubtema(this); actualizarResumenEnTiempoReal()">
+                            <option value="" selected>-- Seleccione un subtema (opcional) --</option>
+                            <optgroup label="Derecho Penal">
+                                <option value="homicidio">Homicidio</option>
+                                <option value="lesiones">Lesiones</option>
+                                <option value="hurto">Hurto</option>
+                                <option value="robo">Robo</option>
+                                <option value="estafa">Estafa</option>
+                                <option value="lavado_activos">Lavado de activos</option>
+                                <option value="narcotrafico">Narcotráfico</option>
+                                <option value="delitos_sexuales">Delitos sexuales</option>
+                                <option value="delitos_contra_adm_publica">Delitos contra la adm. pública</option>
+                            </optgroup>
+                            <optgroup label="Derecho Procesal Penal">
+                                <option value="prueba">Prueba</option>
+                                <option value="nulidades">Nulidades</option>
+                                <option value="recursos">Recursos</option>
+                                <option value="prision_preventiva">Prisión preventiva</option>
+                                <option value="excarcelacion">Excarcelación</option>
+                                <option value="competencia">Competencia</option>
+                            </optgroup>
+                            <optgroup label="Garantías Constitucionales">
+                                <option value="debido_proceso">Debido proceso</option>
+                                <option value="defensa_juicio">Defensa en juicio</option>
+                                <option value="plazo_razonable">Plazo razonable</option>
+                                <option value="non_bis_idem">Non bis in idem</option>
+                                <option value="legalidad">Principio de legalidad</option>
+                                <option value="proporcionalidad">Proporcionalidad</option>
+                            </optgroup>
                             <option value="otro">Otro (especificar)</option>
                         </select>
-                        <div id="customSubtemaContainer" class="custom-input">
+                        <div id="customSubtemaContainer" class="custom-input" style="display: none;">
                             <label for="customSubtema">Especifique el subtema:</label>
-                            <input type="text" id="customSubtema" name="customSubtema" placeholder="Ingrese el subtema...">
+                            <input type="text" id="customSubtema" name="customSubtema" placeholder="Ingrese el subtema..." onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()">
                         </div>
                     </div>
                 </div>
             </section>
             
-            <!-- SECCIÓN 4: CUESTIÓN FEDERAL PLANTEADA -->
+            <!-- SECCIÓN 4: CUESTIÓN FEDERAL -->
             <section class="form-section">
                 <h2 class="section-title"><i class="fas fa-landmark"></i> 4. Cuestión federal planteada</h2>
                 <div class="form-grid">
                     <div class="form-group full-width">
-                        <label for="cuestioneFederal" class="required">Descripción de la cuestión federal</label>
-                        <textarea id="cuestioneFederal" name="cuestioneFederal" required placeholder="Describa la cuestión federal planteada en el fallo..."></textarea>
-                        <div class="helper-text">Ej: Conflicto entre normas federales y provinciales, aplicación de tratados internacionales, etc.</div>
+                        <div class="option-group">
+                            <div class="method-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-debido-proceso" name="cuestionFederal" value="violacion_debido_proceso" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-debido-proceso">Violación al debido proceso</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-defensa-juicio" name="cuestionFederal" value="defensa_en_juicio" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-defensa-juicio">Defensa en juicio</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-detencion-ilegal" name="cuestionFederal" value="detencion_ilegal" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-detencion-ilegal">Detención ilegal</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-pena-inconstitucional" name="cuestionFederal" value="aplicacion_pena_inconstitucional" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-pena-inconstitucional">Aplicación de pena inconstitucional</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-garantia-defensa" name="cuestionFederal" value="garantia_defensa_juicio" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-garantia-defensa">Garantía de defensa en juicio</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-autoincriminacion" name="cuestionFederal" value="prohibicion_autoincriminacion" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-autoincriminacion">Prohibición de autoincriminación</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-plazo-razonable" name="cuestionFederal" value="violacion_plazo_razonable" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-plazo-razonable">Violación al plazo razonable</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-supremacia" name="cuestionFederal" value="supremacia_constitucional" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-supremacia">Supremacía constitucional</label>
+                                </div>
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-derechos-convencionales" name="cuestionFederal" value="derechos_convencionales" onclick="actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-derechos-convencionales">Derechos convencionales</label>
+                                </div>
+                            </div>
+                            <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                                <div class="checkbox-option">
+                                    <input type="checkbox" id="cuestion-otro" name="cuestionFederal" value="otro" onclick="toggleCustomCuestionFederal(this); actualizarResumenEnTiempoReal()">
+                                    <label for="cuestion-otro"><strong>Otro (especificar)</strong></label>
+                                </div>
+                                <div id="customCuestionFederalContainer" class="custom-input" style="display: none;">
+                                    <label for="customCuestionFederal">Especifique la cuestión federal:</label>
+                                    <input type="text" id="customCuestionFederal" name="customCuestionFederal" placeholder="Ingrese la cuestión federal..." onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="descripcionCuestionFederal" class="required">Descripción de la cuestión federal</label>
+                        <textarea id="descripcionCuestionFederal" name="descripcionCuestionFederal" required 
+                                  placeholder="Describa la cuestión federal planteada en el fallo..." 
+                                  rows="4" 
+                                  onchange="actualizarResumenEnTiempoReal()" 
+                                  onkeyup="actualizarResumenEnTiempoReal()"></textarea>
+                        <div class="helper-text">Ej: "Se cuestiona la validez constitucional del art. 123 del Código Penal en cuanto establece una pena desproporcionada..."</div>
                     </div>
                 </div>
             </section>
@@ -649,17 +1041,15 @@
                         <div class="option-group">
                             <div class="options-container">
                                 <div class="checkbox-option">
-                                    <input type="checkbox" id="desacuerdo-normativo" name="tipoDesacuerdo" value="normativo">
+                                    <input type="checkbox" id="desacuerdo-normativo" name="tipoDesacuerdo" value="normativo" onclick="actualizarResumenEnTiempoReal()">
                                     <label for="desacuerdo-normativo">Normativo</label>
                                 </div>
-                                
                                 <div class="checkbox-option">
-                                    <input type="checkbox" id="desacuerdo-factico" name="tipoDesacuerdo" value="factico">
+                                    <input type="checkbox" id="desacuerdo-factico" name="tipoDesacuerdo" value="factico" onclick="actualizarResumenEnTiempoReal()">
                                     <label for="desacuerdo-factico">Fáctico</label>
                                 </div>
-                                
                                 <div class="checkbox-option">
-                                    <input type="checkbox" id="desacuerdo-mixto" name="tipoDesacuerdo" value="mixto">
+                                    <input type="checkbox" id="desacuerdo-mixto" name="tipoDesacuerdo" value="mixto" onclick="actualizarResumenEnTiempoReal()">
                                     <label for="desacuerdo-mixto">Mixto</label>
                                 </div>
                             </div>
@@ -676,68 +1066,54 @@
                         <div class="option-group">
                             <div class="options-container">
                                 <div class="checkbox-option">
-                                    <input type="checkbox" id="problema-constitucionalidad" name="problemaJuridico" value="constitucionalidad" onclick="toggleProbatorio(false)">
+                                    <input type="checkbox" id="problema-constitucionalidad" name="problemaJuridico" value="constitucionalidad" onclick="toggleProbatorio(false); actualizarResumenEnTiempoReal()">
                                     <label for="problema-constitucionalidad">Constitucionalidad de norma</label>
                                 </div>
-                                
                                 <div class="checkbox-option">
-                                    <input type="checkbox" id="problema-interpretativo" name="problemaJuridico" value="interpretativo" onclick="toggleProbatorio(false)">
+                                    <input type="checkbox" id="problema-interpretativo" name="problemaJuridico" value="interpretativo" onclick="toggleProbatorio(false); actualizarResumenEnTiempoReal()">
                                     <label for="problema-interpretativo">Interpretativo</label>
                                 </div>
-                                
                                 <div class="checkbox-option">
-                                    <input type="checkbox" id="problema-probatorio" name="problemaJuridico" value="probatorio" onclick="toggleProbatorio(true)">
+                                    <input type="checkbox" id="problema-probatorio" name="problemaJuridico" value="probatorio" onclick="toggleProbatorio(true); actualizarResumenEnTiempoReal()">
                                     <label for="problema-probatorio">Probatorio</label>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Sub-sección condicional para Probatorio -->
                         <div id="probatorioContainer" class="conditional-section">
                             <div class="sub-section">
-                                <div class="sub-section-title">
-                                    <i class="fas fa-clipboard-check"></i> i. Rol de la prueba en la decisión
-                                </div>
+                                <div class="sub-section-title"><i class="fas fa-clipboard-check"></i> i. Rol de la prueba en la decisión</div>
                                 <div class="options-container">
                                     <div class="radio-option">
-                                        <input type="radio" id="prueba-central" name="rolPrueba" value="central">
+                                        <input type="radio" id="prueba-central" name="rolPrueba" value="central" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="prueba-central">Central</label>
                                     </div>
-                                    
                                     <div class="radio-option">
-                                        <input type="radio" id="prueba-secundario" name="rolPrueba" value="secundario">
+                                        <input type="radio" id="prueba-secundario" name="rolPrueba" value="secundario" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="prueba-secundario">Secundario</label>
                                     </div>
-                                    
                                     <div class="radio-option">
-                                        <input type="radio" id="prueba-marginal" name="rolPrueba" value="marginal">
+                                        <input type="radio" id="prueba-marginal" name="rolPrueba" value="marginal" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="prueba-marginal">Marginal</label>
                                     </div>
                                 </div>
                             </div>
-                            
                             <div class="sub-section">
-                                <div class="sub-section-title">
-                                    <i class="fas fa-brain"></i> ii. Tipo de inferencias probatorias detectadas
-                                </div>
+                                <div class="sub-section-title"><i class="fas fa-brain"></i> ii. Tipo de inferencias probatorias detectadas</div>
                                 <div class="method-grid">
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="inferencia-inductivas" name="tipoInferencias" value="inductivas">
+                                        <input type="checkbox" id="inferencia-inductivas" name="tipoInferencias" value="inductivas" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="inferencia-inductivas">Inductivas</label>
                                     </div>
-                                    
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="inferencia-maximas" name="tipoInferencias" value="maximas_experiencia">
+                                        <input type="checkbox" id="inferencia-maximas" name="tipoInferencias" value="maximas_experiencia" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="inferencia-maximas">Máximas de experiencia</label>
                                     </div>
-                                    
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="inferencia-presunciones-legales" name="tipoInferencias" value="presunciones_legales">
+                                        <input type="checkbox" id="inferencia-presunciones-legales" name="tipoInferencias" value="presunciones_legales" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="inferencia-presunciones-legales">Presunciones legales</label>
                                     </div>
-                                    
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="inferencia-presunciones-judiciales" name="tipoInferencias" value="presunciones_judiciales">
+                                        <input type="checkbox" id="inferencia-presunciones-judiciales" name="tipoInferencias" value="presunciones_judiciales" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="inferencia-presunciones-judiciales">Presunciones judiciales</label>
                                     </div>
                                 </div>
@@ -747,64 +1123,54 @@
                 </div>
             </section>
             
-            <!-- SECCIÓN 7: MÉTODO INTERPRETATIVO UTILIZADO -->
+            <!-- SECCIÓN 7: MÉTODO INTERPRETATIVO -->
             <section class="form-section">
                 <h2 class="section-title"><i class="fas fa-search"></i> 7. Método interpretativo utilizado</h2>
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <div class="method-grid">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-literal" name="metodoInterpretativo" value="literal">
+                                <input type="checkbox" id="metodo-literal" name="metodoInterpretativo" value="literal" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-literal">Literal</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-sistematico" name="metodoInterpretativo" value="sistematico">
+                                <input type="checkbox" id="metodo-sistematico" name="metodoInterpretativo" value="sistematico" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-sistematico">Sistemático</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-teleologico" name="metodoInterpretativo" value="teleologico">
+                                <input type="checkbox" id="metodo-teleologico" name="metodoInterpretativo" value="teleologico" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-teleologico">Teleológico</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-historico" name="metodoInterpretativo" value="historico">
+                                <input type="checkbox" id="metodo-historico" name="metodoInterpretativo" value="historico" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-historico">Histórico</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-principialista" name="metodoInterpretativo" value="principialista">
+                                <input type="checkbox" id="metodo-principialista" name="metodoInterpretativo" value="principialista" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-principialista">Principialista</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-acontrario" name="metodoInterpretativo" value="a_contrario">
+                                <input type="checkbox" id="metodo-acontrario" name="metodoInterpretativo" value="a_contrario" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-acontrario">A contrario</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-afortiori" name="metodoInterpretativo" value="a_fortiori">
+                                <input type="checkbox" id="metodo-afortiori" name="metodoInterpretativo" value="a_fortiori" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-afortiori">A fortiori</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-analogico" name="metodoInterpretativo" value="analogico">
+                                <input type="checkbox" id="metodo-analogico" name="metodoInterpretativo" value="analogico" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-analogico">Analógico</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-reduccion" name="metodoInterpretativo" value="reduccion_absurdo">
+                                <input type="checkbox" id="metodo-reduccion" name="metodoInterpretativo" value="reduccion_absurdo" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-reduccion">Reducción al absurdo</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-coherencia" name="metodoInterpretativo" value="coherencia_sistema">
+                                <input type="checkbox" id="metodo-coherencia" name="metodoInterpretativo" value="coherencia_sistema" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-coherencia">Coherencia del sistema</label>
                             </div>
-                            
                             <div class="checkbox-option">
-                                <input type="checkbox" id="metodo-unidad" name="metodoInterpretativo" value="unidad_constitucion">
+                                <input type="checkbox" id="metodo-unidad" name="metodoInterpretativo" value="unidad_constitucion" onclick="actualizarResumenEnTiempoReal()">
                                 <label for="metodo-unidad">Unidad de la Constitución</label>
                             </div>
                         </div>
@@ -816,7 +1182,6 @@
             <section class="form-section">
                 <h2 class="section-title"><i class="fas fa-weight-hanging"></i> 8. Argumentos de ponderación (Alexy/Maccormick)</h2>
                 
-                <!-- 8a. Colisión de principios -->
                 <div class="collapsible">
                     <div class="collapsible-header" onclick="toggleCollapsible(this)">
                         <span>a. ¿Hay colisión de principios?</span>
@@ -827,22 +1192,20 @@
                             <div class="form-group">
                                 <div class="options-container">
                                     <div class="radio-option">
-                                        <input type="radio" id="colision-no" name="colisionPrincipios" value="no" onclick="togglePrincipiosContainer(false)">
+                                        <input type="radio" id="colision-no" name="colisionPrincipios" value="no" onclick="togglePrincipiosContainer(false); actualizarResumenEnTiempoReal()">
                                         <label for="colision-no">No</label>
                                     </div>
-                                    
                                     <div class="radio-option">
-                                        <input type="radio" id="colision-si" name="colisionPrincipios" value="si" onclick="togglePrincipiosContainer(true)">
+                                        <input type="radio" id="colision-si" name="colisionPrincipios" value="si" onclick="togglePrincipiosContainer(true); actualizarResumenEnTiempoReal()">
                                         <label for="colision-si">Sí</label>
                                     </div>
                                 </div>
                             </div>
-                            
                             <div id="principiosContainer" class="conditional-section">
                                 <div class="form-grid">
                                     <div class="form-group">
                                         <label for="principioA" class="required">Principio A</label>
-                                        <select id="principioA" name="principioA" onchange="toggleCustomPrincipioA(this)">
+                                        <select id="principioA" name="principioA" onchange="toggleCustomPrincipioA(this); actualizarResumenEnTiempoReal()">
                                             <option value="" selected>Seleccione un principio</option>
                                             <option value="autonomia_voluntad">Autonomía de la voluntad</option>
                                             <option value="buena_fe">Buena fe</option>
@@ -862,13 +1225,12 @@
                                         </select>
                                         <div id="customPrincipioAContainer" class="custom-input">
                                             <label for="customPrincipioA" class="required">Especifique el principio:</label>
-                                            <input type="text" id="customPrincipioA" name="customPrincipioA" placeholder="Ingrese el principio A...">
+                                            <input type="text" id="customPrincipioA" name="customPrincipioA" placeholder="Ingrese el principio A..." onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()">
                                         </div>
                                     </div>
-                                    
                                     <div class="form-group">
                                         <label for="principioB" class="required">Principio B</label>
-                                        <select id="principioB" name="principioB" onchange="toggleCustomPrincipioB(this)">
+                                        <select id="principioB" name="principioB" onchange="toggleCustomPrincipioB(this); actualizarResumenEnTiempoReal()">
                                             <option value="" selected>Seleccione un principio</option>
                                             <option value="autonomia_voluntad">Autonomía de la voluntad</option>
                                             <option value="buena_fe">Buena fe</option>
@@ -888,7 +1250,7 @@
                                         </select>
                                         <div id="customPrincipioBContainer" class="custom-input">
                                             <label for="customPrincipioB" class="required">Especifique el principio:</label>
-                                            <input type="text" id="customPrincipioB" name="customPrincipioB" placeholder="Ingrese el principio B...">
+                                            <input type="text" id="customPrincipioB" name="customPrincipioB" placeholder="Ingrese el principio B..." onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()">
                                         </div>
                                     </div>
                                 </div>
@@ -897,7 +1259,6 @@
                     </div>
                 </div>
                 
-                <!-- 8b. Estructura de la ponderación -->
                 <div class="collapsible">
                     <div class="collapsible-header" onclick="toggleCollapsible(this)">
                         <span>b. Estructura de la ponderación</span>
@@ -908,22 +1269,19 @@
                             <div class="form-group full-width">
                                 <div class="method-grid">
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="ponderacion-idoneidad" name="estructuraPonderacion" value="idoneidad">
+                                        <input type="checkbox" id="ponderacion-idoneidad" name="estructuraPonderacion" value="idoneidad" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="ponderacion-idoneidad">Idoneidad</label>
                                     </div>
-                                    
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="ponderacion-necesidad" name="estructuraPonderacion" value="necesidad">
+                                        <input type="checkbox" id="ponderacion-necesidad" name="estructuraPonderacion" value="necesidad" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="ponderacion-necesidad">Necesidad</label>
                                     </div>
-                                    
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="ponderacion-proporcionalidad" name="estructuraPonderacion" value="proporcionalidad_estricta">
+                                        <input type="checkbox" id="ponderacion-proporcionalidad" name="estructuraPonderacion" value="proporcionalidad_estricta" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="ponderacion-proporcionalidad">Proporcionalidad estricta</label>
                                     </div>
-                                    
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="ponderacion-formula" name="estructuraPonderacion" value="formula_peso">
+                                        <input type="checkbox" id="ponderacion-formula" name="estructuraPonderacion" value="formula_peso" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="ponderacion-formula">Fórmula del peso implícita</label>
                                     </div>
                                 </div>
@@ -932,7 +1290,6 @@
                     </div>
                 </div>
                 
-                <!-- 8c. Tipo de razonamiento -->
                 <div class="collapsible">
                     <div class="collapsible-header" onclick="toggleCollapsible(this)">
                         <span>c. Tipo de razonamiento</span>
@@ -943,17 +1300,15 @@
                             <div class="form-group full-width">
                                 <div class="options-container">
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="razonamiento-balance-explicito" name="tipoRazonamiento" value="balance_explicito">
+                                        <input type="checkbox" id="razonamiento-balance-explicito" name="tipoRazonamiento" value="balance_explicito" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="razonamiento-balance-explicito">Balance explícito</label>
                                     </div>
-                                    
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="razonamiento-balance-implicito" name="tipoRazonamiento" value="balance_implicito">
+                                        <input type="checkbox" id="razonamiento-balance-implicito" name="tipoRazonamiento" value="balance_implicito" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="razonamiento-balance-implicito">Balance implícito</label>
                                     </div>
-                                    
                                     <div class="checkbox-option">
-                                        <input type="checkbox" id="razonamiento-retorico" name="tipoRazonamiento" value="retorico">
+                                        <input type="checkbox" id="razonamiento-retorico" name="tipoRazonamiento" value="retorico" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="razonamiento-retorico">Retórico (sin estructura real)</label>
                                     </div>
                                 </div>
@@ -966,147 +1321,112 @@
             <!-- SECCIÓN 9: ERRORES DEL RAZONAMIENTO -->
             <section class="form-section">
                 <h2 class="section-title"><i class="fas fa-times-circle"></i> 9. Errores del razonamiento</h2>
-
                 <div class="form-grid">
                     <div class="form-group full-width">
-
-                        <!-- Primera parte: Falacias formales simples -->
                         <div style="margin-bottom: 15px;">
                             <div class="options-container">
                                 <div class="checkbox-option">
-                                    <input type="checkbox" id="error-afirmacion-consecuente" name="erroresSilogismo" value="afirmacion_consecuente">
+                                    <input type="checkbox" id="error-afirmacion-consecuente" name="erroresSilogismo" value="afirmacion_consecuente" onclick="actualizarResumenEnTiempoReal()">
                                     <label for="error-afirmacion-consecuente">Afirmación del consecuente</label>
                                 </div>
-
                                 <div class="checkbox-option">
-                                    <input type="checkbox" id="error-negacion-antecedente" name="erroresSilogismo" value="negacion_antecedente">
+                                    <input type="checkbox" id="error-negacion-antecedente" name="erroresSilogismo" value="negacion_antecedente" onclick="actualizarResumenEnTiempoReal()">
                                     <label for="error-negacion-antecedente">Negación del antecedente</label>
                                 </div>
-
                                 <div class="checkbox-option">
-                                    <input type="checkbox" id="error-silogismo-disyuntivo" name="erroresSilogismo" value="silogismo_disyuntivo_falaz">
+                                    <input type="checkbox" id="error-silogismo-disyuntivo" name="erroresSilogismo" value="silogismo_disyuntivo_falaz" onclick="actualizarResumenEnTiempoReal()">
                                     <label for="error-silogismo-disyuntivo">Silogismo disyuntivo falaz</label>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Segunda parte: Argumentos de atinencia -->
                         <div style="margin-bottom: 20px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="argumentos-atinencia-principal" name="argumentosAtinenciaPrincipal" value="si" onclick="toggleArgumentosAtinencia(this)">
-                                <label for="argumentos-atinencia-principal">
-                                    <strong>Argumentos de atinencia</strong>
-                                </label>
+                                <input type="checkbox" id="argumentos-atinencia-principal" name="argumentosAtinenciaPrincipal" value="si" onclick="toggleArgumentosAtinencia(this); actualizarResumenEnTiempoReal()">
+                                <label for="argumentos-atinencia-principal"><strong>Argumentos de atinencia</strong></label>
                             </div>
-
                             <div id="argumentosAtinenciaContainer" class="conditional-section" style="display: none; margin-left: 25px; margin-top: 10px;">
                                 <div class="method-grid">
-                                    <!-- Fila 1 -->
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-ad-baculum" name="argumentosAtinencia" value="ad_baculum">
+                                        <input type="checkbox" id="argumento-ad-baculum" name="argumentosAtinencia" value="ad_baculum" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-ad-baculum">ad baculum</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-ad-hominem" name="argumentosAtinencia" value="ad_hominem">
+                                        <input type="checkbox" id="argumento-ad-hominem" name="argumentosAtinencia" value="ad_hominem" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-ad-hominem">ad hominem</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-ad-ignorantiam" name="argumentosAtinencia" value="ad_ignorantiam">
+                                        <input type="checkbox" id="argumento-ad-ignorantiam" name="argumentosAtinencia" value="ad_ignorantiam" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-ad-ignorantiam">ad ignorantiam</label>
                                     </div>
-
-                                    <!-- Fila 2 -->
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-ad-misericordiam" name="argumentosAtinencia" value="ad_misericordiam">
+                                        <input type="checkbox" id="argumento-ad-misericordiam" name="argumentosAtinencia" value="ad_misericordiam" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-ad-misericordiam">ad misericordiam</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-ad-populum" name="argumentosAtinencia" value="ad_populum">
+                                        <input type="checkbox" id="argumento-ad-populum" name="argumentosAtinencia" value="ad_populum" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-ad-populum">ad populum</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-ad-verecundiam" name="argumentosAtinencia" value="ad_verecundiam">
+                                        <input type="checkbox" id="argumento-ad-verecundiam" name="argumentosAtinencia" value="ad_verecundiam" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-ad-verecundiam">ad verecundiam</label>
                                     </div>
-
-                                    <!-- Fila 3 -->
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-de-accidente" name="argumentosAtinencia" value="de_accidente">
+                                        <input type="checkbox" id="argumento-de-accidente" name="argumentosAtinencia" value="de_accidente" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-de-accidente">de accidente</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-accidente-inverso" name="argumentosAtinencia" value="accidente_inverso">
+                                        <input type="checkbox" id="argumento-accidente-inverso" name="argumentosAtinencia" value="accidente_inverso" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-accidente-inverso">Del accidente inverso</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-causa-falsa" name="argumentosAtinencia" value="causa_falsa">
+                                        <input type="checkbox" id="argumento-causa-falsa" name="argumentosAtinencia" value="causa_falsa" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-causa-falsa">Causa falsa</label>
                                     </div>
-
-                                    <!-- Fila 4 -->
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-petitio-principii" name="argumentosAtinencia" value="petitio_principii">
+                                        <input type="checkbox" id="argumento-petitio-principii" name="argumentosAtinencia" value="petitio_principii" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-petitio-principii">Petitio principii</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-pregunta-compleja" name="argumentosAtinencia" value="pregunta_compleja">
+                                        <input type="checkbox" id="argumento-pregunta-compleja" name="argumentosAtinencia" value="pregunta_compleja" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-pregunta-compleja">Pregunta compleja</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-ignoratio-elenchi" name="argumentosAtinencia" value="ignoratio_elenchi">
+                                        <input type="checkbox" id="argumento-ignoratio-elenchi" name="argumentosAtinencia" value="ignoratio_elenchi" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-ignoratio-elenchi">Ignoratio Elenchi</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Tercera parte: Argumentos de ambigüedad -->
                         <div style="margin-bottom: 5px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="argumentos-ambiguedad-principal" name="argumentosAmbiguedadPrincipal" value="si" onclick="toggleArgumentosAmbiguedad(this)">
-                                <label for="argumentos-ambiguedad-principal">
-                                    <strong>Argumentos de ambigüedad</strong>
-                                </label>
+                                <input type="checkbox" id="argumentos-ambiguedad-principal" name="argumentosAmbiguedadPrincipal" value="si" onclick="toggleArgumentosAmbiguedad(this); actualizarResumenEnTiempoReal()">
+                                <label for="argumentos-ambiguedad-principal"><strong>Argumentos de ambigüedad</strong></label>
                             </div>
-
                             <div id="argumentosAmbiguedadContainer" class="conditional-section" style="display: none; margin-left: 25px; margin-top: 10px;">
                                 <div class="method-grid">
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-equivoco" name="argumentosAmbiguedad" value="equivoco">
+                                        <input type="checkbox" id="argumento-equivoco" name="argumentosAmbiguedad" value="equivoco" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-equivoco">Equívoco</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-anfibologia" name="argumentosAmbiguedad" value="anfibologia">
+                                        <input type="checkbox" id="argumento-anfibologia" name="argumentosAmbiguedad" value="anfibologia" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-anfibologia">Anfibología</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-enfasis" name="argumentosAmbiguedad" value="enfasis">
+                                        <input type="checkbox" id="argumento-enfasis" name="argumentosAmbiguedad" value="enfasis" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-enfasis">Énfasis</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-composicion" name="argumentosAmbiguedad" value="composicion">
+                                        <input type="checkbox" id="argumento-composicion" name="argumentosAmbiguedad" value="composicion" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-composicion">Composición</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="argumento-division" name="argumentosAmbiguedad" value="division">
+                                        <input type="checkbox" id="argumento-division" name="argumentosAmbiguedad" value="division" onclick="actualizarResumenEnTiempoReal()">
                                         <label for="argumento-division">División</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </section>
@@ -1114,591 +1434,762 @@
             <!-- SECCIÓN 10: CAUSAL DE ARBITRARIEDAD -->
             <section class="form-section">
                 <h2 class="section-title"><i class="fas fa-gavel"></i> 10. Causal de Arbitrariedad</h2>
-
                 <div class="form-grid">
                     <div class="form-group full-width">
-
-                        <!-- 1. Falta de fundamentación suficiente -->
                         <div style="margin-bottom: 20px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="causal-falta-fundamentacion" name="causalArbitrariedad" value="falta_fundamentacion" onclick="toggleFaltaFundamentacion(this)">
-                                <label for="causal-falta-fundamentacion">
-                                    <strong>Falta de fundamentación suficiente</strong>
-                                </label>
+                                <input type="checkbox" id="causal-falta-fundamentacion" name="causalArbitrariedad" value="falta_fundamentacion" onclick="toggleFaltaFundamentacion(this); actualizarResumenEnTiempoReal()">
+                                <label for="causal-falta-fundamentacion"><strong>Falta de fundamentación suficiente</strong></label>
                             </div>
-
-                            <!-- Opciones específicas (aparecen al seleccionar el checkbox) -->
                             <div id="faltaFundamentacionContainer" class="conditional-section" style="display: none; margin-left: 25px; margin-top: 10px;">
                                 <div class="options-container" style="grid-template-columns: 1fr;">
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="fundamentacion-dogmatica" name="opcionesFundamentacion" value="afirmaciones_dogmaticas">
-                                        <label for="fundamentacion-dogmatica">
-                                            Afirmaciones dogmáticas o no fundadas
-                                        </label>
+                                        <input type="checkbox" id="fundamentacion-dogmatica" name="opcionesFundamentacion" value="afirmaciones_dogmaticas" onclick="actualizarResumenEnTiempoReal()">
+                                        <label for="fundamentacion-dogmatica">Afirmaciones dogmáticas o no fundadas</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="fundamentacion-insuficiente" name="opcionesFundamentacion" value="falta_fundamentacion_idonea">
-                                        <label for="fundamentacion-insuficiente">
-                                            Falta de fundamentación idónea o no suficiente
-                                        </label>
+                                        <input type="checkbox" id="fundamentacion-insuficiente" name="opcionesFundamentacion" value="falta_fundamentacion_idonea" onclick="actualizarResumenEnTiempoReal()">
+                                        <label for="fundamentacion-insuficiente">Falta de fundamentación idónea o no suficiente</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="fundamentacion-carencia" name="opcionesFundamentacion" value="carencia_sustento">
-                                        <label for="fundamentacion-carencia">
-                                            Carencia de sustento o referencia concreta
-                                        </label>
+                                        <input type="checkbox" id="fundamentacion-carencia" name="opcionesFundamentacion" value="carencia_sustento" onclick="actualizarResumenEnTiempoReal()">
+                                        <label for="fundamentacion-carencia">Carencia de sustento o referencia concreta</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- 2. Apartamiento de las condiciones de la causa -->
                         <div style="margin-bottom: 15px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="causal-apartamiento" name="causalArbitrariedad" value="apartamiento_condiciones">
-                                <label for="causal-apartamiento">
-                                    <strong>Apartamiento de las condiciones de la causa</strong>
-                                </label>
+                                <input type="checkbox" id="causal-apartamiento" name="causalArbitrariedad" value="apartamiento_condiciones" onclick="actualizarResumenEnTiempoReal()">
+                                <label for="causal-apartamiento"><strong>Apartamiento de las condiciones de la causa</strong></label>
                             </div>
                         </div>
-
-                        <!-- 3. Valoración de las circunstancias de hecho y prueba -->
                         <div style="margin-bottom: 15px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="causal-valoracion" name="causalArbitrariedad" value="valoracion_hechos_prueba">
-                                <label for="causal-valoracion">
-                                    <strong>Valoración de las circunstancias de hecho y prueba</strong>
-                                </label>
+                                <input type="checkbox" id="causal-valoracion" name="causalArbitrariedad" value="valoracion_hechos_prueba" onclick="actualizarResumenEnTiempoReal()">
+                                <label for="causal-valoracion"><strong>Valoración de las circunstancias de hecho y prueba</strong></label>
                             </div>
                         </div>
-
-                        <!-- 4. Defectos en la consideración de extremos conducentes -->
                         <div style="margin-bottom: 15px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="causal-defectos-extremos" name="causalArbitrariedad" value="defectos_extremos_conducentes">
-                                <label for="causal-defectos-extremos">
-                                    <strong>Defectos en la consideración de extremos conducentes</strong>
-                                </label>
+                                <input type="checkbox" id="causal-defectos-extremos" name="causalArbitrariedad" value="defectos_extremos_conducentes" onclick="actualizarResumenEnTiempoReal()">
+                                <label for="causal-defectos-extremos"><strong>Defectos en la consideración de extremos conducentes</strong></label>
                             </div>
                         </div>
-
-                        <!-- 5. Defectos en la fundamentación normativa -->
                         <div style="margin-bottom: 20px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="causal-defectos-normativa" name="causalArbitrariedad" value="defectos_fundamentacion_normativa" onclick="toggleDefectosNormativa(this)">
-                                <label for="causal-defectos-normativa">
-                                    <strong>Defectos en la fundamentación normativa</strong>
-                                </label>
+                                <input type="checkbox" id="causal-defectos-normativa" name="causalArbitrariedad" value="defectos_fundamentacion_normativa" onclick="toggleDefectosNormativa(this); actualizarResumenEnTiempoReal()">
+                                <label for="causal-defectos-normativa"><strong>Defectos en la fundamentación normativa</strong></label>
                             </div>
-
-                            <!-- Opciones específicas (aparecen al seleccionar el checkbox) -->
                             <div id="defectosNormativaContainer" class="conditional-section" style="display: none; margin-left: 25px; margin-top: 10px;">
                                 <div class="options-container" style="grid-template-columns: 1fr;">
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="normativa-interpretacion-erronea" name="opcionesNormativa" value="interpretacion_aplicacion_erronea">
-                                        <label for="normativa-interpretacion-erronea">
-                                            Interpretación o aplicación errónea de la norma
-                                        </label>
+                                        <input type="checkbox" id="normativa-interpretacion-erronea" name="opcionesNormativa" value="interpretacion_aplicacion_erronea" onclick="actualizarResumenEnTiempoReal()">
+                                        <label for="normativa-interpretacion-erronea">Interpretación o aplicación errónea de la norma</label>
                                     </div>
-
                                     <div class="checkbox-option" style="background: #f8f9fa;">
-                                        <input type="checkbox" id="normativa-apartamiento" name="opcionesNormativa" value="apartamiento_omision_normativa">
-                                        <label for="normativa-apartamiento">
-                                            Apartamiento u omisión normativa
-                                        </label>
+                                        <input type="checkbox" id="normativa-apartamiento" name="opcionesNormativa" value="apartamiento_omision_normativa" onclick="actualizarResumenEnTiempoReal()">
+                                        <label for="normativa-apartamiento">Apartamiento u omisión normativa</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- 6. Excesos u omisiones en el pronunciamiento -->
                         <div style="margin-bottom: 15px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="causal-excesos-omisiones" name="causalArbitrariedad" value="excesos_omisiones_pronunciamiento">
-                                <label for="causal-excesos-omisiones">
-                                    <strong>Excesos u omisiones en el pronunciamiento</strong>
-                                </label>
+                                <input type="checkbox" id="causal-excesos-omisiones" name="causalArbitrariedad" value="excesos_omisiones_pronunciamiento" onclick="actualizarResumenEnTiempoReal()">
+                                <label for="causal-excesos-omisiones"><strong>Excesos u omisiones en el pronunciamiento</strong></label>
                             </div>
                         </div>
-
-                        <!-- 7. Exceso ritual manifiesto -->
                         <div style="margin-bottom: 15px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="causal-exceso-ritual" name="causalArbitrariedad" value="exceso_ritual_manifiesto">
-                                <label for="causal-exceso-ritual">
-                                    <strong>Exceso ritual manifiesto</strong>
-                                </label>
+                                <input type="checkbox" id="causal-exceso-ritual" name="causalArbitrariedad" value="exceso_ritual_manifiesto" onclick="actualizarResumenEnTiempoReal()">
+                                <label for="causal-exceso-ritual"><strong>Exceso ritual manifiesto</strong></label>
                             </div>
                         </div>
-
-                        <!-- 8. Contradicción -->
                         <div style="margin-bottom: 5px;">
                             <div class="checkbox-option">
-                                <input type="checkbox" id="causal-contradiccion" name="causalArbitrariedad" value="contradiccion">
-                                <label for="causal-contradiccion">
-                                    <strong>Contradicción</strong>
-                                </label>
+                                <input type="checkbox" id="causal-contradiccion" name="causalArbitrariedad" value="contradiccion" onclick="actualizarResumenEnTiempoReal()">
+                                <label for="causal-contradiccion"><strong>Contradicción</strong></label>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </section>
             
-            <!-- SECCIÓN 11: OBSERVACIONES ADICIONALES -->
+            <!-- SECCIÓN 11: OBSERVACIONES -->
             <section class="form-section">
                 <h2 class="section-title"><i class="fas fa-sticky-note"></i> 11. Observaciones adicionales</h2>
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label for="observaciones">Notas, comentarios u observaciones relevantes</label>
-                        <textarea id="observaciones" name="observaciones" placeholder="Agregue cualquier observación adicional que considere relevante para el análisis del fallo..." rows="4"></textarea>
-                        <div class="helper-text">Espacio para anotaciones personales, conexiones con otros fallos, relevancia doctrinal, etc.</div>
+                        <textarea id="observaciones" name="observaciones" placeholder="Agregue cualquier observación adicional que considere relevante para el análisis del fallo..." rows="4" onchange="actualizarResumenEnTiempoReal()" onkeyup="actualizarResumenEnTiempoReal()"></textarea>
                     </div>
                 </div>
             </section>
             
-            <!-- BOTONES DE ACCIÓN -->
+            <!-- BOTONES -->
             <div class="buttons-container">
                 <button type="button" class="btn btn-submit" onclick="guardarFallo()">
                     <i class="fas fa-save"></i> Guardar Fallo
                 </button>
-                
                 <button type="button" class="btn btn-reset" onclick="resetForm()">
                     <i class="fas fa-redo"></i> Limpiar Formulario
-                </button>
-                
-                <button type="button" class="btn btn-export" onclick="exportarACSV()">
-                    <i class="fas fa-file-export"></i> Exportar a CSV
                 </button>
             </div>
         </form>
         
         <footer class="footer">
-            <p>Sistema de Carga de Fallos Judiciales &copy; <span id="current-year"></span> | Análisis Jurisprudencial Sistematizado</p>
+            <p>Instituto de Recursos Judiciales, Argumentación y Razonamiento Probatorio &copy; <span id="current-year"></span> | Análisis Jurisprudencial Penal</p>
             <p><i class="fas fa-info-circle"></i> Todos los campos marcados con * son obligatorios</p>
         </footer>
     </div>
 
     <script>
-        // Función para mostrar/ocultar contenido colapsable
-        function toggleCollapsible(element) {
-            const content = element.nextElementSibling;
-            element.classList.toggle('active');
-            content.classList.toggle('active');
-        }
-        
-        // Mostrar/ocultar campo de disidencias
-        function toggleDisidencias(mostrar) {
-            const container = document.getElementById('disidenciasContainer');
-            if (mostrar) {
-                container.classList.add('active');
-            } else {
-                container.classList.remove('active');
-                // Limpiar el campo si se oculta
-                document.getElementById('detalleDisidencias').value = '';
-            }
-        }
-        
-        // Mostrar/ocultar campos de principios
-        function togglePrincipiosContainer(mostrar) {
-            const container = document.getElementById('principiosContainer');
-            if (mostrar) {
-                container.classList.add('active');
-            } else {
-                container.classList.remove('active');
-                // Limpiar los campos si se oculta
-                document.getElementById('principioA').value = '';
-                document.getElementById('principioB').value = '';
-                document.getElementById('customPrincipioA').value = '';
-                document.getElementById('customPrincipioB').value = '';
-                document.getElementById('customPrincipioAContainer').style.display = 'none';
-                document.getElementById('customPrincipioBContainer').style.display = 'none';
-            }
-        }
-        
-        // Mostrar/ocultar sección probatoria
-        function toggleProbatorio(mostrar) {
-            const container = document.getElementById('probatorioContainer');
-            const checkboxProbatorio = document.getElementById('problema-probatorio');
+        // ============ FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN - VERSIÓN DOS COLUMNAS ============
+        function actualizarResumenEnTiempoReal() {
+            const resumenContenido = document.getElementById('resumenContenido');
+            const resumenBadge = document.getElementById('resumenBadge');
+            const resumenFooter = document.getElementById('resumenFooter');
             
-            if (mostrar && checkboxProbatorio.checked) {
-                container.classList.add('active');
-            } else {
-                container.classList.remove('active');
-                // Limpiar los campos si se oculta
-                document.querySelectorAll('#probatorioContainer input').forEach(input => {
-                    if (input.type === 'checkbox' || input.type === 'radio') {
-                        input.checked = false;
-                    }
-                });
+            const datos = recopilarDatosResumen();
+            
+            // Contar secciones completadas
+            let contador = 0;
+            if (datos.caratula) contador++;
+            if (datos.integracion) contador++;
+            if (datos.materias.length > 0) contador++;
+            if (datos.cuestionesFederales.length > 0) contador++;
+            if (datos.causalesArbitrariedad.length > 0) contador++;
+            if (datos.erroresSilogismo.length > 0 || datos.argumentosAtinencia.length > 0 || datos.argumentosAmbiguedad.length > 0) contador++;
+            
+            resumenBadge.textContent = contador > 0 ? `${contador} secciones` : 'Sin datos';
+            
+            // Si no hay datos
+            if (!datos.caratula && datos.materias.length === 0 && datos.cuestionesFederales.length === 0) {
+                resumenContenido.innerHTML = '<span class="resumen-vacio">Complete el formulario para ver el resumen del fallo...</span>';
+                resumenFooter.innerHTML = '';
+                return;
             }
-        }
-        
-        // Mostrar/ocultar opciones de fundamentación
-        function toggleOpcionesFundamentacion(checkbox) {
-            const container = document.getElementById('opcionesFundamentacionContainer');
-            if (checkbox.checked) {
-                container.classList.add('active');
-            } else {
-                container.classList.remove('active');
-                // Limpiar los checkboxes hijos
-                document.querySelectorAll('#opcionesFundamentacionContainer input[type="checkbox"]').forEach(cb => {
-                    cb.checked = false;
-                });
+            
+            // Determinar si hay disidencias
+            let votoTexto = datos.voto === 'unanimidad' ? 'Unanimidad' : datos.voto === 'mayoria' ? 'Mayoría' : datos.voto === 'disidencias' ? 'Con disidencias' : '';
+            let votoColor = datos.voto === 'unanimidad' ? '#27ae60' : datos.voto === 'mayoria' ? '#f39c12' : datos.voto === 'disidencias' ? '#e74c3c' : '#718096';
+            
+            let html = `
+                <!-- ENCABEZADO DEL FALLO -->
+                <div class="resumen-encabezado">
+                    <div class="resumen-encabezado-icono">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <div class="resumen-encabezado-contenido">
+                        <div class="resumen-encabezado-titulo">
+                            ${datos.caratula || 'FALLO SIN CARÁTULA'}
+                        </div>
+                        <div class="resumen-encabezado-detalle">
+                            <span><i class="fas fa-bookmark"></i> ${datos.fallos || 'Sin tomo/página'}</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${datos.fecha || 'Sin fecha'}</span>
+                            ${votoTexto ? `<span><i class="fas fa-check-circle" style="color: ${votoColor};"></i> Voto: ${votoTexto}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="resumen-encabezado-badge">
+                        <i class="fas fa-balance-scale"></i> Análisis crítico
+                    </div>
+                </div>
+                
+                <!-- CONTENIDO A DOS COLUMNAS -->
+                <div class="resumen-columnas">
+                    <!-- COLUMNA IZQUIERDA -->
+                    <div class="resumen-columna">
+            `;
+            
+            // ===== COLUMNA IZQUIERDA =====
+            
+            // 1. INTEGRACIÓN DEL TRIBUNAL
+            if (datos.integracion) {
+                html += `<div class="resumen-seccion">
+                    <div class="resumen-seccion-titulo">
+                        <i class="fas fa-users"></i> COMPOSICIÓN DEL TRIBUNAL
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-user-tie"></i></div>
+                        <div class="resumen-label">INTEGRACIÓN:</div>
+                        <div class="resumen-valor">${datos.integracion}</div>
+                    </div>`;
+                
+                if (datos.detalleDisidencias) {
+                    html += `<div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-comment-dots"></i></div>
+                        <div class="resumen-label">DISIDENCIAS:</div>
+                        <div class="resumen-valor">${datos.detalleDisidencias.substring(0, 80)}${datos.detalleDisidencias.length > 80 ? '...' : ''}</div>
+                    </div>`;
+                }
+                html += `</div>`;
             }
-        }
-        
-        // Mostrar/ocultar opciones de normativa
-        function toggleOpcionesNormativa(checkbox) {
-            const container = document.getElementById('opcionesNormativaContainer');
-            if (checkbox.checked) {
-                container.classList.add('active');
-            } else {
-                container.classList.remove('active');
-                // Limpiar los checkboxes hijos
-                document.querySelectorAll('#opcionesNormativaContainer input[type="checkbox"]').forEach(cb => {
-                    cb.checked = false;
-                });
+            
+            // 2. MATERIA PRINCIPAL Y SUBTEMA
+            if (datos.materias.length > 0) {
+                html += `<div class="resumen-seccion">
+                    <div class="resumen-seccion-titulo">
+                        <i class="fas fa-balance-scale"></i> MATERIA PRINCIPAL
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-tag"></i></div>
+                        <div class="resumen-label">MATERIA${datos.materias.length > 1 ? 'S' : ''}:</div>
+                        <div class="resumen-valor">`;
+                datos.materias.forEach(m => html += `<span class="resumen-chip">${m}</span>`);
+                html += `</div></div>`;
+                
+                if (datos.subtema) {
+                    html += `<div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-tags"></i></div>
+                        <div class="resumen-label">SUBTEMA:</div>
+                        <div class="resumen-valor"><strong>${datos.subtema}</strong></div>
+                    </div>`;
+                }
+                html += `</div>`;
             }
-        }
-        
-        // Funciones para mostrar campos personalizados cuando se selecciona "Otro"
-        function toggleCustomMateria(select) {
-            const container = document.getElementById('customMateriaContainer');
-            container.style.display = select.value === 'otro' ? 'block' : 'none';
-            if (select.value !== 'otro') {
-                document.getElementById('customMateria').value = '';
+            
+            // 3. CUESTIÓN FEDERAL
+            if (datos.cuestionesFederales.length > 0) {
+                html += `<div class="resumen-seccion">
+                    <div class="resumen-seccion-titulo">
+                        <i class="fas fa-landmark"></i> CUESTIÓN FEDERAL
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-check-square"></i></div>
+                        <div class="resumen-label">SELECCIONADAS:</div>
+                        <div class="resumen-valor">`;
+                datos.cuestionesFederales.slice(0, 3).forEach(c => html += `<span class="resumen-chip">${c}</span>`);
+                if (datos.cuestionesFederales.length > 3) html += `<span class="resumen-chip">+${datos.cuestionesFederales.length - 3} más</span>`;
+                html += `</div></div>`;
+                
+                if (datos.descripcionCuestionFederal) {
+                    html += `<div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-file-alt"></i></div>
+                        <div class="resumen-label">DESCRIPCIÓN:</div>
+                        <div class="resumen-valor"><em>${datos.descripcionCuestionFederal.substring(0, 70)}${datos.descripcionCuestionFederal.length > 70 ? '...' : ''}</em></div>
+                    </div>`;
+                }
+                html += `</div>`;
             }
-        }
-        
-        function toggleCustomSubtema(select) {
-            const container = document.getElementById('customSubtemaContainer');
-            container.style.display = select.value === 'otro' ? 'block' : 'none';
-            if (select.value !== 'otro') {
-                document.getElementById('customSubtema').value = '';
+            
+            // 4. TIPO DE DESACUERDO Y PROBLEMA
+            if (datos.desacuerdos.length > 0 || datos.problemas.length > 0) {
+                html += `<div class="resumen-seccion">
+                    <div class="resumen-seccion-titulo">
+                        <i class="fas fa-exclamation-triangle"></i> DESACUERDO Y PROBLEMA
+                    </div>`;
+                if (datos.desacuerdos.length > 0) {
+                    html += `<div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-exchange-alt"></i></div>
+                        <div class="resumen-label">DESACUERDO:</div>
+                        <div class="resumen-valor">${datos.desacuerdos.join(' · ')}</div>
+                    </div>`;
+                }
+                if (datos.problemas.length > 0) {
+                    html += `<div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-question-circle"></i></div>
+                        <div class="resumen-label">PROBLEMA:</div>
+                        <div class="resumen-valor">${datos.problemas.join(' · ')}</div>
+                    </div>`;
+                }
+                if (datos.rolPrueba) {
+                    let rolColor = datos.rolPrueba === 'central' ? '#e74c3c' : datos.rolPrueba === 'secundario' ? '#f39c12' : '#27ae60';
+                    html += `<div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-clipboard-check"></i></div>
+                        <div class="resumen-label">ROL PRUEBA:</div>
+                        <div class="resumen-valor"><span style="color: ${rolColor}; font-weight: 600;">${datos.rolPrueba.charAt(0).toUpperCase() + datos.rolPrueba.slice(1)}</span></div>
+                    </div>`;
+                }
+                html += `</div>`;
             }
-        }
-        
-        function toggleCustomPrincipioA(select) {
-            const container = document.getElementById('customPrincipioAContainer');
-            container.style.display = select.value === 'otro' ? 'block' : 'none';
-            if (select.value !== 'otro') {
-                document.getElementById('customPrincipioA').value = '';
+            
+            // CERRAR COLUMNA IZQUIERDA Y ABRIR COLUMNA DERECHA
+            html += `</div><div class="resumen-columna">`;
+            
+            // ===== COLUMNA DERECHA =====
+            
+            // 5. MÉTODO INTERPRETATIVO
+            if (datos.metodoInterpretativo.length > 0) {
+                html += `<div class="resumen-seccion">
+                    <div class="resumen-seccion-titulo">
+                        <i class="fas fa-search"></i> MÉTODO INTERPRETATIVO
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-magnifying-glass"></i></div>
+                        <div class="resumen-label">MÉTODOS:</div>
+                        <div class="resumen-valor">${datos.metodoInterpretativo.slice(0, 4).join(' · ')}${datos.metodoInterpretativo.length > 4 ? ` <span style="color: var(--accent-color);">(+${datos.metodoInterpretativo.length - 4})</span>` : ''}</div>
+                    </div>
+                </div>`;
             }
-        }
-        
-        function toggleCustomPrincipioB(select) {
-            const container = document.getElementById('customPrincipioBContainer');
-            container.style.display = select.value === 'otro' ? 'block' : 'none';
-            if (select.value !== 'otro') {
-                document.getElementById('customPrincipioB').value = '';
+            
+            // 6. COLISIÓN DE PRINCIPIOS
+            if (datos.colisionPrincipios === 'si' && datos.principioA && datos.principioB) {
+                html += `<div class="resumen-seccion">
+                    <div class="resumen-seccion-titulo">
+                        <i class="fas fa-scale-balanced"></i> PONDERACIÓN
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-gavel"></i></div>
+                        <div class="resumen-label">COLISIÓN:</div>
+                        <div class="resumen-valor">
+                            <span style="background: #e8f0fe; padding: 3px 10px; border-radius: 20px;">${datos.principioA}</span>
+                            <span style="margin: 0 5px; color: var(--danger-color); font-weight: 600;">VS</span>
+                            <span style="background: #e8f0fe; padding: 3px 10px; border-radius: 20px;">${datos.principioB}</span>
+                        </div>
+                    </div>
+                </div>`;
             }
+            
+            // 7. ERRORES DEL RAZONAMIENTO
+            if (datos.erroresSilogismo.length > 0 || datos.argumentosAtinencia.length > 0 || datos.argumentosAmbiguedad.length > 0) {
+                let total = datos.erroresSilogismo.length + datos.argumentosAtinencia.length + datos.argumentosAmbiguedad.length;
+                html += `<div class="resumen-seccion">
+                    <div class="resumen-seccion-titulo">
+                        <i class="fas fa-times-circle"></i> ERRORES DEL RAZONAMIENTO
+                        <span style="background: #e74c3c20; color: var(--danger-color); padding: 2px 10px; border-radius: 30px; font-size: 0.7rem; margin-left: 8px;">${total} detectado${total !== 1 ? 's' : ''}</span>
+                    </div>`;
+                if (datos.erroresSilogismo.length > 0) {
+                    html += `<div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-sitemap"></i></div>
+                        <div class="resumen-label">FORMALES:</div>
+                        <div class="resumen-valor">${datos.erroresSilogismo.join(' · ')}</div>
+                    </div>`;
+                }
+                if (datos.argumentosAtinencia.length > 0) {
+                    html += `<div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-comment"></i></div>
+                        <div class="resumen-label">ATINENCIA:</div>
+                        <div class="resumen-valor">${datos.argumentosAtinencia.slice(0, 3).join(' · ')}${datos.argumentosAtinencia.length > 3 ? ` <span style="color: var(--accent-color);">(+${datos.argumentosAtinencia.length - 3})</span>` : ''}</div>
+                    </div>`;
+                }
+                if (datos.argumentosAmbiguedad.length > 0) {
+                    html += `<div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-language"></i></div>
+                        <div class="resumen-label">AMBIGÜEDAD:</div>
+                        <div class="resumen-valor">${datos.argumentosAmbiguedad.slice(0, 3).join(' · ')}${datos.argumentosAmbiguedad.length > 3 ? ` <span style="color: var(--accent-color);">(+${datos.argumentosAmbiguedad.length - 3})</span>` : ''}</div>
+                    </div>`;
+                }
+                html += `</div>`;
+            }
+            
+            // 8. CAUSALES DE ARBITRARIEDAD
+            if (datos.causalesArbitrariedad.length > 0) {
+                html += `<div class="resumen-seccion">
+                    <div class="resumen-seccion-titulo">
+                        <i class="fas fa-gavel"></i> CAUSALES DE ARBITRARIEDAD
+                        <span style="background: #3498db20; color: var(--accent-color); padding: 2px 10px; border-radius: 30px; font-size: 0.7rem; margin-left: 8px;">${datos.causalesArbitrariedad.length} causal${datos.causalesArbitrariedad.length !== 1 ? 'es' : ''}</span>
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-list-check"></i></div>
+                        <div class="resumen-label">CAUSALES:</div>
+                        <div class="resumen-valor">`;
+                datos.causalesArbitrariedad.slice(0, 4).forEach(c => html += `<span class="resumen-chip">${c}</span>`);
+                if (datos.causalesArbitrariedad.length > 4) html += `<span class="resumen-chip">+${datos.causalesArbitrariedad.length - 4} más</span>`;
+                html += `</div></div></div>`;
+            }
+            
+            // 9. OBSERVACIONES
+            if (datos.observaciones) {
+                html += `<div class="resumen-seccion">
+                    <div class="resumen-seccion-titulo">
+                        <i class="fas fa-sticky-note"></i> OBSERVACIONES
+                    </div>
+                    <div class="resumen-item">
+                        <div class="resumen-icono"><i class="fas fa-quote-left"></i></div>
+                        <div class="resumen-label">NOTAS:</div>
+                        <div class="resumen-valor"><em>${datos.observaciones.substring(0, 100)}${datos.observaciones.length > 100 ? '...' : ''}</em></div>
+                    </div>
+                </div>`;
+            }
+            
+            // CERRAR COLUMNA DERECHA Y CONTENEDOR
+            html += `</div></div>`;
+            
+            resumenContenido.innerHTML = html;
+            resumenFooter.innerHTML = `
+                <div class="resumen-footer-left">
+                    <i class="fas fa-clock"></i> Actualizado: ${new Date().toLocaleTimeString('es-AR')}
+                    <span><i class="fas fa-university"></i> Instituto de Recursos Judiciales</span>
+                </div>
+                <div class="resumen-footer-right">
+                    <i class="fas fa-file-signature"></i> Análisis en tiempo real
+                </div>
+            `;
         }
-        
-        // Validar que al menos un problema jurídico esté seleccionado
-        function validarProblemaJuridico() {
-            const checkboxes = document.querySelectorAll('input[name="problemaJuridico"]:checked');
-            return checkboxes.length > 0;
-        }
-        
-        function toggleFaltaFundamentacion(checkbox) {
-        const container = document.getElementById('faltaFundamentacionContainer');
-        if (checkbox.checked) {
-            container.style.display = 'block';
-        } else {
-            container.style.display = 'none';
-            // Limpiar los checkboxes hijos
-            document.querySelectorAll('#faltaFundamentacionContainer input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
-            });
-        }
-    }
-    
-    function toggleDefectosNormativa(checkbox) {
-        const container = document.getElementById('defectosNormativaContainer');
-        if (checkbox.checked) {
-            container.style.display = 'block';
-        } else {
-            container.style.display = 'none';
-            // Limpiar los checkboxes hijos
-            document.querySelectorAll('#defectosNormativaContainer input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
-            });
-        }
-    }
-    
-    // Inicializar si hay valores guardados
-    document.addEventListener('DOMContentLoaded', function() {
-        // Verificar si algún checkbox principal está marcado y mostrar sus opciones
-        const faltaFundamentacion = document.getElementById('causal-falta-fundamentacion');
-        if (faltaFundamentacion && faltaFundamentacion.checked) {
-            document.getElementById('faltaFundamentacionContainer').style.display = 'block';
-        }
-        
-        const defectosNormativa = document.getElementById('causal-defectos-normativa');
-        if (defectosNormativa && defectosNormativa.checked) {
-            document.getElementById('defectosNormativaContainer').style.display = 'block';
-        }
-    });
-        
-        // Recopilar todos los datos del formulario
-        function recopilarDatos() {
+
+        // ============ RECOPILACIÓN DE DATOS ============
+        function recopilarDatosResumen() {
             const datos = {
-                // Información básica
+                caratula: document.getElementById('caratula').value || '',
+                fallos: document.getElementById('fallos').value || '',
+                fecha: document.getElementById('fecha').value ? new Date(document.getElementById('fecha').value).toLocaleDateString('es-AR') : '',
+                integracion: document.getElementById('integracion').value || '',
+                voto: document.querySelector('input[name="voto"]:checked')?.value || '',
+                detalleDisidencias: document.getElementById('detalleDisidencias')?.value || '',
+                materias: [], 
+                subtema: '', 
+                cuestionesFederales: [], 
+                descripcionCuestionFederal: document.getElementById('descripcionCuestionFederal')?.value || '',
+                desacuerdos: [], 
+                problemas: [], 
+                rolPrueba: document.querySelector('input[name="rolPrueba"]:checked')?.value || '', 
+                metodoInterpretativo: [],
+                colisionPrincipios: document.querySelector('input[name="colisionPrincipios"]:checked')?.value || '', 
+                principioA: '', 
+                principioB: '', 
+                erroresSilogismo: [], 
+                argumentosAtinencia: [], 
+                argumentosAmbiguedad: [],
+                causalesArbitrariedad: [], 
+                observaciones: document.getElementById('observaciones').value || ''
+            };
+
+            // MATERIAS
+            document.querySelectorAll('input[name="materiaPrincipal"]:checked').forEach(cb => {
+                if (cb.value === 'arbitrariedad_sentencia') {
+                    let sub = [];
+                    document.querySelectorAll('#arbitrariedadSubopcionesContainer input[type="checkbox"]:checked').forEach(s => {
+                        if (s.id === 'arbitrariedad-normativa') sub.push('Normativa');
+                        if (s.id === 'arbitrariedad-clasica') sub.push('Clásica');
+                    });
+                    datos.materias.push(`Arbitrariedad${sub.length ? ' (' + sub.join('/') + ')' : ''}`);
+                } else if (cb.value === 'otro') {
+                    let c = document.getElementById('customMateriaPrincipal').value;
+                    datos.materias.push(c || 'Otro');
+                } else {
+                    let l = cb.nextElementSibling?.textContent.trim() || cb.value;
+                    if (l.includes('Afectación')) datos.materias.push('Afectación derechos');
+                    else if (l.includes('Interpretación de tratados')) datos.materias.push('Interpretación tratados');
+                    else if (l.includes('Interpretación de leyes')) datos.materias.push('Interpretación leyes fed.');
+                    else if (l.includes('Fuero penal')) datos.materias.push('Penal económico');
+                    else datos.materias.push(l);
+                }
+            });
+
+            // SUBTEMA
+            let s = document.getElementById('subtema');
+            if (s.value) {
+                if (s.value !== 'otro') datos.subtema = s.options[s.selectedIndex]?.text || '';
+                else datos.subtema = document.getElementById('customSubtema').value || 'Otro';
+            }
+
+            // CUESTIONES FEDERALES
+            document.querySelectorAll('input[name="cuestionFederal"]:checked').forEach(cb => {
+                if (cb.value === 'otro') {
+                    let c = document.getElementById('customCuestionFederal').value;
+                    datos.cuestionesFederales.push(c || 'Otro');
+                } else {
+                    let l = cb.nextElementSibling?.textContent.trim() || cb.value;
+                    datos.cuestionesFederales.push(l);
+                }
+            });
+
+            // DESACUERDOS
+            document.querySelectorAll('input[name="tipoDesacuerdo"]:checked').forEach(cb => {
+                datos.desacuerdos.push(cb.nextElementSibling.textContent.trim());
+            });
+
+            // PROBLEMAS
+            document.querySelectorAll('input[name="problemaJuridico"]:checked').forEach(cb => {
+                datos.problemas.push(cb.nextElementSibling.textContent.trim());
+            });
+
+            // MÉTODO INTERPRETATIVO
+            document.querySelectorAll('input[name="metodoInterpretativo"]:checked').forEach(cb => {
+                datos.metodoInterpretativo.push(cb.nextElementSibling.textContent.trim());
+            });
+
+            // PRINCIPIOS
+            if (document.getElementById('colision-si')?.checked) {
+                datos.principioA = obtenerValorConPersonalizado('principioA', 'customPrincipioA');
+                datos.principioB = obtenerValorConPersonalizado('principioB', 'customPrincipioB');
+            }
+
+            // ERRORES
+            document.querySelectorAll('input[name="erroresSilogismo"]:checked').forEach(cb => {
+                datos.erroresSilogismo.push(cb.nextElementSibling.textContent.trim());
+            });
+            if (document.getElementById('argumentos-atinencia-principal')?.checked) {
+                document.querySelectorAll('#argumentosAtinenciaContainer input[type="checkbox"]:checked').forEach(cb => {
+                    datos.argumentosAtinencia.push(cb.nextElementSibling.textContent.trim());
+                });
+            }
+            if (document.getElementById('argumentos-ambiguedad-principal')?.checked) {
+                document.querySelectorAll('#argumentosAmbiguedadContainer input[type="checkbox"]:checked').forEach(cb => {
+                    datos.argumentosAmbiguedad.push(cb.nextElementSibling.textContent.trim());
+                });
+            }
+
+            // ARBITRARIEDAD (versión simplificada)
+            document.querySelectorAll('input[name="causalArbitrariedad"]:checked').forEach(cb => {
+                let texto = cb.nextElementSibling.textContent.trim();
+                if (texto.includes('Falta de fundamentación')) texto = 'Falta fundamentación';
+                else if (texto.includes('Apartamiento')) texto = 'Apartamiento';
+                else if (texto.includes('Valoración')) texto = 'Valoración hechos';
+                else if (texto.includes('Defectos en la consideración')) texto = 'Defectos extremos';
+                else if (texto.includes('Defectos en la fundamentación normativa')) texto = 'Defectos normativos';
+                else if (texto.includes('Excesos')) texto = 'Excesos/omisiones';
+                else if (texto.includes('Exceso ritual')) texto = 'Exceso ritual';
+                else if (texto.includes('Contradicción')) texto = 'Contradicción';
+                datos.causalesArbitrariedad.push(texto);
+            });
+
+            return datos;
+        }
+
+        // ============ FUNCIONES AUXILIARES ============
+        function obtenerValorConPersonalizado(selectId, customInputId) {
+            let s = document.getElementById(selectId);
+            if (!s) return '';
+            if (s.value === 'otro') { 
+                let c = document.getElementById(customInputId); 
+                return c ? c.value : ''; 
+            }
+            return s.options[s.selectedIndex]?.text || '';
+        }
+
+        function obtenerCheckboxes(n) { 
+            return Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(cb => cb.value).join('; '); 
+        }
+
+        // ============ TOGGLES ============
+        function toggleArbitrariedadSubopciones(cb) {
+            let c = document.getElementById('arbitrariedadSubopcionesContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                c.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleCustomMateriaPrincipal(cb) {
+            let c = document.getElementById('customMateriaPrincipalContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                document.getElementById('customMateriaPrincipal').value = ''; 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleCustomSubtema(s) {
+            let c = document.getElementById('customSubtemaContainer');
+            if (s.value === 'otro') c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                document.getElementById('customSubtema').value = ''; 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleCustomCuestionFederal(cb) {
+            let c = document.getElementById('customCuestionFederalContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                document.getElementById('customCuestionFederal').value = ''; 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleCustomPrincipioA(s) {
+            let c = document.getElementById('customPrincipioAContainer');
+            c.style.display = s.value === 'otro' ? 'block' : 'none';
+            if (s.value !== 'otro') document.getElementById('customPrincipioA').value = '';
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleCustomPrincipioB(s) {
+            let c = document.getElementById('customPrincipioBContainer');
+            c.style.display = s.value === 'otro' ? 'block' : 'none';
+            if (s.value !== 'otro') document.getElementById('customPrincipioB').value = '';
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleArgumentosAtinencia(cb) {
+            let c = document.getElementById('argumentosAtinenciaContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                c.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleArgumentosAmbiguedad(cb) {
+            let c = document.getElementById('argumentosAmbiguedadContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                c.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleFaltaFundamentacion(cb) {
+            let c = document.getElementById('faltaFundamentacionContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                c.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleDefectosNormativa(cb) {
+            let c = document.getElementById('defectosNormativaContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                c.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleCollapsible(e) {
+            e.classList.toggle('active');
+            e.nextElementSibling.classList.toggle('active');
+        }
+        
+        function toggleDisidencias(m) {
+            let c = document.getElementById('disidenciasContainer');
+            if (m) c.classList.add('active');
+            else { 
+                c.classList.remove('active'); 
+                document.getElementById('detalleDisidencias').value = ''; 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function togglePrincipiosContainer(m) {
+            let c = document.getElementById('principiosContainer');
+            if (m) c.classList.add('active');
+            else { 
+                c.classList.remove('active'); 
+                document.getElementById('principioA').value = ''; 
+                document.getElementById('principioB').value = ''; 
+                document.getElementById('customPrincipioA').value = ''; 
+                document.getElementById('customPrincipioB').value = ''; 
+                document.getElementById('customPrincipioAContainer').style.display = 'none'; 
+                document.getElementById('customPrincipioBContainer').style.display = 'none'; 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+        
+        function toggleProbatorio(m) {
+            let c = document.getElementById('probatorioContainer');
+            let chk = document.getElementById('problema-probatorio');
+            if (m && chk.checked) c.classList.add('active');
+            else { 
+                c.classList.remove('active'); 
+                c.querySelectorAll('input').forEach(i => { 
+                    if (i.type === 'checkbox' || i.type === 'radio') i.checked = false; 
+                }); 
+            }
+            actualizarResumenEnTiempoReal();
+        }
+
+        // ============ GUARDADO Y RESET ============
+        function validarProblemaJuridico() { 
+            return document.querySelectorAll('input[name="problemaJuridico"]:checked').length > 0; 
+        }
+        
+        function recopilarDatos() {
+            return {
                 caratula: document.getElementById('caratula').value,
                 fallos: document.getElementById('fallos').value,
                 fecha: document.getElementById('fecha').value,
-                
-                // Composición del tribunal
                 integracion: document.getElementById('integracion').value,
                 voto: document.querySelector('input[name="voto"]:checked')?.value || '',
                 disidencias: document.getElementById('detalleDisidencias')?.value || '',
-                
-                // Tema jurídico
-                materia: obtenerValorConPersonalizado('materia', 'customMateria'),
+                materiaPrincipal: obtenerCheckboxes('materiaPrincipal'),
+                customMateriaPrincipal: document.getElementById('customMateriaPrincipal')?.value || '',
+                causalesArbitrariedad: obtenerCheckboxes('causalesArbitrariedad'),
                 subtema: obtenerValorConPersonalizado('subtema', 'customSubtema'),
-                
-                // Cuestión federal
-                cuestionFederal: document.getElementById('cuestioneFederal').value,
-                
-                // Tipo de desacuerdo
+                cuestionFederal: obtenerCheckboxes('cuestionFederal'),
+                customCuestionFederal: document.getElementById('customCuestionFederal')?.value || '',
+                descripcionCuestionFederal: document.getElementById('descripcionCuestionFederal')?.value || '',
                 tipoDesacuerdo: obtenerCheckboxes('tipoDesacuerdo'),
-                
-                // Tipo de problema jurídico
                 problemaJuridico: obtenerCheckboxes('problemaJuridico'),
-                
-                // Sección probatoria (si aplica)
                 rolPrueba: document.querySelector('input[name="rolPrueba"]:checked')?.value || '',
                 tipoInferencias: obtenerCheckboxes('tipoInferencias'),
-                
-                // Método interpretativo
                 metodoInterpretativo: obtenerCheckboxes('metodoInterpretativo'),
-                
-                // Argumentos de ponderación
                 colisionPrincipios: document.querySelector('input[name="colisionPrincipios"]:checked')?.value || '',
                 principioA: obtenerValorConPersonalizado('principioA', 'customPrincipioA'),
                 principioB: obtenerValorConPersonalizado('principioB', 'customPrincipioB'),
                 estructuraPonderacion: obtenerCheckboxes('estructuraPonderacion'),
                 tipoRazonamiento: obtenerCheckboxes('tipoRazonamiento'),
-                
-                // Errores del razonamiento
                 erroresSilogismo: obtenerCheckboxes('erroresSilogismo'),
                 argumentosAtinencia: obtenerCheckboxes('argumentosAtinencia'),
                 argumentosAmbiguedad: obtenerCheckboxes('argumentosAmbiguedad'),
-                
-                // Causal de arbitrariedad
                 causalArbitrariedad: obtenerCheckboxes('causalArbitrariedad'),
                 opcionesFundamentacion: obtenerCheckboxes('opcionesFundamentacion'),
                 opcionesNormativa: obtenerCheckboxes('opcionesNormativa'),
-                
-                // Observaciones
                 observaciones: document.getElementById('observaciones').value,
-                
-                // Metadata
                 timestamp: new Date().toISOString(),
                 fechaRegistro: new Date().toLocaleString('es-AR')
             };
-            
-            return datos;
         }
-        
-        // Funciones para mostrar/ocultar las opciones específicas del punto 9
-    
-    function toggleArgumentosAtinencia(checkbox) {
-        const container = document.getElementById('argumentosAtinenciaContainer');
-        if (checkbox.checked) {
-            container.style.display = 'block';
-        } else {
-            container.style.display = 'none';
-            // Limpiar todos los checkboxes de argumentos de atinencia
-            document.querySelectorAll('#argumentosAtinenciaContainer input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
-            });
-        }
-    }
-    
-    function toggleArgumentosAmbiguedad(checkbox) {
-        const container = document.getElementById('argumentosAmbiguedadContainer');
-        if (checkbox.checked) {
-            container.style.display = 'block';
-        } else {
-            container.style.display = 'none';
-            // Limpiar todos los checkboxes de argumentos de ambigüedad
-            document.querySelectorAll('#argumentosAmbiguedadContainer input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
-            });
-        }
-    }
-    
-    // Inicializar si hay valores guardados
-    document.addEventListener('DOMContentLoaded', function() {
-        // Verificar si algún checkbox principal está marcado y mostrar sus opciones
-        const argumentosAtinencia = document.getElementById('argumentos-atinencia-principal');
-        if (argumentosAtinencia && argumentosAtinencia.checked) {
-            document.getElementById('argumentosAtinenciaContainer').style.display = 'block';
-        }
-        
-        const argumentosAmbiguedad = document.getElementById('argumentos-ambiguedad-principal');
-        if (argumentosAmbiguedad && argumentosAmbiguedad.checked) {
-            document.getElementById('argumentosAmbiguedadContainer').style.display = 'block';
-        }
-    });
-        
-        function obtenerValorConPersonalizado(selectId, customInputId) {
-            const select = document.getElementById(selectId);
-            if (!select) return '';
-            
-            if (select.value === 'otro') {
-                const customInput = document.getElementById(customInputId);
-                return customInput ? customInput.value : '';
-            }
-            return select.options[select.selectedIndex]?.text || '';
-        }
-        
-        function obtenerCheckboxes(nombre) {
-            const checkboxes = document.querySelectorAll(`input[name="${nombre}"]:checked`);
-            return Array.from(checkboxes).map(cb => cb.value).join('; ');
-        }
-        
-        // Función para guardar el fallo
+
         function guardarFallo() {
-            // Validación básica
-            const caratula = document.getElementById('caratula').value;
-            const fecha = document.getElementById('fecha').value;
-            
-            if (!caratula || !fecha) {
-                showStatus('Por favor complete todos los campos obligatorios', 'error');
-                return;
+            let c = document.getElementById('caratula').value, f = document.getElementById('fecha').value;
+            if (!c || !f) { 
+                showStatus('Complete todos los campos obligatorios', 'error'); 
+                return; 
             }
-            
-            // Validar que se seleccione al menos un problema jurídico
-            if (!validarProblemaJuridico()) {
-                showStatus('Debe seleccionar al menos un tipo de problema jurídico', 'error');
-                return;
+            if (!validarProblemaJuridico()) { 
+                showStatus('Debe seleccionar al menos un tipo de problema jurídico', 'error'); 
+                return; 
             }
-            
-            // Validar campos condicionales
-            const votoDisidencias = document.getElementById('voto-disidencias').checked;
-            if (votoDisidencias && !document.getElementById('detalleDisidencias').value) {
-                showStatus('Debe detallar las disidencias', 'error');
-                return;
+            if (document.getElementById('voto-disidencias').checked && !document.getElementById('detalleDisidencias').value) { 
+                showStatus('Debe detallar las disidencias', 'error'); 
+                return; 
             }
-            
-            const colisionSi = document.getElementById('colision-si').checked;
-            if (colisionSi) {
-                const principioA = obtenerValorConPersonalizado('principioA', 'customPrincipioA');
-                const principioB = obtenerValorConPersonalizado('principioB', 'customPrincipioB');
-                if (!principioA || !principioB) {
-                    showStatus('Debe especificar ambos principios cuando hay colisión', 'error');
-                    return;
+            if (document.getElementById('colision-si')?.checked) {
+                let a = obtenerValorConPersonalizado('principioA', 'customPrincipioA'), 
+                    b = obtenerValorConPersonalizado('principioB', 'customPrincipioB');
+                if (!a || !b) { 
+                    showStatus('Debe especificar ambos principios cuando hay colisión', 'error'); 
+                    return; 
                 }
             }
-            
-            // Recopilar datos
-            const datos = recopilarDatos();
-            
-            console.log('Datos del fallo:', datos);
-            showStatus(`Fallo "${caratula}" procesado correctamente`, 'success');
-            
-            // Aquí es donde conectarías con Google Sheets o tu sistema de almacenamiento
-            // Por ahora solo mostramos un mensaje
-            setTimeout(() => {
-                alert('Fallo listo para guardar. Configure la conexión con Google Sheets siguiendo las instrucciones proporcionadas.');
-            }, 500);
+            console.log('Datos del fallo:', recopilarDatos());
+            showStatus(`Fallo "${c}" procesado correctamente`, 'success');
         }
-        
-        // Función para exportar a CSV
-        function exportarACSV() {
-            const datos = recopilarDatos();
-            
-            // Validar que haya datos básicos
-            if (!datos.caratula) {
-                showStatus('Complete al menos la carátula para exportar', 'error');
-                return;
-            }
-            
-            // Convertir a CSV
-            const csvRows = [];
-            
-            // Encabezados
-            const headers = Object.keys(datos);
-            csvRows.push(headers.map(h => `"${h}"`).join(','));
-            
-            // Valores
-            const values = headers.map(header => {
-                const val = datos[header];
-                // Escapar comas y comillas
-                return `"${String(val).replace(/"/g, '""')}"`;
-            });
-            csvRows.push(values.join(','));
-            
-            // Crear y descargar archivo
-            const csvString = csvRows.join('\n');
-            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            
-            const fecha = new Date().toISOString().split('T')[0];
-            const nombreArchivo = `fallo_${datos.caratula.substring(0, 30).replace(/[^a-z0-9]/gi, '_')}_${fecha}.csv`;
-            a.setAttribute('href', url);
-            a.setAttribute('download', nombreArchivo);
-            a.click();
-            
-            showStatus('CSV descargado correctamente', 'success');
+
+        function showStatus(m, t) {
+            let s = document.getElementById('statusMessage');
+            s.textContent = m; 
+            s.className = `status-message status-${t}`; 
+            s.style.display = 'block';
+            setTimeout(() => s.style.display = 'none', 5000);
         }
-        
-        // Función para mostrar mensajes de estado
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.textContent = message;
-            statusElement.className = `status-message status-${type}`;
-            statusElement.style.display = 'block';
-            
-            // Ocultar después de 5 segundos
-            setTimeout(() => {
-                statusElement.style.display = 'none';
-            }, 5000);
-        }
-        
-        // Función para limpiar el formulario
+
         function resetForm() {
-            if (confirm('¿Está seguro de que desea limpiar todo el formulario? Se perderán todos los datos ingresados.')) {
+            if (confirm('¿Está seguro de que desea limpiar todo el formulario?')) {
                 document.getElementById('fallosForm').reset();
-                
-                // Ocultar todas las secciones condicionales
-                document.querySelectorAll('.conditional-section').forEach(el => {
-                    el.classList.remove('active');
+                document.querySelectorAll('.conditional-section, .custom-input').forEach(el => { 
+                    el.classList.remove('active'); 
+                    el.style.display = 'none'; 
                 });
-                
-                // Ocultar todos los campos personalizados
-                document.querySelectorAll('.custom-input').forEach(el => {
-                    el.style.display = 'none';
-                });
-                
-                // Cerrar todos los acordeones
-                document.querySelectorAll('.collapsible-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                document.querySelectorAll('.collapsible-header').forEach(header => {
-                    header.classList.remove('active');
-                });
-                
+                document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.collapsible-header').forEach(h => h.classList.remove('active'));
+                actualizarResumenEnTiempoReal();
                 showStatus('Formulario limpiado correctamente', 'success');
             }
         }
-        
-        // Actualizar el año actual en el footer
+
+        // ============ INICIALIZACIÓN ============
         document.getElementById('current-year').textContent = new Date().getFullYear();
-        
-        // Inicializar fecha con la fecha actual
         document.getElementById('fecha').valueAsDate = new Date();
-        
-        // Inicializar ocultando todos los campos personalizados
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.custom-input').forEach(el => {
-                el.style.display = 'none';
+            document.querySelectorAll('.custom-input').forEach(el => el.style.display = 'none');
+            actualizarResumenEnTiempoReal();
+            ['argumentos-atinencia-principal', 'argumentos-ambiguedad-principal', 'causal-falta-fundamentacion', 'causal-defectos-normativa'].forEach(id => {
+                let e = document.getElementById(id);
+                if (e && e.checked) document.getElementById(id + (id.includes('causal') ? 'Container' : 'Container')).style.display = 'block';
             });
         });
     </script>
