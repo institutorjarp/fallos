@@ -711,53 +711,47 @@
                 </div>
             </section>
             
-            <!-- SECCIÓN 3: TEMA JURÍDICO -->
+            <!-- SECCIÓN 3: TEMA JURÍDICO - MODIFICADA: Materia Principal como COMBO -->
             <section class="form-section" id="section3">
                 <h2 class="section-title"><i class="fas fa-balance-scale"></i> 3. Tema jurídico</h2>
                 
                 <div class="form-grid">
-                    <!-- MATERIA PRINCIPAL - Lista de opciones no excluyentes -->
+                    <!-- MATERIA PRINCIPAL - AHORA ES UN COMBO (SELECT) -->
                     <div class="form-group full-width">
-                        <label class="required">Materia principal (puede seleccionar múltiples opciones):</label>
-                        <div class="option-group">
-                            <div class="options-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
-                                <div class="checkbox-option"><input type="checkbox" id="materia-pena" name="materiaPrincipal" value="Aplicación/determinación de la pena" onclick="actualizarResumen()"><label>Aplicación/determinación de la pena</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-control-oficio" name="materiaPrincipal" value="Control de oficio del orden público" onclick="actualizarResumen()"><label>Control de oficio del orden público</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-competencia" name="materiaPrincipal" value="Cuestiones de competencia" onclick="actualizarResumen()"><label>Cuestiones de competencia</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-decomiso" name="materiaPrincipal" value="Decomiso de bienes" onclick="actualizarResumen()"><label>Decomiso de bienes</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-derechos-convencionales" name="materiaPrincipal" value="Derechos convencionales" onclick="actualizarResumen()"><label>Derechos convencionales</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-detencion-ilegal" name="materiaPrincipal" value="Detención ilegal" onclick="actualizarResumen()"><label>Detención ilegal</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-ejecucion-pena" name="materiaPrincipal" value="Ejecución de la pena privativa de libertad" onclick="actualizarResumen()"><label>Ejecución de la pena privativa de libertad</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-estupefacientes" name="materiaPrincipal" value="Estupefacientes" onclick="actualizarResumen()"><label>Estupefacientes</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-facultades-legislativo" name="materiaPrincipal" value="Facultades del poder legislativo" onclick="actualizarResumen()"><label>Facultades del poder legislativo</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-falta-fundamentacion" name="materiaPrincipal" value="Falta de fundamentación autónoma del recurso (artículo 15 de la ley 48)" onclick="actualizarResumen()"><label>Falta de fundamentación autónoma del recurso (artículo 15 de la ley 48)</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-garantia-defensa" name="materiaPrincipal" value="Garantía de defensa en juicio" onclick="actualizarResumen()"><label>Garantía de defensa en juicio</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-incompetencia" name="materiaPrincipal" value="Incompetencia de la justicia federal" onclick="actualizarResumen()"><label>Incompetencia de la justicia federal</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-inconstitucionalidad" name="materiaPrincipal" value="Inconstitucionalidad de la escala penal" onclick="actualizarResumen()"><label>Inconstitucionalidad de la escala penal</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-juicio-criminal" name="materiaPrincipal" value="Juicio criminal (por ej: evaluación de la prueba, asistencia legal, etc)" onclick="actualizarResumen()"><label>Juicio criminal (por ej: evaluación de la prueba, asistencia legal, etc)</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-naturaleza-excepcional" name="materiaPrincipal" value="Naturaleza excepcional y restrictiva de la jurisdicción federal" onclick="actualizarResumen()"><label>Naturaleza excepcional y restrictiva de la jurisdicción federal</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-prescripcion" name="materiaPrincipal" value="Prescripción de la acción penal" onclick="actualizarResumen()"><label>Prescripción de la acción penal</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-prision-preventiva" name="materiaPrincipal" value="Prisión preventiva" onclick="actualizarResumen()"><label>Prisión preventiva</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-extradicion" name="materiaPrincipal" value="Procesos de extradición" onclick="actualizarResumen()"><label>Procesos de extradición</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-autoincriminacion" name="materiaPrincipal" value="Prohibición de autoincriminación" onclick="actualizarResumen()"><label>Prohibición de autoincriminación</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-supremacia" name="materiaPrincipal" value="Supremacía constitucional" onclick="actualizarResumen()"><label>Supremacía constitucional</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-suspension-juicio" name="materiaPrincipal" value="Suspensión del juicio a prueba" onclick="actualizarResumen()"><label>Suspensión del juicio a prueba</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-tutela" name="materiaPrincipal" value="Tutela judicial efectiva" onclick="actualizarResumen()"><label>Tutela judicial efectiva</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-violacion-debido-proceso" name="materiaPrincipal" value="Violación al debido proceso" onclick="actualizarResumen()"><label>Violación al debido proceso</label></div>
-                                <div class="checkbox-option"><input type="checkbox" id="materia-plazo-razonable" name="materiaPrincipal" value="Violación del plazo razonable" onclick="actualizarResumen()"><label>Violación del plazo razonable</label></div>
-                            </div>
-                            
-                            <!-- Opción Otro con campo de texto -->
-                            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color);">
-                                <div class="checkbox-option">
-                                    <input type="checkbox" id="materia-otro" name="materiaPrincipal" value="otro" onclick="toggleCustomMateria(this); actualizarResumen()">
-                                    <label for="materia-otro"><strong>Otro</strong></label>
-                                </div>
-                                <div id="customMateriaContainer" class="custom-input" style="display: none; margin-top: 10px;">
-                                    <label for="customMateria">Especifique la materia:</label>
-                                    <input type="text" id="customMateria" name="customMateria" placeholder="Ingrese la materia..." onchange="actualizarResumen()" onkeyup="actualizarResumen()">
-                                </div>
-                            </div>
+                        <label for="materiaPrincipal" class="required">Materia principal</label>
+                        <select id="materiaPrincipal" name="materiaPrincipal" class="form-control" onchange="toggleMateriaPrincipal(this); actualizarResumen()">
+                            <option value="">-- Seleccione una materia principal --</option>
+                            <option value="Aplicación/determinación de la pena">Aplicación/determinación de la pena</option>
+                            <option value="Control de oficio del orden público">Control de oficio del orden público</option>
+                            <option value="Cuestiones de competencia">Cuestiones de competencia</option>
+                            <option value="Decomiso de bienes">Decomiso de bienes</option>
+                            <option value="Derechos convencionales">Derechos convencionales</option>
+                            <option value="Detención ilegal">Detención ilegal</option>
+                            <option value="Ejecución de la pena privativa de libertad">Ejecución de la pena privativa de libertad</option>
+                            <option value="Estupefacientes">Estupefacientes</option>
+                            <option value="Facultades del poder legislativo">Facultades del poder legislativo</option>
+                            <option value="Falta de fundamentación autónoma del recurso (artículo 15 de la ley 48)">Falta de fundamentación autónoma del recurso (artículo 15 de la ley 48)</option>
+                            <option value="Garantía de defensa en juicio">Garantía de defensa en juicio</option>
+                            <option value="Incompetencia de la justicia federal">Incompetencia de la justicia federal</option>
+                            <option value="Inconstitucionalidad de la escala penal">Inconstitucionalidad de la escala penal</option>
+                            <option value="Juicio criminal (por ej: evaluación de la prueba, asistencia legal, etc)">Juicio criminal (por ej: evaluación de la prueba, asistencia legal, etc)</option>
+                            <option value="Naturaleza excepcional y restrictiva de la jurisdicción federal">Naturaleza excepcional y restrictiva de la jurisdicción federal</option>
+                            <option value="Prescripción de la acción penal">Prescripción de la acción penal</option>
+                            <option value="Prisión preventiva">Prisión preventiva</option>
+                            <option value="Procesos de extradición">Procesos de extradición</option>
+                            <option value="Prohibición de autoincriminación">Prohibición de autoincriminación</option>
+                            <option value="Supremacía constitucional">Supremacía constitucional</option>
+                            <option value="Suspensión del juicio a prueba">Suspensión del juicio a prueba</option>
+                            <option value="Tutela judicial efectiva">Tutela judicial efectiva</option>
+                            <option value="Violación al debido proceso">Violación al debido proceso</option>
+                            <option value="Violación del plazo razonable">Violación del plazo razonable</option>
+                            <option value="otro">Otra... (especificar)</option>
+                        </select>
+                        
+                        <!-- Campo de texto para "Otra..." -->
+                        <div id="materiaPrincipalOtraContainer" class="custom-input" style="display: none; margin-top: 10px;">
+                            <label for="materiaPrincipalOtra">Especifique la materia principal:</label>
+                            <input type="text" id="materiaPrincipalOtra" name="materiaPrincipalOtra" placeholder="Ingrese la materia principal..." class="form-control" onchange="actualizarResumen()" onkeyup="actualizarResumen()">
                         </div>
                     </div>
                     
@@ -769,7 +763,7 @@
                 </div>
             </section>
             
-            <!-- SECCIÓN 4: CUESTIÓN FEDERAL PLANTEADA - REDISEÑADA -->
+            <!-- SECCIÓN 4: CUESTIÓN FEDERAL PLANTEADA -->
             <section class="form-section" id="section4">
                 <h2 class="section-title"><i class="fas fa-landmark"></i> 4. Cuestión federal planteada</h2>
                 <div class="form-grid">
@@ -841,22 +835,19 @@
                                                 <div class="checkbox-option" style="background: #fff4e6; height: 100%;">
                                                     <input type="checkbox" id="cuest-factica-conceptual" name="arbitrariedadFacticaCuest" value="Conceptual" onclick="actualizarResumen()">
                                                     <label for="cuest-factica-conceptual">
-                                                        <strong>Conceptual</strong><br>
-                                                        <small style="color: var(--gray-600);">ej: discusión sobre el concepto de causa</small>
+                                                        <strong>Conceptual</strong><br>                                                        
                                                     </label>
                                                 </div>
                                                 <div class="checkbox-option" style="background: #fff4e6; height: 100%;">
                                                     <input type="checkbox" id="cuest-factica-normativa" name="arbitrariedadFacticaCuest" value="Normativa" onclick="actualizarResumen()">
                                                     <label for="cuest-factica-normativa">
-                                                        <strong>Normativa</strong><br>
-                                                        <small style="color: var(--gray-600);">ej: se discute una presunción probatoria</small>
+                                                        <strong>Normativa</strong><br>                                                        
                                                     </label>
                                                 </div>
                                                 <div class="checkbox-option" style="background: #fff4e6; height: 100%;">
                                                     <input type="checkbox" id="cuest-factica-epistemica" name="arbitrariedadFacticaCuest" value="Epistémica" onclick="actualizarResumen()">
                                                     <label for="cuest-factica-epistemica">
-                                                        <strong>Epistémica</strong><br>
-                                                        <small style="color: var(--gray-600);">ej: discusiones técnicas de prueba</small>
+                                                        <strong>Epistémica</strong><br>                                                        
                                                     </label>
                                                 </div>
                                             </div>
@@ -879,14 +870,15 @@
                                                     <input type="checkbox" id="cuest-logica-otra" name="logicaOpciones" value="otra" onclick="toggleLogicaOtra(this); actualizarResumen()">
                                                     <label for="cuest-logica-otra"><strong>Otra</strong></label>
                                                 </div>
-                                                <div id="logicaOtraContainer" style="display: none; margin-left: 25px; margin-top: 10px;">                                                    
-                                                    <input type="text" id="logicaOtraTexto" name="logicaOtraTexto" placeholder="Especifique..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--border-radius);" onchange="actualizarResumen()" onkeyup="actualizarResumen()">
+                                                <div id="logicaOtraContainer" style="display: none; margin-left: 25px; margin-top: 10px;">
+                                                    <label for="logicaOtraTexto">Especifique:</label>
+                                                    <input type="text" id="logicaOtraTexto" name="logicaOtraTexto" placeholder="Ingrese el tipo de error lógico..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--border-radius);" onchange="actualizarResumen()" onkeyup="actualizarResumen()">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <!-- OTRAS (checkbox que despliega opciones) -->
+                                    <!-- OTRAS -->
                                     <div style="margin-top: 15px;">
                                         <div class="checkbox-option" style="background: #f8f9fa; border-left: 2px solid var(--accent-color);">
                                             <input type="checkbox" id="cuest-arbitrariedad-otras" name="arbitrariedadCuest" value="Otras" onclick="toggleOtrasCuest(this); actualizarResumen()">
@@ -1254,13 +1246,13 @@
             if (datos.caratula) contador++;
             if (datos.numeroCausa) contador++;
             if (datos.integracion) contador++;
-            if (datos.materias.length > 0) contador++;
+            if (datos.materiaPrincipal) contador++;
             if (datos.cuestionesFederales.length > 0) contador++;
             
             resumenBadge.textContent = contador > 0 ? `${contador} secciones` : 'Sin datos';
             
             // Si no hay datos
-            if (!datos.caratula && !datos.numeroCausa && datos.materias.length === 0 && datos.cuestionesFederales.length === 0) {
+            if (!datos.caratula && !datos.numeroCausa && !datos.materiaPrincipal && datos.cuestionesFederales.length === 0) {
                 resumenRedactadoContenido.innerHTML = '<span class="resumen-vacio">Complete el formulario para ver el resumen del fallo...</span>';
                 resumenFooter.innerHTML = '';
                 return;
@@ -1290,9 +1282,9 @@
             if (votoTexto) {
                 redactado += `La decisión fue adoptada <strong>${votoTexto}</strong>`;
                 if (datos.detalleDisidencias && votoTexto === 'Con disidencias') {
-                    redactado += `, con disidencias de ${datos.detalleDisidencias}`;
+                    redactado += `, ${datos.detalleDisidencias}`;
                 } else if (datos.detalleDisidencias) {
-                    redactado += `, con disidencias de ${datos.detalleDisidencias}`;
+                    redactado += `, ${datos.detalleDisidencias}`;
                 }
                 redactado += `. `;
             }
@@ -1323,8 +1315,8 @@
                 
                 // Párrafo 3: Materia y Cuestión Federal
                 redactado += `<p><strong>Materia y cuestión federal:</strong> `;
-                if (datos.materias.length > 0) {
-                    redactado += `Las materias principales del caso son: ${datos.materias.join(', ')}`;
+                if (datos.materiaPrincipal) {
+                    redactado += `La materia principal del caso es ${datos.materiaPrincipal}`;
                     if (datos.subtema) redactado += `, en particular sobre ${datos.subtema}`;
                     redactado += `. `;
                 }
@@ -1409,7 +1401,7 @@
                 admisibilidad: document.querySelector('input[name="admisibilidad"]:checked')?.value || '',
                 motivoInadmisible: document.getElementById('motivoInadmisible')?.value || '',
                 argumentoCorte: document.getElementById('argumentoCorte')?.value || '',
-                materias: [],
+                materiaPrincipal: '',
                 subtema: document.getElementById('subtemaTexto')?.value || '',
                 cuestionesFederales: [],
                 observaciones: document.getElementById('observaciones').value || '',
@@ -1420,17 +1412,17 @@
                 logicaAdicional: ''
             };
 
-            // Solo recopilar datos de materias si la admisibilidad es SI o no está definida
+            // Solo recopilar datos si la admisibilidad es SI o no está definida
             if (datos.admisibilidad !== 'no') {
-                // MATERIAS PRINCIPALES
-                document.querySelectorAll('input[name="materiaPrincipal"]:checked').forEach(cb => {
-                    if (cb.id === 'materia-otro') {
-                        let custom = document.getElementById('customMateria')?.value;
-                        if (custom) datos.materias.push(custom);
+                // MATERIA PRINCIPAL (desde combo)
+                const materiaSelect = document.getElementById('materiaPrincipal');
+                if (materiaSelect.value) {
+                    if (materiaSelect.value === 'otro') {
+                        datos.materiaPrincipal = document.getElementById('materiaPrincipalOtra')?.value || 'Otra (sin especificar)';
                     } else {
-                        datos.materias.push(cb.nextElementSibling.textContent.trim());
+                        datos.materiaPrincipal = materiaSelect.options[materiaSelect.selectedIndex]?.text || '';
                     }
-                });
+                }
 
                 // CUESTIONES FEDERALES - Arbitrariedad
                 if (document.getElementById('cuest-arbitrariedad')?.checked) {
@@ -1502,6 +1494,17 @@
         }
 
         // ============ TOGGLES ============
+        function toggleMateriaPrincipal(select) {
+            let c = document.getElementById('materiaPrincipalOtraContainer');
+            if (select.value === 'otro') {
+                c.style.display = 'block';
+            } else {
+                c.style.display = 'none';
+                document.getElementById('materiaPrincipalOtra').value = '';
+            }
+            actualizarResumen();
+        }
+        
         function toggleDisidencias(m) {
             let c = document.getElementById('disidenciasContainer');
             if (m) c.classList.add('active');
@@ -1524,16 +1527,6 @@
                 document.getElementById('argumentoCorte').value = '';
                 // Habilitar secciones 3-9
                 deshabilitarSecciones(false);
-            }
-            actualizarResumen();
-        }
-        
-        function toggleCustomMateria(cb) {
-            let c = document.getElementById('customMateriaContainer');
-            if (cb.checked) c.style.display = 'block';
-            else { 
-                c.style.display = 'none'; 
-                document.getElementById('customMateria').value = ''; 
             }
             actualizarResumen();
         }
@@ -1748,7 +1741,7 @@
                 document.getElementById('logicaCuestContainer').style.display = 'none';
                 document.getElementById('logicaOtraContainer').style.display = 'none';
                 document.getElementById('otrasCuestContainer').style.display = 'none';
-                document.getElementById('customMateriaContainer').style.display = 'none';
+                document.getElementById('materiaPrincipalOtraContainer').style.display = 'none';
                 document.getElementById('principiosContainer').style.display = 'none';
                 
                 // Habilitar todas las secciones
