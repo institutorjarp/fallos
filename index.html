@@ -625,7 +625,7 @@
         <div id="statusMessage" class="status-message"></div>
         
         <form id="fallosForm">
-            <!-- SECCIÓN 1: IDENTIFICACIÓN DEL FALLO - Con todos los campos en la misma línea -->
+            <!-- SECCIÓN 1: IDENTIFICACIÓN DEL FALLO -->
             <section class="form-section" id="section1">
                 <h2 class="section-title"><i class="fas fa-id-card"></i> 1. Identificación del fallo</h2>
                 <div class="form-grid" style="grid-template-columns: 1.5fr 1fr 1fr 0.8fr;">
@@ -769,7 +769,7 @@
                 </div>
             </section>
             
-            <!-- SECCIÓN 4: CUESTIÓN FEDERAL PLANTEADA -->
+            <!-- SECCIÓN 4: CUESTIÓN FEDERAL PLANTEADA - REDISEÑADA -->
             <section class="form-section" id="section4">
                 <h2 class="section-title"><i class="fas fa-landmark"></i> 4. Cuestión federal planteada</h2>
                 <div class="form-grid">
@@ -785,7 +785,7 @@
                                 
                                 <div id="arbitrariedadCuestContainer" style="display: none; margin-left: 25px;">
                                     
-                                    <!-- Normativa -->
+                                    <!-- NORMATIVA -->
                                     <div style="margin-bottom: 10px;">
                                         <div class="checkbox-option" style="background: #f8f9fa;">
                                             <input type="checkbox" id="cuest-arbitrariedad-normativa" name="arbitrariedadCuest" value="Normativa" onclick="toggleNormativaCuest(this); actualizarResumen()">
@@ -830,7 +830,7 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Fáctica - CON TRES COLUMNAS A TODO LO ANCHO -->
+                                    <!-- FÁCTICA -->
                                     <div style="margin-bottom: 15px;">
                                         <div class="checkbox-option" style="background: #f8f9fa; border-left: 2px solid var(--warning-color);">
                                             <input type="checkbox" id="cuest-arbitrariedad-factica" name="arbitrariedadCuest" value="Fáctica" onclick="toggleArbitrariedadFacticaCuest(this); actualizarResumen()">
@@ -863,72 +863,65 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Lógica -->
-                                    <div style="margin-bottom: 10px;">
-                                        <div class="checkbox-option" style="background: #f8f9fa;">
-                                            <input type="checkbox" id="cuest-arbitrariedad-logica" name="arbitrariedadCuest" value="Lógica: Contradicción" onclick="actualizarResumen()">
-                                            <label for="cuest-arbitrariedad-logica"><strong>Lógica: Contradicción</strong></label>
+                                    <!-- LÓGICA -->
+                                    <div style="margin-bottom: 15px;">
+                                        <div class="checkbox-option" style="background: #f8f9fa; border-left: 2px solid var(--danger-color);">
+                                            <input type="checkbox" id="cuest-arbitrariedad-logica" name="arbitrariedadCuest" value="Lógica" onclick="toggleLogicaCuest(this); actualizarResumen()">
+                                            <label for="cuest-arbitrariedad-logica"><strong>Lógica</strong></label>
+                                        </div>
+                                        <div id="logicaCuestContainer" style="display: none; margin-left: 25px; margin-top: 10px;">
+                                            <div class="checkbox-option" style="background: #fff0f0; margin-bottom: 10px;">
+                                                <input type="checkbox" id="cuest-logica-contradiccion" name="logicaOpciones" value="Contradicción" onclick="actualizarResumen()">
+                                                <label for="cuest-logica-contradiccion"><strong>Contradicción</strong></label>
+                                            </div>
+                                            <div style="margin-top: 10px;">
+                                                <div class="checkbox-option" style="background: #fff0f0;">
+                                                    <input type="checkbox" id="cuest-logica-otra" name="logicaOpciones" value="otra" onclick="toggleLogicaOtra(this); actualizarResumen()">
+                                                    <label for="cuest-logica-otra"><strong>Otra</strong></label>
+                                                </div>
+                                                <div id="logicaOtraContainer" style="display: none; margin-left: 25px; margin-top: 10px;">                                                    
+                                                    <input type="text" id="logicaOtraTexto" name="logicaOtraTexto" placeholder="Especifique..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: var(--border-radius);" onchange="actualizarResumen()" onkeyup="actualizarResumen()">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     
-                                    <!-- Otras -->
-                                    <div style="margin-top: 10px;">
-                                        <div style="font-weight: 600; margin-bottom: 8px; color: var(--primary-color);">Otras:</div>
-                                        <div class="options-container">
-                                            <div class="checkbox-option" style="background: #f8f9fa;">
-                                                <input type="checkbox" id="cuest-exceso-ritual" name="arbitrariedadOtras" value="Exceso ritual manifiesto" onclick="actualizarResumen()">
-                                                <label for="cuest-exceso-ritual">Exceso ritual manifiesto</label>
-                                            </div>
-                                            <div class="checkbox-option" style="background: #f8f9fa;">
-                                                <input type="checkbox" id="cuest-apartamiento" name="arbitrariedadOtras" value="Apartamiento de las condiciones de la causa" onclick="actualizarResumen()">
-                                                <label for="cuest-apartamiento">Apartamiento de las condiciones de la causa</label>
-                                            </div>
-                                            <div class="checkbox-option" style="background: #f8f9fa;">
-                                                <input type="checkbox" id="cuest-valoracion" name="arbitrariedadOtras" value="Valoración de las circunstancias de hecho y prueba" onclick="actualizarResumen()">
-                                                <label for="cuest-valoracion">Valoración de las circunstancias de hecho y prueba</label>
-                                            </div>
-                                            <div class="checkbox-option" style="background: #f8f9fa;">
-                                                <input type="checkbox" id="cuest-defectos-extremos" name="arbitrariedadOtras" value="Defectos en la consideración de extremos conducentes" onclick="actualizarResumen()">
-                                                <label for="cuest-defectos-extremos">Defectos en la consideración de extremos conducentes</label>
-                                            </div>
-                                            <div class="checkbox-option" style="background: #f8f9fa;">
-                                                <input type="checkbox" id="cuest-excesos-omisiones" name="arbitrariedadOtras" value="Excesos u omisiones en el pronunciamiento" onclick="actualizarResumen()">
-                                                <label for="cuest-excesos-omisiones">Excesos u omisiones en el pronunciamiento</label>
+                                    <!-- OTRAS (checkbox que despliega opciones) -->
+                                    <div style="margin-top: 15px;">
+                                        <div class="checkbox-option" style="background: #f8f9fa; border-left: 2px solid var(--accent-color);">
+                                            <input type="checkbox" id="cuest-arbitrariedad-otras" name="arbitrariedadCuest" value="Otras" onclick="toggleOtrasCuest(this); actualizarResumen()">
+                                            <label for="cuest-arbitrariedad-otras"><strong>Otras</strong></label>
+                                        </div>
+                                        <div id="otrasCuestContainer" style="display: none; margin-left: 25px; margin-top: 10px;">
+                                            <div class="options-container">
+                                                <div class="checkbox-option" style="background: #f8f9fa;">
+                                                    <input type="checkbox" id="cuest-exceso-ritual" name="arbitrariedadOtras" value="Exceso ritual manifiesto" onclick="actualizarResumen()">
+                                                    <label for="cuest-exceso-ritual">Exceso ritual manifiesto</label>
+                                                </div>
+                                                <div class="checkbox-option" style="background: #f8f9fa;">
+                                                    <input type="checkbox" id="cuest-apartamiento" name="arbitrariedadOtras" value="Apartamiento de las condiciones de la causa" onclick="actualizarResumen()">
+                                                    <label for="cuest-apartamiento">Apartamiento de las condiciones de la causa</label>
+                                                </div>
+                                                <div class="checkbox-option" style="background: #f8f9fa;">
+                                                    <input type="checkbox" id="cuest-valoracion" name="arbitrariedadOtras" value="Valoración de las circunstancias de hecho y prueba" onclick="actualizarResumen()">
+                                                    <label for="cuest-valoracion">Valoración de las circunstancias de hecho y prueba</label>
+                                                </div>
+                                                <div class="checkbox-option" style="background: #f8f9fa;">
+                                                    <input type="checkbox" id="cuest-defectos-extremos" name="arbitrariedadOtras" value="Defectos en la consideración de extremos conducentes" onclick="actualizarResumen()">
+                                                    <label for="cuest-defectos-extremos">Defectos en la consideración de extremos conducentes</label>
+                                                </div>
+                                                <div class="checkbox-option" style="background: #f8f9fa;">
+                                                    <input type="checkbox" id="cuest-excesos-omisiones" name="arbitrariedadOtras" value="Excesos u omisiones en el pronunciamiento" onclick="actualizarResumen()">
+                                                    <label for="cuest-excesos-omisiones">Excesos u omisiones en el pronunciamiento</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Otras opciones de cuestión federal -->
-                            <div style="margin-top: 15px;">
-                                <div class="options-container" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-aplicacion-pena" name="otrasCuestionesFederales" value="Aplicación/determinación de la pena" onclick="actualizarResumen()"><label>Aplicación/determinación de la pena</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-control-oficio" name="otrasCuestionesFederales" value="Control de oficio del orden público" onclick="actualizarResumen()"><label>Control de oficio del orden público</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-competencia" name="otrasCuestionesFederales" value="Cuestiones de competencia" onclick="actualizarResumen()"><label>Cuestiones de competencia</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-decomiso" name="otrasCuestionesFederales" value="Decomiso de bienes" onclick="actualizarResumen()"><label>Decomiso de bienes</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-derechos-convencionales" name="otrasCuestionesFederales" value="Derechos convencionales" onclick="actualizarResumen()"><label>Derechos convencionales</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-detencion-ilegal" name="otrasCuestionesFederales" value="Detención ilegal" onclick="actualizarResumen()"><label>Detención ilegal</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-ejecucion-pena" name="otrasCuestionesFederales" value="Ejecución de la pena privativa de libertad" onclick="actualizarResumen()"><label>Ejecución de la pena privativa de libertad</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-estupefacientes" name="otrasCuestionesFederales" value="Estupefacientes" onclick="actualizarResumen()"><label>Estupefacientes</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-facultades-legislativo" name="otrasCuestionesFederales" value="Facultades del poder legislativo" onclick="actualizarResumen()"><label>Facultades del poder legislativo</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-falta-fundamentacion" name="otrasCuestionesFederales" value="Falta de fundamentación autónoma del recurso (artículo 15 de la ley 48)" onclick="actualizarResumen()"><label>Falta de fundamentación autónoma del recurso (artículo 15 de la ley 48)</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-garantia-defensa" name="otrasCuestionesFederales" value="Garantía de defensa en juicio" onclick="actualizarResumen()"><label>Garantía de defensa en juicio</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-incompetencia" name="otrasCuestionesFederales" value="Incompetencia de la justicia federal" onclick="actualizarResumen()"><label>Incompetencia de la justicia federal</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-inconstitucionalidad" name="otrasCuestionesFederales" value="Inconstitucionalidad de la escala penal" onclick="actualizarResumen()"><label>Inconstitucionalidad de la escala penal</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-juicio-criminal" name="otrasCuestionesFederales" value="Juicio criminal" onclick="actualizarResumen()"><label>Juicio criminal</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-naturaleza-excepcional" name="otrasCuestionesFederales" value="Naturaleza excepcional y restrictiva de la jurisdicción federal" onclick="actualizarResumen()"><label>Naturaleza excepcional y restrictiva de la jurisdicción federal</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-prescripcion" name="otrasCuestionesFederales" value="Prescripción de la acción penal" onclick="actualizarResumen()"><label>Prescripción de la acción penal</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-prision-preventiva" name="otrasCuestionesFederales" value="Prisión preventiva" onclick="actualizarResumen()"><label>Prisión preventiva</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-extradicion" name="otrasCuestionesFederales" value="Procesos de extradición" onclick="actualizarResumen()"><label>Procesos de extradición</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-autoincriminacion" name="otrasCuestionesFederales" value="Prohibición de autoincriminación" onclick="actualizarResumen()"><label>Prohibición de autoincriminación</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-supremacia" name="otrasCuestionesFederales" value="Supremacía constitucional" onclick="actualizarResumen()"><label>Supremacía constitucional</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-suspension-juicio" name="otrasCuestionesFederales" value="Suspensión del juicio a prueba" onclick="actualizarResumen()"><label>Suspensión del juicio a prueba</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-tutela" name="otrasCuestionesFederales" value="Tutela judicial efectiva" onclick="actualizarResumen()"><label>Tutela judicial efectiva</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-violacion-debido-proceso" name="otrasCuestionesFederales" value="Violación al debido proceso" onclick="actualizarResumen()"><label>Violación al debido proceso</label></div>
-                                    <div class="checkbox-option"><input type="checkbox" id="cuest-plazo-razonable" name="otrasCuestionesFederales" value="Violación del plazo razonable" onclick="actualizarResumen()"><label>Violación del plazo razonable</label></div>
-                                </div>
-                            </div>
+                            <!-- NOTA: Se han eliminado las opciones duplicadas que estaban aquí -->
+                            
                         </div>
                     </div>
                 </div>
@@ -1273,7 +1266,7 @@
                 return;
             }
             
-            // Determinar voto - CORREGIDO: eliminado "por" antes de "Con disidencias"
+            // Determinar voto
             let votoTexto = '';
             if (datos.voto === 'unanimidad') votoTexto = 'Unanimidad';
             else if (datos.voto === 'mayoria') votoTexto = 'Mayoría';
@@ -1282,7 +1275,7 @@
             // ===== GENERAR RESUMEN REDACTADO (NARRATIVO) =====
             let redactado = '';
             
-            // Párrafo 1: Identificación y Tribunal - AHORA TODO EN UNA SOLA LÍNEA
+            // Párrafo 1: Identificación y Tribunal
             redactado += `<p><strong>Identificación del fallo:</strong> `;
             redactado += `${datos.caratula || 'Fallo sin carátula'}`;
             if (datos.numeroCausa) redactado += `, causa N° ${datos.numeroCausa}`;
@@ -1356,6 +1349,9 @@
                     if (datos.arbitrariedadFactica.length > 0) {
                         redactado += ` La arbitrariedad fáctica es de tipo: ${datos.arbitrariedadFactica.join(', ')}. `;
                     }
+                    if (datos.logicaAdicional) {
+                        redactado += ` ${datos.logicaAdicional}. `;
+                    }
                     redactado += `</p>`;
                 }
                 
@@ -1420,7 +1416,8 @@
                 arbitrariedadCausales: [],
                 opcionesFundamentacion: [],
                 opcionesNormativa: [],
-                arbitrariedadFactica: []
+                arbitrariedadFactica: [],
+                logicaAdicional: ''
             };
 
             // Solo recopilar datos de materias si la admisibilidad es SI o no está definida
@@ -1466,21 +1463,28 @@
                     
                     // Lógica
                     if (document.getElementById('cuest-arbitrariedad-logica')?.checked) {
-                        datos.cuestionesFederales.push('Contradicción');
-                        datos.arbitrariedadCausales.push('Contradicción');
+                        if (document.getElementById('cuest-logica-contradiccion')?.checked) {
+                            datos.cuestionesFederales.push('Contradicción');
+                            datos.arbitrariedadCausales.push('Contradicción');
+                        }
+                        if (document.getElementById('cuest-logica-otra')?.checked) {
+                            let otraLogica = document.getElementById('logicaOtraTexto')?.value;
+                            if (otraLogica) {
+                                datos.cuestionesFederales.push(`Error lógico: ${otraLogica}`);
+                                datos.arbitrariedadCausales.push(`Error lógico: ${otraLogica}`);
+                                datos.logicaAdicional = `Error lógico adicional: ${otraLogica}`;
+                            }
+                        }
                     }
                     
                     // Otras
-                    document.querySelectorAll('input[name="arbitrariedadOtras"]:checked').forEach(cb => {
-                        datos.cuestionesFederales.push(cb.value);
-                        datos.arbitrariedadCausales.push(cb.value);
-                    });
+                    if (document.getElementById('cuest-arbitrariedad-otras')?.checked) {
+                        document.querySelectorAll('input[name="arbitrariedadOtras"]:checked').forEach(cb => {
+                            datos.cuestionesFederales.push(cb.value);
+                            datos.arbitrariedadCausales.push(cb.value);
+                        });
+                    }
                 }
-
-                // OTRAS CUESTIONES FEDERALES
-                document.querySelectorAll('input[name="otrasCuestionesFederales"]:checked').forEach(cb => {
-                    datos.cuestionesFederales.push(cb.nextElementSibling.textContent.trim());
-                });
             }
 
             return datos;
@@ -1545,6 +1549,9 @@
                 document.getElementById('fundamentacionCuestContainer').style.display = 'none';
                 document.getElementById('defectosNormativaCuestContainer').style.display = 'none';
                 document.getElementById('arbitrariedadFacticaCuestContainer').style.display = 'none';
+                document.getElementById('logicaCuestContainer').style.display = 'none';
+                document.getElementById('logicaOtraContainer').style.display = 'none';
+                document.getElementById('otrasCuestContainer').style.display = 'none';
             }
             actualizarResumen();
         }
@@ -1589,6 +1596,39 @@
         
         function toggleArbitrariedadFacticaCuest(cb) {
             let c = document.getElementById('arbitrariedadFacticaCuestContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                c.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            }
+            actualizarResumen();
+        }
+        
+        function toggleLogicaCuest(cb) {
+            let c = document.getElementById('logicaCuestContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                document.getElementById('cuest-logica-contradiccion').checked = false;
+                document.getElementById('cuest-logica-otra').checked = false;
+                document.getElementById('logicaOtraContainer').style.display = 'none';
+                document.getElementById('logicaOtraTexto').value = '';
+            }
+            actualizarResumen();
+        }
+        
+        function toggleLogicaOtra(cb) {
+            let c = document.getElementById('logicaOtraContainer');
+            if (cb.checked) c.style.display = 'block';
+            else { 
+                c.style.display = 'none'; 
+                document.getElementById('logicaOtraTexto').value = ''; 
+            }
+            actualizarResumen();
+        }
+        
+        function toggleOtrasCuest(cb) {
+            let c = document.getElementById('otrasCuestContainer');
             if (cb.checked) c.style.display = 'block';
             else { 
                 c.style.display = 'none'; 
@@ -1705,6 +1745,9 @@
                 document.getElementById('fundamentacionCuestContainer').style.display = 'none';
                 document.getElementById('defectosNormativaCuestContainer').style.display = 'none';
                 document.getElementById('arbitrariedadFacticaCuestContainer').style.display = 'none';
+                document.getElementById('logicaCuestContainer').style.display = 'none';
+                document.getElementById('logicaOtraContainer').style.display = 'none';
+                document.getElementById('otrasCuestContainer').style.display = 'none';
                 document.getElementById('customMateriaContainer').style.display = 'none';
                 document.getElementById('principiosContainer').style.display = 'none';
                 
