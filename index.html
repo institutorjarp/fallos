@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Librería para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
         /* ===== VARIABLES Y RESET ===== */
         :root {
@@ -228,6 +231,35 @@
             padding: 5px 15px;
             border-radius: 30px;
             font-size: 0.7rem;
+        }
+        
+        /* ===== BOTÓN PDF DEBAJO DEL RESUMEN ===== */
+        .pdf-button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        
+        .btn-pdf {
+            background: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-pdf:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-hover);
         }
         
         /* ===== FORMULARIOS ===== */
@@ -543,6 +575,10 @@
             .buttons-container {
                 flex-direction: column;
             }
+            
+            .pdf-button-container {
+                justify-content: center;
+            }
         }
         
         .status-message {
@@ -617,6 +653,13 @@
                 <div class="resumen-redactado-contenido" id="resumenRedactadoContenido">
                     <span class="resumen-vacio">Complete el formulario para ver el resumen del fallo...</span>
                 </div>
+            </div>
+            
+            <!-- BOTÓN PDF DEBAJO DEL RESUMEN -->
+            <div class="pdf-button-container">
+                <button type="button" class="btn-pdf" onclick="descargarResumenPDF()">
+                    <i class="fas fa-file-pdf"></i> Descargar Resumen PDF
+                </button>
             </div>
             
             <div class="resumen-footer" id="resumenFooter"></div>
@@ -711,12 +754,12 @@
                 </div>
             </section>
             
-            <!-- SECCIÓN 3: TEMA JURÍDICO - MODIFICADA: Materia Principal como COMBO -->
+            <!-- SECCIÓN 3: TEMA JURÍDICO -->
             <section class="form-section" id="section3">
                 <h2 class="section-title"><i class="fas fa-balance-scale"></i> 3. Tema jurídico</h2>
                 
                 <div class="form-grid">
-                    <!-- MATERIA PRINCIPAL - AHORA ES UN COMBO (SELECT) -->
+                    <!-- MATERIA PRINCIPAL - COMBO (SELECT) -->
                     <div class="form-group full-width">
                         <label for="materiaPrincipal" class="required">Materia principal</label>
                         <select id="materiaPrincipal" name="materiaPrincipal" class="form-control" onchange="toggleMateriaPrincipal(this); actualizarResumen()">
@@ -911,9 +954,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- NOTA: Se han eliminado las opciones duplicadas que estaban aquí -->
-                            
                         </div>
                     </div>
                 </div>
@@ -1221,6 +1261,7 @@
                 <button type="button" class="btn btn-submit" onclick="guardarFallo()">
                     <i class="fas fa-save"></i> Guardar Fallo
                 </button>
+                
                 <button type="button" class="btn btn-reset" onclick="resetForm()">
                     <i class="fas fa-redo"></i> Limpiar Formulario
                 </button>
@@ -1233,6 +1274,97 @@
     </div>
 
     <script>
+        // ============ FUNCIÓN PARA DESCARGAR PDF ============
+        function descargarResumenPDF() {
+            const { jsPDF } = window.jspdf;
+            
+            // Obtener el contenido del resumen
+            const resumenContenido = document.getElementById('resumenRedactadoContenido');
+            const resumenTexto = resumenContenido.innerText || resumenContenido.textContent;
+            
+            // Verificar si hay datos
+            if (!resumenTexto || resumenTexto.includes('Complete el formulario')) {
+                showStatus('No hay datos para generar el PDF. Complete el formulario primero.', 'error');
+                return;
+            }
+            
+            // Obtener la carátula para el nombre del archivo
+            let caratula = document.getElementById('caratula').value || 'fallo';
+            // Limpiar la carátula para el nombre de archivo (quitar caracteres especiales)
+            caratula = caratula.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50);
+            
+            // Fecha para el nombre del archivo
+            const fechaActual = new Date().toISOString().slice(0, 10);
+            
+            // Crear nuevo documento PDF
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            // Configurar fuentes y estilos
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.setTextColor(44, 62, 80); // Color primario
+            
+            // Título del documento
+            doc.text('RESUMEN DE FALLO JUDICIAL', 20, 20);
+            
+            // Línea separadora
+            doc.setDrawColor(52, 152, 219); // Color acento
+            doc.setLineWidth(0.5);
+            doc.line(20, 25, 190, 25);
+            
+            // Fecha de generación
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            const fechaHora = new Date().toLocaleDateString('es-AR', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            doc.text(`Generado el: ${fechaHora}`, 20, 32);
+            
+            // Contenido del resumen (con ajuste de líneas)
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(11);
+            doc.setTextColor(50, 50, 50);
+            
+            // Dividir el texto en líneas que quepan en la página
+            const lineas = doc.splitTextToSize(resumenTexto, 170);
+            
+            // Calcular posición inicial (después del título y fecha)
+            let yPos = 40;
+            
+            // Agregar cada línea al PDF
+            lineas.forEach(linea => {
+                // Si llegamos al final de la página, agregar nueva página
+                if (yPos > 280) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.text(linea, 20, yPos);
+                yPos += 7;
+            });
+            
+            // Agregar pie de página
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(8);
+            doc.setTextColor(150, 150, 150);
+            doc.text('Instituto de Recursos Judiciales - Sistema de Análisis de Fallos', 20, 285);
+            doc.text('Documento generado automáticamente', 20, 290);
+            
+            // Guardar el PDF con el nombre solicitado
+            const nombreArchivo = `resumen_fallo_${caratula}_${fechaActual}.pdf`;
+            doc.save(nombreArchivo);
+            
+            showStatus('PDF generado correctamente', 'success');
+        }
+
         // ============ FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN ============
         function actualizarResumen() {
             const resumenRedactadoContenido = document.getElementById('resumenRedactadoContenido');
@@ -1347,7 +1479,68 @@
                     redactado += `</p>`;
                 }
                 
-                // Párrafo 5: Observaciones
+                // ===== NUEVOS PÁRRAFOS PARA SECCIONES 5-9 =====
+                
+                // Párrafo 5: Tipo de desacuerdo
+                if (datos.desacuerdos && datos.desacuerdos.length > 0) {
+                    redactado += `<p><strong>Tipo de desacuerdo:</strong> ${datos.desacuerdos.join(', ')}. </p>`;
+                }
+                
+                // Párrafo 6: Problema jurídico
+                if (datos.problemas && datos.problemas.length > 0) {
+                    redactado += `<p><strong>Problema jurídico:</strong> ${datos.problemas.join(', ')}. `;
+                    if (datos.rolPrueba) {
+                        redactado += `La prueba cumple un rol <strong>${datos.rolPrueba.toLowerCase()}</strong> en la decisión. `;
+                    }
+                    if (datos.tipoInferencias && datos.tipoInferencias.length > 0) {
+                        redactado += `Se detectaron inferencias probatorias de tipo: ${datos.tipoInferencias.join(', ')}. `;
+                    }
+                    redactado += `</p>`;
+                }
+                
+                // Párrafo 7: Método interpretativo
+                if (datos.metodoInterpretativo && datos.metodoInterpretativo.length > 0) {
+                    redactado += `<p><strong>Método interpretativo:</strong> ${datos.metodoInterpretativo.join(', ')}. </p>`;
+                }
+                
+                // Párrafo 8: Ponderación
+                if (datos.colisionPrincipios === 'si' && datos.principioA && datos.principioB) {
+                    redactado += `<p><strong>Colisión de principios:</strong> Se verifica una colisión entre el principio de ${datos.principioA} y el principio de ${datos.principioB}. `;
+                }
+                if (datos.estructuraPonderacion && datos.estructuraPonderacion.length > 0) {
+                    redactado += `La ponderación utiliza: ${datos.estructuraPonderacion.join(', ')}. `;
+                }
+                if (datos.tipoRazonamiento && datos.tipoRazonamiento.length > 0) {
+                    redactado += `El razonamiento es de tipo: ${datos.tipoRazonamiento.join(', ')}. `;
+                }
+                if ((datos.colisionPrincipios === 'si' && datos.principioA && datos.principioB) || 
+                    (datos.estructuraPonderacion && datos.estructuraPonderacion.length > 0) || 
+                    (datos.tipoRazonamiento && datos.tipoRazonamiento.length > 0)) {
+                    redactado += `</p>`;
+                }
+                
+                // Párrafo 9: Errores del razonamiento
+                let erroresTotales = 0;
+                if (datos.erroresSilogismo) erroresTotales += datos.erroresSilogismo.length;
+                if (datos.argumentosAtinencia) erroresTotales += datos.argumentosAtinencia.length;
+                if (datos.argumentosAmbiguedad) erroresTotales += datos.argumentosAmbiguedad.length;
+                
+                if (erroresTotales > 0) {
+                    redactado += `<p><strong>Errores del razonamiento:</strong> Se detectaron ${erroresTotales} error(es) en el razonamiento. `;
+                    
+                    if (datos.erroresSilogismo && datos.erroresSilogismo.length > 0) {
+                        redactado += `Falacias formales: ${datos.erroresSilogismo.join(', ')}. `;
+                    }
+                    if (datos.argumentosAtinencia && datos.argumentosAtinencia.length > 0) {
+                        redactado += `Argumentos de atinencia: ${datos.argumentosAtinencia.join(', ')}. `;
+                    }
+                    if (datos.argumentosAmbiguedad && datos.argumentosAmbiguedad.length > 0) {
+                        redactado += `Argumentos de ambigüedad: ${datos.argumentosAmbiguedad.join(', ')}. `;
+                    }
+                    redactado += `</p>`;
+                }
+                
+                // Párrafo 10: Observaciones
                 if (datos.observaciones) {
                     redactado += `<p><strong>Observaciones:</strong> ${datos.observaciones}</p>`;
                 }
@@ -1409,7 +1602,20 @@
                 opcionesFundamentacion: [],
                 opcionesNormativa: [],
                 arbitrariedadFactica: [],
-                logicaAdicional: ''
+                logicaAdicional: '',
+                desacuerdos: [],
+                problemas: [],
+                rolPrueba: '',
+                tipoInferencias: [],
+                metodoInterpretativo: [],
+                colisionPrincipios: '',
+                principioA: '',
+                principioB: '',
+                estructuraPonderacion: [],
+                tipoRazonamiento: [],
+                erroresSilogismo: [],
+                argumentosAtinencia: [],
+                argumentosAmbiguedad: []
             };
 
             // Solo recopilar datos si la admisibilidad es SI o no está definida
@@ -1476,6 +1682,60 @@
                             datos.arbitrariedadCausales.push(cb.value);
                         });
                     }
+                }
+                
+                // TIPO DE DESACUERDO
+                document.querySelectorAll('input[name="tipoDesacuerdo"]:checked').forEach(cb => {
+                    datos.desacuerdos.push(cb.nextElementSibling.textContent.trim());
+                });
+                
+                // PROBLEMA JURÍDICO
+                document.querySelectorAll('input[name="problemaJuridico"]:checked').forEach(cb => {
+                    datos.problemas.push(cb.nextElementSibling.textContent.trim());
+                });
+                
+                datos.rolPrueba = document.querySelector('input[name="rolPrueba"]:checked')?.value || '';
+                
+                document.querySelectorAll('input[name="tipoInferencias"]:checked').forEach(cb => {
+                    datos.tipoInferencias.push(cb.nextElementSibling.textContent.trim());
+                });
+                
+                // MÉTODO INTERPRETATIVO
+                document.querySelectorAll('input[name="metodoInterpretativo"]:checked').forEach(cb => {
+                    datos.metodoInterpretativo.push(cb.nextElementSibling.textContent.trim());
+                });
+                
+                // PONDERACIÓN
+                datos.colisionPrincipios = document.querySelector('input[name="colisionPrincipios"]:checked')?.value || '';
+                
+                if (datos.colisionPrincipios === 'si') {
+                    datos.principioA = obtenerValorConPersonalizado('principioA', 'customPrincipioA');
+                    datos.principioB = obtenerValorConPersonalizado('principioB', 'customPrincipioB');
+                }
+                
+                document.querySelectorAll('input[name="estructuraPonderacion"]:checked').forEach(cb => {
+                    datos.estructuraPonderacion.push(cb.nextElementSibling.textContent.trim());
+                });
+                
+                document.querySelectorAll('input[name="tipoRazonamiento"]:checked').forEach(cb => {
+                    datos.tipoRazonamiento.push(cb.nextElementSibling.textContent.trim());
+                });
+                
+                // ERRORES
+                document.querySelectorAll('input[name="erroresSilogismo"]:checked').forEach(cb => {
+                    datos.erroresSilogismo.push(cb.nextElementSibling.textContent.trim());
+                });
+                
+                if (document.getElementById('atinencia-principal')?.checked) {
+                    document.querySelectorAll('#atinenciaContainer input[type="checkbox"]:checked').forEach(cb => {
+                        datos.argumentosAtinencia.push(cb.nextElementSibling.textContent.trim());
+                    });
+                }
+                
+                if (document.getElementById('ambiguedad-principal')?.checked) {
+                    document.querySelectorAll('#ambiguedadContainer input[type="checkbox"]:checked').forEach(cb => {
+                        datos.argumentosAmbiguedad.push(cb.nextElementSibling.textContent.trim());
+                    });
                 }
             }
 
