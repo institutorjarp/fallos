@@ -24,6 +24,7 @@
             --dark-color: #2c3e50;
             --border-color: #bdc3c7;
             --shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
             --border-radius: 4px;
             --transition: all 0.2s ease;
             --gray-600: #718096;
@@ -51,10 +52,9 @@
             margin: 0 auto;
         }
         
-        /* ===== HEADER PROFESIONAL ===== */
+        /* ===== HEADER CON NAVEGACIÓN ===== */
         .header {
             margin-bottom: 25px;
-            padding: 0;
             border-radius: var(--border-radius);
             overflow: hidden;
             box-shadow: var(--shadow);
@@ -63,9 +63,38 @@
         .header-top {
             background: linear-gradient(135deg, #1a2634, #2c3e50);
             color: white;
-            padding: 25px 30px;
+            padding: 20px 30px;
             text-align: center;
             border-bottom: 3px solid var(--accent-color);
+        }
+        
+        .header-footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .badge {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        
+        .header-nav-wrapper {
+            background-color: var(--secondary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            gap: 30px;
+            flex-wrap: wrap;
         }
         
         .instituto-nombre {
@@ -101,16 +130,6 @@
             font-style: italic;
         }
         
-        .header-footer {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-        }
-        
         .badge {
             background-color: var(--accent-color);
             color: white;
@@ -119,6 +138,37 @@
             font-weight: 500;
             font-size: 0.8rem;
         }
+        
+        .header-nav {
+            background-color: var(--secondary-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+        }
+        
+        
         
         /* ===== PANEL DE RESUMEN ===== */
         .resumen-panel {
@@ -585,6 +635,17 @@
             .pdf-button-container {
                 justify-content: center;
             }
+            
+            .header-nav-wrapper {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-nav {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
         }
         
         .status-message {
@@ -627,7 +688,7 @@
 </head>
 <body>
     <div class="container">
-        <!-- HEADER -->
+        <!-- HEADER CON NAVEGACIÓN -->
         <header class="header">
             <div class="header-top">
                 <div class="instituto-nombre">
@@ -638,38 +699,52 @@
                 </h1>
                 <p class="header-subtitle">Análisis sistematizado de jurisprudencia</p>
             </div>
-            <div class="header-footer">
-                <span><i class="fas fa-balance-scale"></i> </span>
-                <span class="badge"><i class="fas fa-file-alt"></i> Formulario de análisis crítico</span>
+
+            <!-- CONTENEDOR UNIFICADO: Menú centrado + Badge a la derecha -->
+            <div class="header-nav-wrapper">
+                <div class="header-nav">
+                    <a href="index.html" class="nav-link active">
+                        <i class="fas fa-edit"></i> Carga de Fallos
+                    </a>
+                    <a href="consulta.html" class="nav-link">
+                        <i class="fas fa-search"></i> Consulta
+                    </a>
+                    <a href="estadisticas.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i> Estadísticas
+                    </a>
+                </div>
+                <div class="header-badge">
+                    <span class="badge"><i class="fas fa-file-alt"></i> Formulario de análisis crítico</span>
+                </div>
             </div>
         </header>
-        
-        <!-- PANEL DE RESUMEN -->
-        <div class="resumen-panel" id="resumenPanel">
-            <div class="resumen-header">
-                <span><i class="fas fa-file-alt"></i> RESUMEN DEL FALLO - ACTUALIZACIÓN EN TIEMPO REAL</span>
-                <span class="resumen-badge" id="resumenBadge">Sin datos</span>
-            </div>
-            
-            <!-- SOLO RESUMEN NARRATIVO -->
-            <div class="resumen-redactado" id="resumenRedactado" style="display: block;">
-                <div class="resumen-redactado-titulo">
-                    <i class="fas fa-quote-left"></i> RESUMEN NARRATIVO DEL FALLO
-                </div>
-                <div class="resumen-redactado-contenido" id="resumenRedactadoContenido">
-                    <span class="resumen-vacio">Complete el formulario para ver el resumen del fallo...</span>
-                </div>
-            </div>
-            
-            <!-- BOTÓN PDF DEBAJO DEL RESUMEN -->
-            <div class="pdf-button-container">
-                <button type="button" class="btn-pdf" onclick="descargarResumenPDF()">
-                    <i class="fas fa-file-pdf"></i> Descargar Resumen PDF
-                </button>
-            </div>
-            
-            <div class="resumen-footer" id="resumenFooter"></div>
+
+    <!-- PANEL DE RESUMEN -->
+    <div class="resumen-panel" id="resumenPanel">
+        <div class="resumen-header">
+            <span><i class="fas fa-file-alt"></i> RESUMEN DEL FALLO - ACTUALIZACIÓN EN TIEMPO REAL</span>
+            <span class="resumen-badge" id="resumenBadge">Sin datos</span>
         </div>
+
+        <!-- SOLO RESUMEN NARRATIVO -->
+        <div class="resumen-redactado" id="resumenRedactado" style="display: block;">
+            <div class="resumen-redactado-titulo">
+                <i class="fas fa-quote-left"></i> RESUMEN NARRATIVO DEL FALLO
+            </div>
+            <div class="resumen-redactado-contenido" id="resumenRedactadoContenido">
+                <span class="resumen-vacio">Complete el formulario para ver el resumen del fallo...</span>
+            </div>
+        </div>
+
+        <!-- BOTÓN PDF DEBAJO DEL RESUMEN -->
+        <div class="pdf-button-container">
+            <button type="button" class="btn-pdf" onclick="descargarResumenPDF()">
+                <i class="fas fa-file-pdf"></i> Descargar Resumen PDF
+            </button>
+        </div>
+
+        <div class="resumen-footer" id="resumenFooter"></div>
+    </div>
         
         <div id="statusMessage" class="status-message"></div>
         
@@ -1196,7 +1271,7 @@
                 </div>
             </section>
             
-            <!-- SECCIÓN 9: ERRORES DEL RAZONAMIENTO (ahora se unifican en Análisis) -->
+            <!-- SECCIÓN 9: ERRORES DEL RAZONAMIENTO -->
             <section class="form-section" id="section9">
                 <h2 class="section-title"><i class="fas fa-times-circle"></i> 9. Errores del razonamiento</h2>
                 <div class="form-grid">
@@ -1264,7 +1339,7 @@
             
             <!-- BOTONES -->
             <div class="buttons-container">
-                <button type="button" class="btn btn-submit" onclick="guardarFallo()">
+                <button type="button" class="btn btn-submit" onclick="guardarFalloConGoogleSheets()">
                     <i class="fas fa-save"></i> Guardar Fallo
                 </button>
                 
@@ -1275,11 +1350,168 @@
         </form>
         
         <footer class="footer">
-            <p>Instituto de Recursos Judiciales &copy; <span id="current-year"></span></p>
+            <p>Instituto de Recursos Judiciales &copy; <span id="current-year"></span> | Sistema de Consulta de Fallos</p>
         </footer>
     </div>
 
     <script>
+        // =====================================================
+        // CONFIGURACIÓN DE GOOGLE SHEETS
+        // =====================================================
+        // Reemplazar con tu URL de Google Apps Script
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/XXXXXXXXXX/exec';
+        
+        // =====================================================
+        // FUNCIONES PARA GOOGLE SHEETS
+        // =====================================================
+        
+        async function guardarEnGoogleSheets(datos) {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Importante para CORS
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(datos)
+                });
+                
+                // Con no-cors no podemos leer la respuesta
+                console.log('Datos enviados a Google Sheets');
+                return { success: true };
+                
+            } catch (error) {
+                console.error('Error al guardar en Google Sheets:', error);
+                return { success: false, error: error.message };
+            }
+        }
+        
+        function guardarEnLocalStorage(datos) {
+            // Obtener fallos existentes
+            let fallos = [];
+            const stored = localStorage.getItem('fallosJudiciales');
+            if (stored) {
+                try {
+                    fallos = JSON.parse(stored);
+                } catch (e) {
+                    fallos = [];
+                }
+            }
+            
+            // Agregar nuevo fallo
+            fallos.push(datos);
+            
+            // Guardar en localStorage
+            localStorage.setItem('fallosJudiciales', JSON.stringify(fallos));
+        }
+        
+        // =====================================================
+        // FUNCIÓN PRINCIPAL PARA GUARDAR
+        // =====================================================
+        
+        async function guardarFalloConGoogleSheets() {
+            // Validar campos obligatorios
+            let c = document.getElementById('caratula').value;
+            let nc = document.getElementById('numeroCausa').value;
+            let f = document.getElementById('fecha').value;
+            
+            if (!c || !nc || !f) {
+                showStatus('Complete los campos obligatorios: Carátula, Número de causa y Fecha', 'error');
+                return;
+            }
+            
+            // Recopilar todos los datos del formulario
+            const datosCompletos = recopilarDatosCompletos();
+            
+            // Mostrar estado de carga
+            showStatus('Guardando fallo...', 'success');
+            
+            // Guardar en localStorage (siempre)
+            guardarEnLocalStorage(datosCompletos);
+            
+            // Intentar guardar en Google Sheets
+            const resultado = await guardarEnGoogleSheets(datosCompletos);
+            
+            if (resultado.success) {
+                showStatus(`Fallo "${c}" guardado correctamente en Google Sheets y almacenamiento local`, 'success');
+            } else {
+                showStatus(`Fallo "${c}" guardado en almacenamiento local. Error al conectar con Google Sheets: ${resultado.error}`, 'warning');
+            }
+        }
+        
+        // =====================================================
+        // FUNCIÓN PARA RECOPILAR TODOS LOS DATOS
+        // =====================================================
+        
+        function recopilarDatosCompletos() {
+            const datos = recopilarDatosResumen();
+            
+            // Agregar todos los campos adicionales que no están en el resumen
+            return {
+                ...datos,
+                // Sección 1
+                caratula: document.getElementById('caratula').value,
+                numeroCausa: document.getElementById('numeroCausa').value,
+                fallos: document.getElementById('fallos').value,
+                fecha: document.getElementById('fecha').value,
+                
+                // Sección 2
+                integracion: document.getElementById('integracion').value,
+                voto: document.querySelector('input[name="voto"]:checked')?.value || '',
+                detalleDisidencias: document.getElementById('detalleDisidencias').value,
+                admisibilidad: document.querySelector('input[name="admisibilidad"]:checked')?.value || '',
+                motivoInadmisible: document.getElementById('motivoInadmisible').value,
+                argumentoCorte: document.getElementById('argumentoCorte').value,
+                
+                // Sección 3
+                materiaPrincipal: document.getElementById('materiaPrincipal').value,
+                materiaPrincipalOtra: document.getElementById('materiaPrincipalOtra').value,
+                subtema: document.getElementById('subtemaTexto').value,
+                
+                // Sección 4 - Arbitrariedad (todos los checkboxes)
+                cuestArbitrariedad: document.getElementById('cuest-arbitrariedad')?.checked || false,
+                cuestArbitrariedadNormativa: document.getElementById('cuest-arbitrariedad-normativa')?.checked || false,
+                cuestFundamentacion: document.getElementById('cuest-fundamentacion')?.checked || false,
+                cuestDefectosNormativa: document.getElementById('cuest-defectos-normativa')?.checked || false,
+                cuestArbitrariedadFactica: document.getElementById('cuest-arbitrariedad-factica')?.checked || false,
+                cuestArbitrariedadLogica: document.getElementById('cuest-arbitrariedad-logica')?.checked || false,
+                cuestLogicaContradiccion: document.getElementById('cuest-logica-contradiccion')?.checked || false,
+                cuestLogicaOtra: document.getElementById('cuest-logica-otra')?.checked || false,
+                logicaOtraTexto: document.getElementById('logicaOtraTexto')?.value || '',
+                cuestArbitrariedadOtras: document.getElementById('cuest-arbitrariedad-otras')?.checked || false,
+                
+                // Sección 5
+                tipoDesacuerdo: Array.from(document.querySelectorAll('input[name="tipoDesacuerdo"]:checked')).map(cb => cb.value).join('; '),
+                
+                // Sección 6
+                problemaJuridico: Array.from(document.querySelectorAll('input[name="problemaJuridico"]:checked')).map(cb => cb.value).join('; '),
+                rolPrueba: document.querySelector('input[name="rolPrueba"]:checked')?.value || '',
+                tipoInferencias: Array.from(document.querySelectorAll('input[name="tipoInferencias"]:checked')).map(cb => cb.value).join('; '),
+                
+                // Sección 7
+                metodoInterpretativo: Array.from(document.querySelectorAll('input[name="metodoInterpretativo"]:checked')).map(cb => cb.value).join('; '),
+                
+                // Sección 8
+                colisionPrincipios: document.querySelector('input[name="colisionPrincipios"]:checked')?.value || '',
+                principioA: obtenerValorConPersonalizado('principioA', 'customPrincipioA'),
+                principioB: obtenerValorConPersonalizado('principioB', 'customPrincipioB'),
+                estructuraPonderacion: Array.from(document.querySelectorAll('input[name="estructuraPonderacion"]:checked')).map(cb => cb.value).join('; '),
+                tipoRazonamiento: Array.from(document.querySelectorAll('input[name="tipoRazonamiento"]:checked')).map(cb => cb.value).join('; '),
+                
+                // Sección 9
+                erroresSilogismo: Array.from(document.querySelectorAll('input[name="erroresSilogismo"]:checked')).map(cb => cb.value).join('; '),
+                argumentosAtinencia: Array.from(document.querySelectorAll('input[name="argumentosAtinencia"]:checked')).map(cb => cb.value).join('; '),
+                argumentosAmbiguedad: Array.from(document.querySelectorAll('input[name="argumentosAmbiguedad"]:checked')).map(cb => cb.value).join('; '),
+                
+                // Sección 10
+                observaciones: document.getElementById('observaciones').value,
+                
+                // Metadatos
+                timestamp: new Date().toISOString(),
+                fechaRegistro: new Date().toLocaleString('es-AR')
+            };
+        }
+
         // ============ FUNCIÓN PARA DESCARGAR PDF ============
         function descargarResumenPDF() {
             const { jsPDF } = window.jspdf;
@@ -1457,7 +1689,7 @@
             }
             
             if (votoTexto) {
-                redactado += `La decisión fue adoptada por <strong>${votoTexto}</strong>`;
+                redactado += `La decisión fue adoptada por ${votoTexto}`;
                 if (datos.detalleDisidencias && votoTexto === 'Con disidencias') {
                     redactado += `, con disidencias de ${datos.detalleDisidencias}`;
                 } else if (datos.detalleDisidencias) {
@@ -2006,28 +2238,16 @@
             actualizarResumen();
         }
 
-        // ============ GUARDADO Y RESET ============
-        function validarProblemaJuridico() { 
-            return document.querySelectorAll('input[name="problemaJuridico"]:checked').length > 0; 
-        }
-        
-        function guardarFallo() {
-            let c = document.getElementById('caratula').value;
-            let nc = document.getElementById('numeroCausa').value;
-            let f = document.getElementById('fecha').value;
-            if (!c || !nc || !f) {
-                showStatus('Complete los campos obligatorios: Carátula, Número de causa y Fecha', 'error');
-                return;
-            }
-            showStatus(`Fallo "${c}" procesado correctamente`, 'success');
-        }
-
-        function showStatus(m, t) {
-            let s = document.getElementById('statusMessage');
-            s.textContent = m;
-            s.className = `status-message status-${t}`;
-            s.style.display = 'block';
-            setTimeout(() => s.style.display = 'none', 5000);
+        // ============ FUNCIONES DE UTILIDAD ============
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = `status-message status-${type}`;
+            statusElement.style.display = 'block';
+            
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
         }
 
         function resetForm() {
