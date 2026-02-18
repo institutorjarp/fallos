@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas - Instituto de Recursos Judiciales</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --border-color: #bdc3c7;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --border-radius: 6px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a2634, #2c3e50);
+            color: white;
+            padding: 20px 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header h1 i {
+            color: var(--accent-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-link.active {
+            background: var(--accent-color);
+        }
+        
+        /* KPIs */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 3px solid var(--accent-color);
+        }
+        
+        .kpi-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(52,152,219,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+        }
+        
+        .kpi-info h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+        
+        .kpi-info p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+        
+        /* Filtros de período */
+        .periodo-filtros {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .periodo-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .periodo-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .periodo-btn:hover,
+        .periodo-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .periodo-custom {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .periodo-custom input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+        
+        /* Grid de gráficos */
+        .graficos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .grafico-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .grafico-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+        
+        .grafico-header h3 {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .grafico-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Tablas de datos */
+        .tablas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .tabla-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .tabla-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+        
+        .tabla-header h3 {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 10px;
+            background: var(--light-color);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--gray-600);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        @media (max-width: 768px) {
+            .graficos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tablas-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .periodo-filtros {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-chart-bar"></i> 
+                Estadísticas de Fallos Judiciales
+            </h1>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-edit"></i> Carga
+                </a>
+                <a href="consulta.html" class="nav-link">
+                    <i class="fas fa-search"></i> Consulta
+                </a>
+                <a href="estadisticas.html" class="nav-link active">
+                    <i class="fas fa-chart-bar"></i> Estadísticas
+                </a>
+            </div>
+        </div>
+        
+        <!-- KPIs -->
+        <div class="kpi-grid" id="kpiContainer">
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="kpi-info">
+                    <h2 id="kpiTotal">0</h2>
+                    <p>Fallos cargados</p>
+                </div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="kpi-info">
+                    <h2 id="kpiAdmitidos">0</h2>
+                    <p>Admitidos</p>
+                </div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="kpi-info">
+                    <h2 id="kpiInadmisibles">0</h2>
+                    <p>Inadmisibles</p>
+                </div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-icon">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div class="kpi-info">
+                    <h2 id="kpiArbitrariedad">0</h2>
+                    <p>Con arbitrariedad</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filtros de período -->
+        <div class="periodo-filtros">
+            <div class="periodo-buttons">
+                <button class="periodo-btn active" onclick="cambiarPeriodo('todo')">Todo</button>
+                <button class="periodo-btn" onclick="cambiarPeriodo('mes')">Último mes</button>
+                <button class="periodo-btn" onclick="cambiarPeriodo('trimestre')">Último trimestre</button>
+                <button class="periodo-btn" onclick="cambiarPeriodo('año')">Último año</button>
+            </div>
+            <div class="periodo-custom">
+                <input type="date" id="fechaDesde" onchange="cambiarPeriodo('custom')">
+                <span>a</span>
+                <input type="date" id="fechaHasta" onchange="cambiarPeriodo('custom')">
+            </div>
+        </div>
+        
+        <!-- Gráficos -->
+        <div class="graficos-grid">
+            <!-- Gráfico de admisibilidad -->
+            <div class="grafico-card">
+                <div class="grafico-header">
+                    <h3><i class="fas fa-check-circle" style="color: var(--success-color);"></i> Admisibilidad</h3>
+                </div>
+                <div class="grafico-container">
+                    <canvas id="graficoAdmisibilidad"></canvas>
+                </div>
+            </div>
+            
+            <!-- Gráfico de votos -->
+            <div class="grafico-card">
+                <div class="grafico-header">
+                    <h3><i class="fas fa-gavel" style="color: var(--warning-color);"></i> Tipo de voto</h3>
+                </div>
+                <div class="grafico-container">
+                    <canvas id="graficoVotos"></canvas>
+                </div>
+            </div>
+            
+            <!-- Gráfico de materias principales -->
+            <div class="grafico-card">
+                <div class="grafico-header">
+                    <h3><i class="fas fa-balance-scale" style="color: var(--primary-color);"></i> Materias principales</h3>
+                </div>
+                <div class="grafico-container">
+                    <canvas id="graficoMaterias"></canvas>
+                </div>
+            </div>
+            
+            <!-- Gráfico de arbitrariedad -->
+            <div class="grafico-card">
+                <div class="grafico-header">
+                    <h3><i class="fas fa-exclamation-triangle" style="color: var(--danger-color);"></i> Tipos de arbitrariedad</h3>
+                </div>
+                <div class="grafico-container">
+                    <canvas id="graficoArbitrariedad"></canvas>
+                </div>
+            </div>
+            
+            <!-- Gráfico de evolución temporal -->
+            <div class="grafico-card" style="grid-column: 1 / -1;">
+                <div class="grafico-header">
+                    <h3><i class="fas fa-chart-line" style="color: var(--accent-color);"></i> Evolución de fallos por mes</h3>
+                </div>
+                <div class="grafico-container" style="height: 350px;">
+                    <canvas id="graficoEvolucion"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tablas de datos -->
+        <div class="tablas-grid">
+            <!-- Top materias -->
+            <div class="tabla-card">
+                <div class="tabla-header">
+                    <h3><i class="fas fa-trophy" style="color: var(--warning-color);"></i> Top 5 materias más frecuentes</h3>
+                </div>
+                <table id="tablaTopMaterias">
+                    <thead>
+                        <tr>
+                            <th>Materia</th>
+                            <th>Cantidad</th>
+                            <th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <!-- Distribución por voto -->
+            <div class="tabla-card">
+                <div class="tabla-header">
+                    <h3><i class="fas fa-users" style="color: var(--primary-color);"></i> Distribución por voto</h3>
+                </div>
+                <table id="tablaVotos">
+                    <thead>
+                        <tr>
+                            <th>Tipo de voto</th>
+                            <th>Cantidad</th>
+                            <th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <!-- Causales de arbitrariedad -->
+            <div class="tabla-card" style="grid-column: 1 / -1;">
+                <div class="tabla-header">
+                    <h3><i class="fas fa-list-check" style="color: var(--danger-color);"></i> Causales de arbitrariedad detectadas</h3>
+                </div>
+                <table id="tablaArbitrariedad">
+                    <thead>
+                        <tr>
+                            <th>Causal</th>
+                            <th>Cantidad</th>
+                            <th>%</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>Instituto de Recursos Judiciales &copy; <span id="current-year"></span> | Dashboard Estadístico</p>
+        </footer>
+    </div>
+
+    <script>
+        // ============ VARIABLES GLOBALES ============
+        let fallosData = [];
+        let fallosFiltrados = [];
+        let periodoActual = 'todo';
+        let charts = {};
+        
+        // ============ INICIALIZACIÓN ============
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            cargarDatos();
+            
+            // Establecer fechas por defecto (últimos 30 días)
+            const hoy = new Date();
+            const hace30Dias = new Date();
+            hace30Dias.setDate(hoy.getDate() - 30);
+            
+            document.getElementById('fechaDesde').valueAsDate = hace30Dias;
+            document.getElementById('fechaHasta').valueAsDate = hoy;
+        });
+        
+        function cargarDatos() {
+            // Intentar cargar desde localStorage
+            const stored = localStorage.getItem('fallosJudiciales');
+            if (stored) {
+                try {
+                    fallosData = JSON.parse(stored);
+                } catch (e) {
+                    console.error('Error al cargar datos:', e);
+                    fallosData = generarDatosEjemplo();
+                }
+            } else {
+                fallosData = generarDatosEjemplo();
+                localStorage.setItem('fallosJudiciales', JSON.stringify(fallosData));
+            }
+            
+            fallosFiltrados = [...fallosData];
+            actualizarEstadisticas();
+        }
+        
+        function generarDatosEjemplo() {
+            // Generar más datos para estadísticas
+            const datos = [];
+            const materias = [
+                'Violación al debido proceso',
+                'Garantía de defensa en juicio',
+                'Detención ilegal',
+                'Supremacía constitucional',
+                'Prisión preventiva',
+                'Prohibición de autoincriminación',
+                'Violación del plazo razonable'
+            ];
+            
+            const votos = ['unanimidad', 'mayoria', 'disidencias'];
+            const admisibilidades = ['si', 'no'];
+            const arbitrariedades = [
+                { tipo: 'Arbitrariedad normativa', factica: [] },
+                { tipo: 'Arbitrariedad fáctica', factica: ['Conceptual'] },
+                { tipo: 'Arbitrariedad fáctica', factica: ['Normativa'] },
+                { tipo: 'Arbitrariedad fáctica', factica: ['Epistémica'] },
+                { tipo: 'Contradicción', factica: [] },
+                { tipo: 'Exceso ritual manifiesto', factica: [] },
+                { tipo: 'Falta de fundamentación suficiente', factica: [] }
+            ];
+            
+            // Generar 50 fallos de ejemplo
+            for (let i = 0; i < 50; i++) {
+                const fecha = new Date();
+                fecha.setDate(fecha.getDate() - Math.floor(Math.random() * 365));
+                
+                const tieneArbitrariedad = Math.random() > 0.5;
+                const arbIndex = Math.floor(Math.random() * arbitrariedades.length);
+                const arb = tieneArbitrariedad ? arbitrariedades[arbIndex] : null;
+                
+                datos.push({
+                    caratula: `Fallo Ejemplo ${i+1}`,
+                    numeroCausa: `${10000 + i}/${2023 - Math.floor(i/12)}`,
+                    fecha: fecha.toISOString().split('T')[0],
+                    fallos: `${330 + Math.floor(i/10)}:${1000 + i}`,
+                    materiaPrincipal: materias[Math.floor(Math.random() * materias.length)],
+                    subtema: 'Subtema ejemplo',
+                    integracion: 'Jueces ejemplo',
+                    voto: votos[Math.floor(Math.random() * votos.length)],
+                    admisibilidad: admisibilidades[Math.floor(Math.random() * admisibilidades.length)],
+                    motivoInadmisible: '',
+                    argumentoCorte: '',
+                    cuestionesFederales: [materias[Math.floor(Math.random() * materias.length)]],
+                    arbitrariedadCausales: arb ? [arb.tipo] : [],
+                    arbitrariedadFactica: arb?.factica || [],
+                    opcionesFundamentacion: [],
+                    opcionesNormativa: [],
+                    desacuerdos: ['Normativo'],
+                    problemas: ['Interpretativo'],
+                    metodoInterpretativo: ['Sistemático'],
+                    estructuraPonderacion: ['Necesidad'],
+                    tipoRazonamiento: ['Balance explícito'],
+                    erroresSilogismo: [],
+                    argumentosAtinencia: [],
+                    argumentosAmbiguedad: [],
+                    observaciones: ''
+                });
+            }
+            
+            return datos;
+        }
+        
+        // ============ FUNCIONES DE FILTRADO POR PERÍODO ============
+        function cambiarPeriodo(periodo) {
+            // Actualizar botones
+            document.querySelectorAll('.periodo-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            periodoActual = periodo;
+            
+            const hoy = new Date();
+            let desde = new Date();
+            
+            switch(periodo) {
+                case 'todo':
+                    fallosFiltrados = [...fallosData];
+                    break;
+                case 'mes':
+                    desde.setMonth(hoy.getMonth() - 1);
+                    fallosFiltrados = fallosData.filter(f => new Date(f.fecha) >= desde);
+                    break;
+                case 'trimestre':
+                    desde.setMonth(hoy.getMonth() - 3);
+                    fallosFiltrados = fallosData.filter(f => new Date(f.fecha) >= desde);
+                    break;
+                case 'año':
+                    desde.setFullYear(hoy.getFullYear() - 1);
+                    fallosFiltrados = fallosData.filter(f => new Date(f.fecha) >= desde);
+                    break;
+                case 'custom':
+                    const fechaDesde = document.getElementById('fechaDesde').value;
+                    const fechaHasta = document.getElementById('fechaHasta').value;
+                    if (fechaDesde && fechaHasta) {
+                        fallosFiltrados = fallosData.filter(f => 
+                            f.fecha >= fechaDesde && f.fecha <= fechaHasta
+                        );
+                    }
+                    break;
+            }
+            
+            actualizarEstadisticas();
+        }
+        
+        // ============ ACTUALIZAR TODAS LAS ESTADÍSTICAS ============
+        function actualizarEstadisticas() {
+            actualizarKPIs();
+            actualizarGraficoAdmisibilidad();
+            actualizarGraficoVotos();
+            actualizarGraficoMaterias();
+            actualizarGraficoArbitrariedad();
+            actualizarGraficoEvolucion();
+            actualizarTablas();
+        }
+        
+        function actualizarKPIs() {
+            const total = fallosFiltrados.length;
+            const admitidos = fallosFiltrados.filter(f => f.admisibilidad === 'si').length;
+            const inadmisibles = fallosFiltrados.filter(f => f.admisibilidad === 'no').length;
+            const conArbitrariedad = fallosFiltrados.filter(f => f.arbitrariedadCausales?.length > 0).length;
+            
+            document.getElementById('kpiTotal').textContent = total;
+            document.getElementById('kpiAdmitidos').textContent = admitidos;
+            document.getElementById('kpiInadmisibles').textContent = inadmisibles;
+            document.getElementById('kpiArbitrariedad').textContent = conArbitrariedad;
+        }
+        
+        // ============ GRÁFICOS ============
+        function actualizarGraficoAdmisibilidad() {
+            const admitidos = fallosFiltrados.filter(f => f.admisibilidad === 'si').length;
+            const inadmisibles = fallosFiltrados.filter(f => f.admisibilidad === 'no').length;
+            
+            if (charts.admisibilidad) charts.admisibilidad.destroy();
+            
+            const ctx = document.getElementById('graficoAdmisibilidad').getContext('2d');
+            charts.admisibilidad = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Admitidos', 'Inadmisibles'],
+                    datasets: [{
+                        data: [admitidos, inadmisibles],
+                        backgroundColor: ['#27ae60', '#e74c3c'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function actualizarGraficoVotos() {
+            const unanimidad = fallosFiltrados.filter(f => f.voto === 'unanimidad').length;
+            const mayoria = fallosFiltrados.filter(f => f.voto === 'mayoria').length;
+            const disidencias = fallosFiltrados.filter(f => f.voto === 'disidencias').length;
+            
+            if (charts.votos) charts.votos.destroy();
+            
+            const ctx = document.getElementById('graficoVotos').getContext('2d');
+            charts.votos = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Unanimidad', 'Mayoría', 'Con disidencias'],
+                    datasets: [{
+                        data: [unanimidad, mayoria, disidencias],
+                        backgroundColor: ['#27ae60', '#f39c12', '#e74c3c'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function actualizarGraficoMaterias() {
+            const materiasCount = {};
+            fallosFiltrados.forEach(f => {
+                if (f.materiaPrincipal) {
+                    materiasCount[f.materiaPrincipal] = (materiasCount[f.materiaPrincipal] || 0) + 1;
+                }
+            });
+            
+            const sorted = Object.entries(materiasCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 6);
+            
+            const labels = sorted.map(([materia]) => materia.length > 20 ? materia.substring(0,20)+'...' : materia);
+            const data = sorted.map(([, count]) => count);
+            
+            if (charts.materias) charts.materias.destroy();
+            
+            const ctx = document.getElementById('graficoMaterias').getContext('2d');
+            charts.materias = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cantidad de fallos',
+                        data: data,
+                        backgroundColor: '#3498db',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function actualizarGraficoArbitrariedad() {
+            const tipos = {};
+            fallosFiltrados.forEach(f => {
+                if (f.arbitrariedadCausales) {
+                    f.arbitrariedadCausales.forEach(causal => {
+                        tipos[causal] = (tipos[causal] || 0) + 1;
+                    });
+                }
+            });
+            
+            const sorted = Object.entries(tipos).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const labels = sorted.map(([tipo]) => tipo.length > 20 ? tipo.substring(0,20)+'...' : tipo);
+            const data = sorted.map(([, count]) => count);
+            
+            if (charts.arbitrariedad) charts.arbitrariedad.destroy();
+            
+            const ctx = document.getElementById('graficoArbitrariedad').getContext('2d');
+            charts.arbitrariedad = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cantidad',
+                        data: data,
+                        backgroundColor: '#e74c3c',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function actualizarGraficoEvolucion() {
+            // Agrupar por mes
+            const meses = {};
+            fallosFiltrados.forEach(f => {
+                const fecha = new Date(f.fecha);
+                const mesKey = `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}`;
+                meses[mesKey] = (meses[mesKey] || 0) + 1;
+            });
+            
+            const sortedMeses = Object.keys(meses).sort();
+            const labels = sortedMeses.map(m => {
+                const [year, month] = m.split('-');
+                const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                return `${meses[parseInt(month)-1]} ${year}`;
+            });
+            const data = sortedMeses.map(m => meses[m]);
+            
+            if (charts.evolucion) charts.evolucion.destroy();
+            
+            const ctx = document.getElementById('graficoEvolucion').getContext('2d');
+            charts.evolucion = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Fallos por mes',
+                        data: data,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52,152,219,0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#2980b9'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // ============ TABLAS ============
+        function actualizarTablas() {
+            actualizarTablaTopMaterias();
+            actualizarTablaVotos();
+            actualizarTablaArbitrariedad();
+        }
+        
+        function actualizarTablaTopMaterias() {
+            const materiasCount = {};
+            fallosFiltrados.forEach(f => {
+                if (f.materiaPrincipal) {
+                    materiasCount[f.materiaPrincipal] = (materiasCount[f.materiaPrincipal] || 0) + 1;
+                }
+            });
+            
+            const sorted = Object.entries(materiasCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            const total = fallosFiltrados.length;
+            const tbody = document.querySelector('#tablaTopMaterias tbody');
+            
+            tbody.innerHTML = sorted.map(([materia, count]) => {
+                const porcentaje = ((count / total) * 100).toFixed(1);
+                return `
+                    <tr>
+                        <td>${materia}</td>
+                        <td>${count}</td>
+                        <td>${porcentaje}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function actualizarTablaVotos() {
+            const unanimidad = fallosFiltrados.filter(f => f.voto === 'unanimidad').length;
+            const mayoria = fallosFiltrados.filter(f => f.voto === 'mayoria').length;
+            const disidencias = fallosFiltrados.filter(f => f.voto === 'disidencias').length;
+            
+            const total = fallosFiltrados.length;
+            const tbody = document.querySelector('#tablaVotos tbody');
+            
+            tbody.innerHTML = `
+                <tr>
+                    <td>Unanimidad</td>
+                    <td>${unanimidad}</td>
+                    <td>${((unanimidad/total)*100).toFixed(1)}%</td>
+                </tr>
+                <tr>
+                    <td>Mayoría</td>
+                    <td>${mayoria}</td>
+                    <td>${((mayoria/total)*100).toFixed(1)}%</td>
+                </tr>
+                <tr>
+                    <td>Con disidencias</td>
+                    <td>${disidencias}</td>
+                    <td>${((disidencias/total)*100).toFixed(1)}%</td>
+                </tr>
+            `;
+        }
+        
+        function actualizarTablaArbitrariedad() {
+            const causales = {};
+            fallosFiltrados.forEach(f => {
+                if (f.arbitrariedadCausales) {
+                    f.arbitrariedadCausales.forEach(causal => {
+                        causales[causal] = (causales[causal] || 0) + 1;
+                    });
+                }
+            });
+            
+            const sorted = Object.entries(causales).sort((a, b) => b[1] - a[1]);
+            const total = sorted.reduce((sum, [,count]) => sum + count, 0);
+            
+            const tbody = document.querySelector('#tablaArbitrariedad tbody');
+            
+            tbody.innerHTML = sorted.map(([causal, count]) => {
+                const porcentaje = ((count / total) * 100).toFixed(1);
+                return `
+                    <tr>
+                        <td>${causal}</td>
+                        <td>${count}</td>
+                        <td>${porcentaje}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
