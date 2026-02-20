@@ -1427,65 +1427,88 @@
                 try {
                     // Mostrar advertencia si hay archivo
                     if (archivoFile) {
-                        showStatus('⚠️ La carga de archivos requiere un servidor. Por ahora, se guardarán solo los datos.', 'warning');
-                        // Continuamos sin el archivo
+                        showStatus('⚠️ Por ahora, solo se guardarán los datos (sin archivo)', 'warning');
                     }
         
-                    // Crear un callback único para JSONP
-                    const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.round(Math.random() * 1000000);
+                    // Obtener la URL base (sin parámetros)
+                    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxo2bJ6qt2lCokz06Tl-xpjlLaOh6UZxpXhxfuGi08fl8TAkI_UYw4i_X1j8yWRS5-rwQ/exec';
                     
-                    // Construir la URL con los datos como parámetros GET
-                    const baseUrl = APPS_SCRIPT_URL.replace('/exec', '') + '/exec'; // Asegurar formato correcto
+                    // Crear un callback único
+                    const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                     
-                    // Crear un parámetro con los datos (limitado por URL)
-                    const params = new URLSearchParams({
-                        callback: callbackName
-                    });
+                    // Construir URL con datos (solo los campos más importantes para evitar límite de URL)
+                    const url = new URL(scriptUrl);
+                    url.searchParams.append('callback', callbackName);
+                    url.searchParams.append('caratula', datos.caratula || '');
+                    url.searchParams.append('numeroCausa', datos.numeroCausa || '');
+                    url.searchParams.append('fecha', datos.fecha || '');
+                    url.searchParams.append('test', 'true');
                     
-                    // Agregar datos principales como parámetros (no todos por límite de URL)
-                    params.append('caratula', datos.caratula || '');
-                    params.append('numeroCausa', datos.numeroCausa || '');
-                    params.append('fecha', datos.fecha || '');
-                    params.append('timestamp', Date.now());
+                    console.log('URL generada:', url.toString());
                     
-                    // Crear elemento script
+                    // Crear script
                     const script = document.createElement('script');
-                    script.src = baseUrl + '?' + params.toString();
+                    script.src = url.toString();
                     
-                    // Definir función callback global
+                    // Definir callback global
                     window[callbackName] = function(response) {
+                        console.log('Respuesta recibida:', response);
+                        
                         // Limpiar
                         delete window[callbackName];
-                        document.body.removeChild(script);
+                        if (script.parentNode) {
+                            document.body.removeChild(script);
+                        }
                         
-                        // Procesar respuesta
                         if (response && response.success) {
                             resolve({ success: true, data: response });
                         } else {
-                            reject({ success: false, error: response?.error || 'Error desconocido' });
+                            reject({ 
+                                success: false, 
+                                error: response?.error || 'Error en la respuesta del servidor' 
+                            });
                         }
                     };
                     
-                    // Timeout por si no hay respuesta
-                    const timeout = setTimeout(() => {
+                    // Timeout
+                    const timeoutId = setTimeout(() => {
+                        if (window[callbackName]) {
+                            console.error('Timeout - No hubo respuesta');
+                            delete window[callbackName];
+                            if (script.parentNode) {
+                                document.body.removeChild(script);
+                            }
+                            reject({ 
+                                success: false, 
+                                error: 'Tiempo de espera agotado. Verifica la conexión.' 
+                            });
+                        }
+                    }, 15000); // 15 segundos
+                    
+                    // Manejar error
+                    script.onerror = function(error) {
+                        console.error('Error en script:', error);
+                        clearTimeout(timeoutId);
+                        
                         if (window[callbackName]) {
                             delete window[callbackName];
-                            document.body.removeChild(script);
-                            reject({ success: false, error: 'Timeout: No hubo respuesta del servidor' });
                         }
-                    }, 10000); // 10 segundos
-                    
-                    // Manejar errores
-                    script.onerror = function() {
-                        clearTimeout(timeout);
-                        delete window[callbackName];
-                        document.body.removeChild(script);
-                        reject({ success: false, error: 'Error de conexión con el servidor' });
+                        if (script.parentNode) {
+                            document.body.removeChild(script);
+                        }
+                        
+                        reject({ 
+                            success: false, 
+                            error: 'Error de conexión con el servidor. Verifica la URL y los permisos.' 
+                        });
                     };
                     
+                    // Agregar al documento
                     document.body.appendChild(script);
+                    console.log('Script agregado al documento');
                     
                 } catch (error) {
+                    console.error('Error en guardarEnSistema:', error);
                     reject({ success: false, error: error.message });
                 }
             });
