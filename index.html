@@ -1454,7 +1454,7 @@
                 showStatus('Enviando datos al servidor del Instituto...', 'success');
 
                 // IMPORTANTE: Cambiamos a 'cors' en lugar de 'no-cors' para poder leer errores
-                const response = await fetch(GOOGLE_SHEETS_URL, {
+                const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'cors', // Cambiado de 'no-cors' a 'cors'
                     headers: {
