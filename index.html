@@ -1403,86 +1403,118 @@
 
     <script>
         // =====================================================
-        // CONFIGURACIÓN DE GOOGLE SHEETS
+        // CONFIGURACIÓN DE APPS SCRIPT
         // =====================================================
         // Reemplazar con tu URL de Google Apps Script
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz5nOuExZGwHcLzNn80GXcdg4sU4f-d28AmtzG0cAo0-snXtTigOk39V_JLJRBrx-Sdng/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyIDzuaBl6Lr3ne5Gc3AGgqS5_QsTUIUZLbMEjABzm2n258G7unCHh2LPwSZZsVcETlSQ/exec';
         
         // =====================================================
-        // FUNCIONES PARA GOOGLE SHEETS
+        // FUNCIÓN PARA CONVERTIR ARCHIVO A BASE64
         // =====================================================
-        
-        async function guardarEnGoogleSheets(datos) {
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // =====================================================
+        // FUNCIÓN PARA GUARDAR EN APPS SCRIPT (SHEETS + DRIVE)
+        // =====================================================
+        async function guardarEnGoogleSheets(datos, archivoFile) {
             try {
+                // Preparar los datos para enviar
+                const payload = {
+                    ...datos,
+                    archivo: null
+                };
+
+                // Si hay archivo, convertirlo a Base64
+                if (archivoFile) {
+                    // Validar tamaño (10MB máximo)
+                    if (archivoFile.size > 10 * 1024 * 1024) {
+                        return { 
+                            success: false, 
+                            error: 'El archivo no puede superar los 10MB' 
+                        };
+                    }
+
+                    showStatus('Preparando archivo...', 'success');
+                    const base64Data = await fileToBase64(archivoFile);
+
+                    payload.archivo = {
+                        name: archivoFile.name,
+                        type: archivoFile.type,
+                        data: base64Data
+                    };
+                }
+
+                showStatus('Enviando datos al servidor del Instituto...', 'success');
+
+                // IMPORTANTE: Cambiamos a 'cors' en lugar de 'no-cors' para poder leer errores
                 const response = await fetch(GOOGLE_SHEETS_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Importante para CORS
+                    mode: 'cors', // Cambiado de 'no-cors' a 'cors'
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(datos)
+                    body: JSON.stringify(payload)
                 });
-                
-                // Con no-cors no podemos leer la respuesta
-                console.log('Datos enviados a Google Sheets');
-                return { success: true };
-                
-            } catch (error) {
-                console.error('Error al guardar en Google Sheets:', error);
-                return { success: false, error: error.message };
-            }
-        }
-        
-        function guardarEnLocalStorage(datos) {
-            // Obtener fallos existentes
-            let fallos = [];
-            const stored = localStorage.getItem('fallosJudiciales');
-            if (stored) {
-                try {
-                    fallos = JSON.parse(stored);
-                } catch (e) {
-                    fallos = [];
+
+                if (response.ok) {
+                    const result = await response.json();
+                    return { success: true, data: result };
+                } else {
+                    return { 
+                        success: false, 
+                        error: `Error del servidor: ${response.status}` 
+                    };
                 }
+
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                return { 
+                    success: false, 
+                    error: 'No se pudo conectar con el servidor. Verifique su conexión a internet.' 
+                };
             }
-            
-            // Agregar nuevo fallo
-            fallos.push(datos);
-            
-            // Guardar en localStorage
-            localStorage.setItem('fallosJudiciales', JSON.stringify(fallos));
         }
         
         // =====================================================
         // FUNCIÓN PRINCIPAL PARA GUARDAR
-        // =====================================================
-        
+        // =====================================================        
         async function guardarFalloConGoogleSheets() {
             // Validar campos obligatorios
             let c = document.getElementById('caratula').value;
             let nc = document.getElementById('numeroCausa').value;
             let f = document.getElementById('fecha').value;
-            
+
             if (!c || !nc || !f) {
                 showStatus('Complete los campos obligatorios: Carátula, Número de causa y Fecha', 'error');
                 return;
             }
-            
+
+            showStatus('Procesando formulario...', 'success');
+
             // Recopilar todos los datos del formulario
             const datosCompletos = recopilarDatosCompletos();
-            
-            // Mostrar estado de carga
-            showStatus('Guardando fallo...', 'success');
-            
-            // Guardar en localStorage (siempre)
-            guardarEnLocalStorage(datosCompletos);
-            
-            // Intentar guardar en Google Sheets
-            const resultado = await guardarEnGoogleSheets(datosCompletos);
-            
+
+            // Obtener el archivo
+            const archivoInput = document.getElementById('archivoFallo');
+            const archivoFile = archivoInput.files.length > 0 ? archivoInput.files[0] : null;
+
+            // Guardar DIRECTAMENTE en Google Sheets (con Drive)
+            const resultado = await guardarEnGoogleSheets(datosCompletos, archivoFile);
+
             if (resultado.success) {
-                showStatus(`Fallo "${c}" guardado correctamente en Google Sheets y almacenamiento local`, 'success');
+                showStatus(`Fallo "${c}" guardado correctamente en el sistema del Instituto`, 'success');
+
+                // Opcional: limpiar el formulario después de guardar exitosamente
+                // resetForm();
             } else {
-                showStatus(`Fallo "${c}" guardado en almacenamiento local. Error al conectar con Google Sheets: ${resultado.error}`, 'warning');
+                showStatus(`Error al guardar: ${resultado.error}. Por favor, intente nuevamente.`, 'error');
             }
         }
         
