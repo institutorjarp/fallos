@@ -1420,31 +1420,53 @@
         }
 
         // =====================================================
-        // FUNCIÓN PARA GUARDAR EN APPS SCRIPT (SHEETS + DRIVE)
+        // FUNCIÓN PARA GUARDAR TODOS LOS DATOS (JSONP)
         // =====================================================
         function guardarEnSistema(datos, archivoFile) {
             return new Promise((resolve, reject) => {
                 try {
-                    // Mostrar advertencia si hay archivo
                     if (archivoFile) {
-                        showStatus('⚠️ Por ahora, solo se guardarán los datos (sin archivo)', 'warning');
+                        showStatus('⚠️ La carga de archivos requiere Google Drive API. Por ahora, solo se guardarán los datos.', 'warning');
                     }
         
-                    // Obtener la URL base (sin parámetros)
-                    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxo2bJ6qt2lCokz06Tl-xpjlLaOh6UZxpXhxfuGi08fl8TAkI_UYw4i_X1j8yWRS5-rwQ/exec';
+                    const scriptUrl = 'https://script.google.com/macros/s/AKfycbycsJVtsEyl48Ep4jTlFQvsCtvMpVqLKpEUoYhOQHnEIvKdWmwo42IUjOUCvUbCwHgtBQ/exec';
                     
-                    // Crear un callback único
-                    const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    // Crear callback único
+                    const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                     
-                    // Construir URL con datos (solo los campos más importantes para evitar límite de URL)
+                    // Construir URL con TODOS los datos
                     const url = new URL(scriptUrl);
-                    url.searchParams.append('callback', callbackName);
-                    url.searchParams.append('caratula', datos.caratula || '');
-                    url.searchParams.append('numeroCausa', datos.numeroCausa || '');
-                    url.searchParams.append('fecha', datos.fecha || '');
-                    url.searchParams.append('test', 'true');
                     
-                    console.log('URL generada:', url.toString());
+                    // Agregar callback
+                    url.searchParams.append('callback', callbackName);
+                    
+                    // Función para aplanar objetos y arrays
+                    function agregarDatos(obj, prefix = '') {
+                        for (let key in obj) {
+                            const value = obj[key];
+                            const newKey = prefix ? `${prefix}[${key}]` : key;
+                            
+                            if (value && typeof value === 'object' && !Array.isArray(value)) {
+                                agregarDatos(value, newKey);
+                            } else if (Array.isArray(value)) {
+                                value.forEach((item, index) => {
+                                    const arrayKey = `${newKey}[${index}]`;
+                                    if (item && typeof item === 'object') {
+                                        agregarDatos(item, arrayKey);
+                                    } else {
+                                        url.searchParams.append(arrayKey, item || '');
+                                    }
+                                });
+                            } else {
+                                url.searchParams.append(newKey, value || '');
+                            }
+                        }
+                    }
+                    
+                    // Agregar todos los datos a la URL
+                    agregarDatos(datos);
+                    
+                    console.log('Enviando datos...', Object.fromEntries(url.searchParams));
                     
                     // Crear script
                     const script = document.createElement('script');
@@ -1452,13 +1474,14 @@
                     
                     // Definir callback global
                     window[callbackName] = function(response) {
-                        console.log('Respuesta recibida:', response);
+                        console.log('Respuesta del servidor:', response);
                         
                         // Limpiar
                         delete window[callbackName];
                         if (script.parentNode) {
                             document.body.removeChild(script);
                         }
+                        clearTimeout(timeoutId);
                         
                         if (response && response.success) {
                             resolve({ success: true, data: response });
@@ -1483,9 +1506,9 @@
                                 error: 'Tiempo de espera agotado. Verifica la conexión.' 
                             });
                         }
-                    }, 15000); // 15 segundos
+                    }, 20000); // 20 segundos
                     
-                    // Manejar error
+                    // Error handler
                     script.onerror = function(error) {
                         console.error('Error en script:', error);
                         clearTimeout(timeoutId);
@@ -1499,13 +1522,12 @@
                         
                         reject({ 
                             success: false, 
-                            error: 'Error de conexión con el servidor. Verifica la URL y los permisos.' 
+                            error: 'Error de conexión con el servidor' 
                         });
                     };
                     
-                    // Agregar al documento
+                    // Agregar al DOM
                     document.body.appendChild(script);
-                    console.log('Script agregado al documento');
                     
                 } catch (error) {
                     console.error('Error en guardarEnSistema:', error);
@@ -1513,11 +1535,9 @@
                 }
             });
         }
+
         
-        // =====================================================
-        // FUNCIÓN PRINCIPAL PARA GUARDAR
-        // =====================================================
-        async function guardarFallo() {
+                async function guardarFallo() {
             // Validar campos obligatorios
             let c = document.getElementById('caratula').value;
             let nc = document.getElementById('numeroCausa').value;
@@ -1528,29 +1548,41 @@
                 return;
             }
             
-            showStatus('Procesando formulario...', 'info');
+            showStatus('Enviando datos al servidor...', 'info');
             
-            // Recopilar todos los datos del formulario
-            const datosCompletos = recopilarDatosCompletos();
-            
-            // Obtener el archivo
-            const archivoInput = document.getElementById('archivoFallo');
-            const archivoFile = archivoInput.files.length > 0 ? archivoInput.files[0] : null;
-            
-            // Guardar en el sistema (Google Sheets + Drive)
-            const resultado = await guardarEnSistema(datosCompletos, archivoFile);
-            
-            if (resultado.success) {
-                showStatus(`Fallo "${c}" guardado correctamente en el sistema del Instituto`, 'success');
+            try {
+                // Recopilar TODOS los datos del formulario
+                const datosCompletos = recopilarDatosResumen(); // Usamos resumen que ya tiene todos los datos
                 
-                // Opcional: limpiar formulario después de 2 segundos
-                setTimeout(() => {
-                    if (confirm('¿Desea limpiar el formulario para cargar otro fallo?')) {
-                        resetForm();
-                    }
-                }, 2000);
-            } else {
-                showStatus(`Error al guardar: ${resultado.error}. Por favor, intente nuevamente.`, 'error');
+                // Agregar campos obligatorios explícitamente
+                datosCompletos.caratula = c;
+                datosCompletos.numeroCausa = nc;
+                datosCompletos.fecha = f;
+                
+                // Agregar timestamp
+                datosCompletos.timestamp = new Date().toISOString();
+                datosCompletos.fechaRegistro = new Date().toLocaleString('es-AR');
+                
+                // Obtener archivo (opcional)
+                const archivoInput = document.getElementById('archivoFallo');
+                const archivoFile = archivoInput.files.length > 0 ? archivoInput.files[0] : null;
+                
+                // Guardar en el sistema
+                const resultado = await guardarEnSistema(datosCompletos, archivoFile);
+                
+                if (resultado.success) {
+                    showStatus(`✅ Fallo "${c}" guardado correctamente en el sistema del Instituto`, 'success');
+                    
+                    // Preguntar si quiere limpiar el formulario
+                    setTimeout(() => {
+                        if (confirm('¿Desea limpiar el formulario para cargar otro fallo?')) {
+                            resetForm();
+                        }
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                showStatus(`❌ Error al guardar: ${error.error || error.message || 'Error desconocido'}`, 'error');
             }
         }
         
