@@ -130,15 +130,6 @@
             font-style: italic;
         }
         
-        .badge {
-            background-color: var(--accent-color);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 500;
-            font-size: 0.8rem;
-        }
-        
         .header-nav {
             background-color: var(--secondary-color);
             padding: 10px 20px;
@@ -167,8 +158,6 @@
         .nav-link.active {
             background: var(--accent-color);
         }
-        
-        
         
         /* ===== PANEL DE RESUMEN ===== */
         .resumen-panel {
@@ -391,6 +380,7 @@
         
         input[type="text"],
         input[type="date"],
+        input[type="file"],
         textarea,
         select {
             width: 100%;
@@ -404,6 +394,7 @@
         
         input[type="text"]:focus,
         input[type="date"]:focus,
+        input[type="file"]:focus,
         textarea:focus,
         select:focus {
             outline: none;
@@ -603,6 +594,34 @@
             box-shadow: var(--shadow);
         }
         
+        /* Estilo para la sección de adjuntar archivo */
+        .file-upload-container {
+            background: #f8f9fa;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .file-upload-container:hover {
+            border-color: var(--accent-color);
+            background: #f0f8ff;
+        }
+        
+        .file-upload-container i {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+        
+        .file-name {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+        
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .resumen-item {
@@ -719,32 +738,32 @@
             </div>
         </header>
 
-    <!-- PANEL DE RESUMEN -->
-    <div class="resumen-panel" id="resumenPanel">
-        <div class="resumen-header">
-            <span><i class="fas fa-file-alt"></i> RESUMEN DEL FALLO - ACTUALIZACIÓN EN TIEMPO REAL</span>
-            <span class="resumen-badge" id="resumenBadge">Sin datos</span>
-        </div>
-
-        <!-- SOLO RESUMEN NARRATIVO -->
-        <div class="resumen-redactado" id="resumenRedactado" style="display: block;">
-            <div class="resumen-redactado-titulo">
-                <i class="fas fa-quote-left"></i> RESUMEN NARRATIVO DEL FALLO
+        <!-- PANEL DE RESUMEN -->
+        <div class="resumen-panel" id="resumenPanel">
+            <div class="resumen-header">
+                <span><i class="fas fa-file-alt"></i> RESUMEN DEL FALLO - ACTUALIZACIÓN EN TIEMPO REAL</span>
+                <span class="resumen-badge" id="resumenBadge">Sin datos</span>
             </div>
-            <div class="resumen-redactado-contenido" id="resumenRedactadoContenido">
-                <span class="resumen-vacio">Complete el formulario para ver el resumen del fallo...</span>
+
+            <!-- SOLO RESUMEN NARRATIVO -->
+            <div class="resumen-redactado" id="resumenRedactado" style="display: block;">
+                <div class="resumen-redactado-titulo">
+                    <i class="fas fa-quote-left"></i> RESUMEN NARRATIVO DEL FALLO
+                </div>
+                <div class="resumen-redactado-contenido" id="resumenRedactadoContenido">
+                    <span class="resumen-vacio">Complete el formulario para ver el resumen del fallo...</span>
+                </div>
             </div>
-        </div>
 
-        <!-- BOTÓN PDF DEBAJO DEL RESUMEN -->
-        <div class="pdf-button-container">
-            <button type="button" class="btn-pdf" onclick="descargarResumenPDF()">
-                <i class="fas fa-file-pdf"></i> Descargar Resumen PDF
-            </button>
-        </div>
+            <!-- BOTÓN PDF DEBAJO DEL RESUMEN -->
+            <div class="pdf-button-container">
+                <button type="button" class="btn-pdf" onclick="descargarResumenPDF()">
+                    <i class="fas fa-file-pdf"></i> Descargar Resumen PDF
+                </button>
+            </div>
 
-        <div class="resumen-footer" id="resumenFooter"></div>
-    </div>
+            <div class="resumen-footer" id="resumenFooter"></div>
+        </div>
         
         <div id="statusMessage" class="status-message"></div>
         
@@ -959,19 +978,19 @@
                                                 <div class="checkbox-option" style="background: #fff4e6; height: 100%;">
                                                     <input type="checkbox" id="cuest-factica-conceptual" name="arbitrariedadFacticaCuest" value="Conceptual" onclick="actualizarResumen()">
                                                     <label for="cuest-factica-conceptual">
-                                                        <strong>Conceptual</strong><br>                                                        
+                                                        <strong>Conceptual</strong>
                                                     </label>
                                                 </div>
                                                 <div class="checkbox-option" style="background: #fff4e6; height: 100%;">
                                                     <input type="checkbox" id="cuest-factica-normativa" name="arbitrariedadFacticaCuest" value="Normativa" onclick="actualizarResumen()">
                                                     <label for="cuest-factica-normativa">
-                                                        <strong>Normativa</strong><br>                                                        
+                                                        <strong>Normativa</strong>
                                                     </label>
                                                 </div>
                                                 <div class="checkbox-option" style="background: #fff4e6; height: 100%;">
                                                     <input type="checkbox" id="cuest-factica-epistemica" name="arbitrariedadFacticaCuest" value="Epistémica" onclick="actualizarResumen()">
                                                     <label for="cuest-factica-epistemica">
-                                                        <strong>Epistémica</strong><br>                                                        
+                                                        <strong>Epistémica</strong>
                                                     </label>
                                                 </div>
                                             </div>
@@ -1033,6 +1052,18 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            
+                            <!-- NUEVO: OTROS... (campo de texto) -->
+                            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                                <div class="checkbox-option" style="background: #f8f9fa; border-left: 2px solid var(--accent-color);">
+                                    <input type="checkbox" id="cuest-otros" name="cuestOtros" value="otros" onclick="toggleOtrosCuest(this); actualizarResumen()">
+                                    <label for="cuest-otros"><strong>Otros...</strong></label>
+                                </div>
+                                <div id="otrosCuestTextoContainer" style="display: none; margin-left: 25px; margin-top: 10px;">
+                                    <label for="cuestOtrosTexto">Especifique la cuestión federal:</label>
+                                    <input type="text" id="cuestOtrosTexto" name="cuestOtrosTexto" placeholder="Ingrese la cuestión federal..." class="form-control" onchange="actualizarResumen()" onkeyup="actualizarResumen()">
                                 </div>
                             </div>
                         </div>
@@ -1337,6 +1368,23 @@
                 </div>
             </section>
             
+            <!-- NUEVA SECCIÓN: ADJUNTAR FALLO -->
+            <section class="form-section" id="section11">
+                <h2 class="section-title"><i class="fas fa-paperclip"></i> 11. Adjuntar fallo (opcional)</h2>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <div class="file-upload-container" onclick="document.getElementById('archivoFallo').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Haga clic para seleccionar el archivo del fallo</p>
+                            <p style="font-size: 0.8rem; color: var(--gray-600);">Formatos aceptados: PDF, DOC, DOCX, TXT (máx. 10MB)</p>
+                            <input type="file" id="archivoFallo" name="archivoFallo" style="display: none;" accept=".pdf,.doc,.docx,.txt" onchange="mostrarNombreArchivo(this)">
+                            <div id="archivoNombre" class="file-name"></div>
+                        </div>
+                        <div class="helper-text">Puede adjuntar el fallo completo para referencia posterior. No se almacenará en Google Sheets, solo en localStorage.</div>
+                    </div>
+                </div>
+            </section>
+            
             <!-- BOTONES -->
             <div class="buttons-container">
                 <button type="button" class="btn btn-submit" onclick="guardarFalloConGoogleSheets()">
@@ -1359,7 +1407,7 @@
         // CONFIGURACIÓN DE GOOGLE SHEETS
         // =====================================================
         // Reemplazar con tu URL de Google Apps Script
-        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/XXXXXXXXXX/exec';
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz5nOuExZGwHcLzNn80GXcdg4sU4f-d28AmtzG0cAo0-snXtTigOk39V_JLJRBrx-Sdng/exec';
         
         // =====================================================
         // FUNCIONES PARA GOOGLE SHEETS
@@ -1446,7 +1494,10 @@
         function recopilarDatosCompletos() {
             const datos = recopilarDatosResumen();
             
-            // Agregar todos los campos adicionales que no están en el resumen
+            // Procesar archivo (solo guardamos el nombre, no el contenido)
+            const archivoInput = document.getElementById('archivoFallo');
+            const archivoNombre = archivoInput.files.length > 0 ? archivoInput.files[0].name : '';
+            
             return {
                 ...datos,
                 // Sección 1
@@ -1480,6 +1531,10 @@
                 logicaOtraTexto: document.getElementById('logicaOtraTexto')?.value || '',
                 cuestArbitrariedadOtras: document.getElementById('cuest-arbitrariedad-otras')?.checked || false,
                 
+                // NUEVO: Otros...
+                cuestOtros: document.getElementById('cuest-otros')?.checked || false,
+                cuestOtrosTexto: document.getElementById('cuestOtrosTexto')?.value || '',
+                
                 // Sección 5
                 tipoDesacuerdo: Array.from(document.querySelectorAll('input[name="tipoDesacuerdo"]:checked')).map(cb => cb.value).join('; '),
                 
@@ -1506,10 +1561,35 @@
                 // Sección 10
                 observaciones: document.getElementById('observaciones').value,
                 
+                // Sección 11 - Archivo
+                archivoAdjunto: archivoNombre,
+                
                 // Metadatos
                 timestamp: new Date().toISOString(),
                 fechaRegistro: new Date().toLocaleString('es-AR')
             };
+        }
+
+        // Función para mostrar nombre del archivo
+        function mostrarNombreArchivo(input) {
+            const fileName = document.getElementById('archivoNombre');
+            if (input.files.length > 0) {
+                fileName.textContent = `Archivo seleccionado: ${input.files[0].name}`;
+            } else {
+                fileName.textContent = '';
+            }
+        }
+
+        // NUEVO: Toggle para Otros...
+        function toggleOtrosCuest(cb) {
+            let c = document.getElementById('otrosCuestTextoContainer');
+            if (cb.checked) {
+                c.style.display = 'block';
+            } else {
+                c.style.display = 'none';
+                document.getElementById('cuestOtrosTexto').value = '';
+            }
+            actualizarResumen();
         }
 
         // ============ FUNCIÓN PARA DESCARGAR PDF ============
@@ -1848,7 +1928,7 @@
 
         // ============ FUNCIÓN PARA DESHABILITAR SECCIONES ============
         function deshabilitarSecciones(deshabilitar) {
-            const secciones = ['section3', 'section4', 'section5', 'section6', 'section7', 'section8', 'section9'];
+            const secciones = ['section3', 'section4', 'section5', 'section6', 'section7', 'section8', 'section9', 'section10', 'section11'];
             secciones.forEach(id => {
                 const seccion = document.getElementById(id);
                 if (seccion) {
@@ -1970,6 +2050,14 @@
                     }
                 }
                 
+                // NUEVO: Otros...
+                if (document.getElementById('cuest-otros')?.checked) {
+                    const otrosTexto = document.getElementById('cuestOtrosTexto')?.value;
+                    if (otrosTexto) {
+                        datos.cuestionesFederales.push(otrosTexto);
+                    }
+                }
+                
                 // TIPO DE DESACUERDO
                 document.querySelectorAll('input[name="tipoDesacuerdo"]:checked').forEach(cb => {
                     datos.desacuerdos.push(cb.nextElementSibling.textContent.trim());
@@ -2088,6 +2176,7 @@
                 document.getElementById('logicaCuestContainer').style.display = 'none';
                 document.getElementById('logicaOtraContainer').style.display = 'none';
                 document.getElementById('otrasCuestContainer').style.display = 'none';
+                document.getElementById('otrosCuestTextoContainer').style.display = 'none';
             }
             actualizarResumen();
         }
@@ -2269,8 +2358,12 @@
                 document.getElementById('logicaCuestContainer').style.display = 'none';
                 document.getElementById('logicaOtraContainer').style.display = 'none';
                 document.getElementById('otrasCuestContainer').style.display = 'none';
+                document.getElementById('otrosCuestTextoContainer').style.display = 'none';
                 document.getElementById('materiaPrincipalOtraContainer').style.display = 'none';
                 document.getElementById('principiosContainer').style.display = 'none';
+                
+                // Limpiar nombre de archivo
+                document.getElementById('archivoNombre').textContent = '';
                 
                 deshabilitarSecciones(false);
                 
@@ -2289,6 +2382,7 @@
             document.getElementById('arbitrariedadCuestContainer').style.display = 'none';
             document.getElementById('normativaSubopcionesContainer').style.display = 'none';
             document.getElementById('principiosContainer').style.display = 'none';
+            document.getElementById('otrosCuestTextoContainer').style.display = 'none';
             actualizarResumen();
         });
     </script>
