@@ -1439,7 +1439,22 @@
         // FUNCIÓN PARA GUARDAR EN APPS SCRIPT (JSONP con archivo)
         // =====================================================
         async function guardarEnSistema(datos, archivoFile) {
+            // Prevenir múltiples llamadas simultáneas
+            if (window.guardandoEnSistemaActivo) {
+                console.log('🚫 Llamada a guardarEnSistema ignorada - ya hay una activa');
+                showStatus('Ya hay un envío en progreso. Espere por favor...', 'warning');
+                return { success: false, error: 'Operación en progreso' };
+            }
+
+            // Marcar como activo
+            window.guardandoEnSistemaActivo = true;
+            console.log('🔒 Iniciando guardarEnSistema - flag activado');
+
             return new Promise(async (resolve, reject) => {
+                let timeoutId = null;
+                let script = null;
+                let callbackName = null;
+
                 try {
                     // Mostrar progreso
                     showStatus('Preparando datos para enviar...', 'info');
@@ -1448,6 +1463,7 @@
                     if (!datos.id) {
                         datos.id = generarIdUnico();
                         document.getElementById('registroId').value = datos.id;
+                        console.log('🆔 ID generado:', datos.id);
                     }
 
                     // Crear objeto con todos los datos
@@ -1461,9 +1477,15 @@
 
                     // Si hay archivo, convertirlo a Base64
                     if (archivoFile) {
-                        // Validar tamaño (10MB máximo para URL, pero podemos manejar más)
+                        // Validar tamaño (10MB máximo)
                         if (archivoFile.size > 10 * 1024 * 1024) {
-                            if (!confirm('El archivo es mayor a 10MB. ¿Continuar de todos modos? Puede haber problemas de timeout.')) {
+                            const continuar = confirm('El archivo es mayor a 10MB. ¿Continuar de todos modos? Puede haber problemas de timeout.');
+                            if (!continuar) {
+                                // Liberar flag antes de rechazar
+                                setTimeout(() => {
+                                    window.guardandoEnSistemaActivo = false;
+                                    console.log('🔓 Flag liberado - cancelado por tamaño');
+                                }, 1000);
                                 reject({ success: false, error: 'Archivo demasiado grande' });
                                 return;
                             }
@@ -1472,43 +1494,48 @@
                         showStatus('Convirtiendo archivo a Base64...', 'info');
                         const base64Data = await fileToBase64(archivoFile);
                         payload.archivoBase64 = base64Data;
-                        console.log(`Archivo convertido: ${archivoFile.name}, tamaño: ${archivoFile.size} bytes, Base64 length: ${base64Data.length}`);
+                        console.log(`📎 Archivo convertido: ${archivoFile.name}, tamaño: ${archivoFile.size} bytes, Base64 length: ${base64Data.length}`);
                     }
 
                     // Crear callback único
-                    const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
                     // Construir URL
                     const url = new URL(APPS_SCRIPT_URL);
                     url.searchParams.append('callback', callbackName);
 
-                    // IMPORTANTE: Para archivos grandes, necesitamos enviar el payload como string JSON
-                    // porque los parámetros de URL tienen límite de tamaño
+                    // Enviar el payload como string JSON
                     const payloadString = JSON.stringify(payload);
                     url.searchParams.append('payload', payloadString);
 
                     // También agregar campos principales para compatibilidad
                     url.searchParams.append('id', payload.id);
-                    url.searchParams.append('caratula', payload.caratula);
+                    url.searchParams.append('caratula', payload.caratula || '');
                     url.searchParams.append('archivoSubido', payload.archivoSubido);
-                    url.searchParams.append('nombreArchivo', payload.nombreArchivo);
+                    url.searchParams.append('nombreArchivo', payload.nombreArchivo || '');
 
-                    console.log('Enviando payload de tamaño:', payloadString.length, 'caracteres');
+                    console.log('📤 Enviando payload de tamaño:', (payloadString.length / 1024).toFixed(2), 'KB');
 
                     // Crear script
-                    const script = document.createElement('script');
+                    script = document.createElement('script');
                     script.src = url.toString();
 
                     // Definir callback global
                     window[callbackName] = function(response) {
-                        console.log('Respuesta del servidor:', response);
+                        console.log('📥 Respuesta del servidor:', response);
 
                         // Limpiar
                         delete window[callbackName];
-                        if (script.parentNode) {
+                        if (script && script.parentNode) {
                             document.body.removeChild(script);
                         }
-                        clearTimeout(timeoutId);
+                        if (timeoutId) clearTimeout(timeoutId);
+
+                        // Liberar flag después de 3 segundos (para evitar envíos duplicados)
+                        setTimeout(() => {
+                            window.guardandoEnSistemaActivo = false;
+                            console.log('🔓 Flag liberado - operación completada');
+                        }, 3000);
 
                         if (response && response.success) {
                             if (response.archivoInfo) {
@@ -1523,32 +1550,46 @@
                         }
                     };
 
-                    // Timeout más largo para archivos grandes (2 minutos)
-                    const timeoutId = setTimeout(() => {
+                    // Timeout según si hay archivo o no
+                    const timeoutTime = archivoFile ? 120000 : 60000; // 2 min con archivo, 1 min sin archivo
+                    timeoutId = setTimeout(() => {
                         if (window[callbackName]) {
-                            console.error('Timeout - No hubo respuesta');
+                            console.error('⏰ Timeout - No hubo respuesta después de', timeoutTime/1000, 'segundos');
+
+                            // Limpiar
                             delete window[callbackName];
-                            if (script.parentNode) {
+                            if (script && script.parentNode) {
                                 document.body.removeChild(script);
                             }
+
+                            // Liberar flag
+                            window.guardandoEnSistemaActivo = false;
+                            console.log('🔓 Flag liberado - timeout');
+
                             reject({ 
                                 success: false, 
-                                error: 'Tiempo de espera agotado (2 minutos). El archivo puede ser demasiado grande.' 
+                                error: archivoFile ? 
+                                    'Tiempo de espera agotado (2 minutos). El archivo puede ser demasiado grande.' : 
+                                    'Tiempo de espera agotado (1 minuto). Verifique su conexión.' 
                             });
                         }
-                    }, 120000); // 2 minutos
+                    }, timeoutTime);
 
                     // Error handler
                     script.onerror = function(error) {
-                        console.error('Error en script:', error);
+                        console.error('❌ Error en script:', error);
                         clearTimeout(timeoutId);
 
                         if (window[callbackName]) {
                             delete window[callbackName];
                         }
-                        if (script.parentNode) {
+                        if (script && script.parentNode) {
                             document.body.removeChild(script);
                         }
+
+                        // Liberar flag
+                        window.guardandoEnSistemaActivo = false;
+                        console.log('🔓 Flag liberado - error de script');
 
                         reject({ 
                             success: false, 
@@ -1560,7 +1601,12 @@
                     document.body.appendChild(script);
 
                 } catch (error) {
-                    console.error('Error en guardarEnSistema:', error);
+                    console.error('❌ Error en guardarEnSistema:', error);
+
+                    // Liberar flag
+                    window.guardandoEnSistemaActivo = false;
+                    console.log('🔓 Flag liberado - catch error');
+
                     reject({ success: false, error: error.message });
                 }
             });
@@ -1569,43 +1615,79 @@
         // =====================================================
         // FUNCIÓN PRINCIPAL PARA GUARDAR
         // =====================================================
+        let guardandoFallo = false;
+        let preguntandoLimpiar = false;
+
         async function guardarFallo() {
+            // Prevenir múltiples clics
+            if (guardandoFallo) {
+                showStatus('Ya hay un envío en progreso. Espere...', 'warning');
+                return;
+            }
+
             // Validar campos obligatorios
-            let c = document.getElementById('caratula').value;
-            let nc = document.getElementById('numeroCausa').value;
+            let c = document.getElementById('caratula').value.trim();
+            let nc = document.getElementById('numeroCausa').value.trim();
             let f = document.getElementById('fecha').value;
-            
+
             if (!c || !nc || !f) {
                 showStatus('Complete los campos obligatorios: Carátula, Número de causa y Fecha', 'error');
                 return;
             }
-            
+
+            // Marcar como guardando
+            guardandoFallo = true;
+
+            // Deshabilitar botón
+            const btnSubmit = document.querySelector('.btn-submit');
+            const textoOriginal = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            btnSubmit.disabled = true;
+
             showStatus('Enviando datos al servidor...', 'info');
-            
+
             try {
-                // Recopilar TODOS los datos del formulario
+                // Recopilar datos
                 const datosCompletos = recopilarDatosCompletos();
-                
+
                 // Obtener archivo
                 const archivoInput = document.getElementById('archivoFallo');
                 const archivoFile = archivoInput.files.length > 0 ? archivoInput.files[0] : null;
-                
+
                 // Guardar en el sistema
                 const resultado = await guardarEnSistema(datosCompletos, archivoFile);
-                
+
                 if (resultado.success) {
-                    showStatus(`✅ Fallo "${c}" guardado correctamente en el sistema del Instituto`, 'success');
-                    
-                    // Preguntar si quiere limpiar el formulario
-                    setTimeout(() => {
-                        if (confirm('✅ Fallo "${c}" guardado correctamente en el sistema del Instituto ¿Desea cargar otro fallo?')) {
-                            resetForm();
-                        }
-                    }, 2000);
+                    showStatus(`✅ Fallo "${c}" guardado correctamente. ID: ${datosCompletos.id}`, 'success');
+
+                    // Restaurar botón ANTES de preguntar
+                    btnSubmit.innerHTML = textoOriginal;
+                    btnSubmit.disabled = false;
+                    guardandoFallo = false;
+
+                    // Preguntar si quiere limpiar (solo una vez, sin setTimeout)
+                    if (!preguntandoLimpiar) {
+                        preguntandoLimpiar = true;
+                        setTimeout(() => {
+                            if (confirm('¿Desea limpiar el formulario para cargar otro fallo?')) {
+                                resetForm();
+                            }
+                            preguntandoLimpiar = false;
+                        }, 500); // Pequeño delay para no interferir con el mensaje de éxito
+                    }
+                } else {
+                    // Error
+                    showStatus(`❌ Error: ${resultado.error}`, 'error');
+                    btnSubmit.innerHTML = textoOriginal;
+                    btnSubmit.disabled = false;
+                    guardandoFallo = false;
                 }
             } catch (error) {
-                console.error('Error al guardar:', error);
-                showStatus(`❌ Error al guardar: ${error.error || error.message || 'Error desconocido'}`, 'error');
+                console.error('Error:', error);
+                showStatus(`❌ Error: ${error.message || 'Desconocido'}`, 'error');
+                btnSubmit.innerHTML = textoOriginal;
+                btnSubmit.disabled = false;
+                guardandoFallo = false;
             }
         }
         
@@ -2489,39 +2571,44 @@
         }
 
         function resetForm() {
-            if (confirm('¿Confirma limpiar todos los datos del formulario?')) {
+            // Prevenir múltiples resets
+            if (window.reseteandoFormulario) return;
+            window.reseteandoFormulario = true;
+
+            if (confirm('¿Limpiar todo el formulario?')) {
                 document.getElementById('fallosForm').reset();
+
+                // Ocultar todas las secciones condicionales
                 document.querySelectorAll('.conditional-section, .custom-input').forEach(el => { 
                     el.classList.remove('active'); 
                     el.style.display = 'none'; 
                 });
-                document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('active'));
-                document.querySelectorAll('.collapsible-header').forEach(h => h.classList.remove('active'));
-                
+
+                // Resetear específicos
                 document.getElementById('admisibilidadNoContainer').style.display = 'none';
                 document.getElementById('arbitrariedadCuestContainer').style.display = 'none';
                 document.getElementById('normativaSubopcionesContainer').style.display = 'none';
-                document.getElementById('fundamentacionCuestContainer').style.display = 'none';
-                document.getElementById('defectosNormativaCuestContainer').style.display = 'none';
-                document.getElementById('arbitrariedadFacticaCuestContainer').style.display = 'none';
-                document.getElementById('logicaCuestContainer').style.display = 'none';
-                document.getElementById('logicaOtraContainer').style.display = 'none';
-                document.getElementById('otrasCuestContainer').style.display = 'none';
+                document.getElementById('principiosContainer').style.display = 'none';
                 document.getElementById('otrosCuestTextoContainer').style.display = 'none';
                 document.getElementById('materiaPrincipalOtraContainer').style.display = 'none';
-                document.getElementById('principiosContainer').style.display = 'none';
-                
-                // Limpiar ID
+
+                // Limpiar ID y archivo
                 document.getElementById('registroId').value = '';
-                
-                // Limpiar nombre de archivo
                 document.getElementById('archivoNombre').textContent = '';
-                
+
+                // Reactivar secciones
                 deshabilitarSecciones(false);
-                
+
+                // Actualizar resumen
                 actualizarResumen();
+
                 showStatus('Formulario limpiado correctamente', 'success');
             }
+
+            // Liberar flag después de un tiempo
+            setTimeout(() => {
+                window.reseteandoFormulario = false;
+            }, 1000);
         }
 
         // ============ INICIALIZACIÓN ============
