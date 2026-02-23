@@ -1408,7 +1408,7 @@
         // =====================================================
         // CONFIGURACIÓN
         // =====================================================
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzW39ZaT1MWto2r_wRJIL3BF3xAIEWnhlsuGN9WpuLAWUzbdkPcgb6FD6GRZAuGwuPUrQ/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLyo1-dlQ17SCrnXIJ39T_uDZ21QXKtitCokSekmeGsU6md3AKy0ZzzoNturONIKWyIQ/exec';
         
         // =====================================================
         // FUNCIÓN PARA GENERAR ID ÚNICO
@@ -1426,131 +1426,94 @@
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onload = () => {
+                    // Eliminar el prefijo (ej: "data:application/pdf;base64,")
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
                 reader.onerror = error => reject(error);
             });
         }
 
         // =====================================================
-        // FUNCIÓN PARA GUARDAR EN APPS SCRIPT (JSONP)
+        // FUNCIÓN PARA GUARDAR EN APPS SCRIPT (JSONP con archivo)
         // =====================================================
-        function guardarEnSistema(datos, archivoFile) {
-            return new Promise((resolve, reject) => {
+        async function guardarEnSistema(datos, archivoFile) {
+            return new Promise(async (resolve, reject) => {
                 try {
-                    // Mostrar advertencia si hay archivo
-                    if (archivoFile) {
-                        showStatus('⚠️ La carga de archivos requiere configuración adicional en Apps Script. Por ahora, solo se guardarán los datos.', 'warning');
-                    }
-                    
+                    // Mostrar progreso
+                    showStatus('Preparando datos para enviar...', 'info');
+
                     // Generar ID si no existe
                     if (!datos.id) {
                         datos.id = generarIdUnico();
                         document.getElementById('registroId').value = datos.id;
                     }
-                    
+
+                    // Crear objeto con todos los datos
+                    const payload = {
+                        ...datos,
+                        archivoSubido: archivoFile ? 'SI' : 'NO',
+                        nombreArchivo: archivoFile ? archivoFile.name : '',
+                        tipoArchivo: archivoFile ? archivoFile.type : '',
+                        tamañoArchivo: archivoFile ? archivoFile.size : 0
+                    };
+
+                    // Si hay archivo, convertirlo a Base64
+                    if (archivoFile) {
+                        // Validar tamaño (10MB máximo para URL, pero podemos manejar más)
+                        if (archivoFile.size > 10 * 1024 * 1024) {
+                            if (!confirm('El archivo es mayor a 10MB. ¿Continuar de todos modos? Puede haber problemas de timeout.')) {
+                                reject({ success: false, error: 'Archivo demasiado grande' });
+                                return;
+                            }
+                        }
+
+                        showStatus('Convirtiendo archivo a Base64...', 'info');
+                        const base64Data = await fileToBase64(archivoFile);
+                        payload.archivoBase64 = base64Data;
+                        console.log(`Archivo convertido: ${archivoFile.name}, tamaño: ${archivoFile.size} bytes, Base64 length: ${base64Data.length}`);
+                    }
+
                     // Crear callback único
                     const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                    
+
                     // Construir URL
                     const url = new URL(APPS_SCRIPT_URL);
-                    
-                    // Agregar callback
                     url.searchParams.append('callback', callbackName);
-                    
-                    // AGREGAR TODOS LOS CAMPOS DEL FORMULARIO
-                    // ID y metadata
-                    url.searchParams.append('id', datos.id || '');
-                    url.searchParams.append('fechaCarga', new Date().toISOString().split('T')[0]);
-                    url.searchParams.append('timestamp', new Date().toISOString());
-                    url.searchParams.append('fechaRegistro', new Date().toLocaleString('es-AR'));
-                    
-                    // Sección 1
-                    url.searchParams.append('caratula', datos.caratula || '');
-                    url.searchParams.append('numeroCausa', datos.numeroCausa || '');
-                    url.searchParams.append('fallos', datos.fallos || '');
-                    url.searchParams.append('fechaFallo', datos.fecha || '');
-                    
-                    // Sección 2
-                    url.searchParams.append('integracionTribunal', datos.integracion || '');
-                    url.searchParams.append('voto', datos.voto || '');
-                    url.searchParams.append('detalleDisidencias', datos.detalleDisidencias || '');
-                    url.searchParams.append('admisibilidad', datos.admisibilidad || '');
-                    url.searchParams.append('motivoInadmisible', datos.motivoInadmisible || '');
-                    url.searchParams.append('argumentoCorte', datos.argumentoCorte || '');
-                    
-                    // Sección 3
-                    url.searchParams.append('materiaPrincipal', datos.materiaPrincipal || '');
-                    url.searchParams.append('subtema', datos.subtema || '');
-                    
-                    // Sección 4 - Cuestiones Federales
-                    const cuestionesFederales = Array.isArray(datos.cuestionesFederales) ? datos.cuestionesFederales.join('; ') : (datos.cuestionesFederales || '');
-                    url.searchParams.append('cuestionesFederales', cuestionesFederales);
-                    
-                    const tipoArbitrariedad = Array.isArray(datos.arbitrariedadCausales) ? datos.arbitrariedadCausales.join('; ') : '';
-                    url.searchParams.append('tipoArbitrariedad', tipoArbitrariedad);
-                    
-                    // Sección 5
-                    const tipoDesacuerdo = Array.isArray(datos.desacuerdos) ? datos.desacuerdos.join('; ') : (datos.tipoDesacuerdo || '');
-                    url.searchParams.append('tipoDesacuerdo', tipoDesacuerdo);
-                    
-                    // Sección 6
-                    const problemaJuridico = Array.isArray(datos.problemas) ? datos.problemas.join('; ') : (datos.problemaJuridico || '');
-                    url.searchParams.append('problemaJuridico', problemaJuridico);
-                    url.searchParams.append('rolPrueba', datos.rolPrueba || '');
-                    
-                    const tipoInferencias = Array.isArray(datos.tipoInferencias) ? datos.tipoInferencias.join('; ') : '';
-                    url.searchParams.append('tipoInferencias', tipoInferencias);
-                    
-                    // Sección 7
-                    const metodoInterpretativo = Array.isArray(datos.metodoInterpretativo) ? datos.metodoInterpretativo.join('; ') : '';
-                    url.searchParams.append('metodoInterpretativo', metodoInterpretativo);
-                    
-                    // Sección 8
-                    url.searchParams.append('colisionPrincipios', datos.colisionPrincipios || '');
-                    url.searchParams.append('principioA', datos.principioA || '');
-                    url.searchParams.append('principioB', datos.principioB || '');
-                    
-                    const estructuraPonderacion = Array.isArray(datos.estructuraPonderacion) ? datos.estructuraPonderacion.join('; ') : '';
-                    url.searchParams.append('estructuraPonderacion', estructuraPonderacion);
-                    
-                    const tipoRazonamiento = Array.isArray(datos.tipoRazonamiento) ? datos.tipoRazonamiento.join('; ') : '';
-                    url.searchParams.append('tipoRazonamiento', tipoRazonamiento);
-                    
-                    // Sección 9
-                    const erroresSilogismo = Array.isArray(datos.erroresSilogismo) ? datos.erroresSilogismo.join('; ') : '';
-                    url.searchParams.append('erroresSilogismo', erroresSilogismo);
-                    
-                    const argumentosAtinencia = Array.isArray(datos.argumentosAtinencia) ? datos.argumentosAtinencia.join('; ') : '';
-                    url.searchParams.append('argumentosAtinencia', argumentosAtinencia);
-                    
-                    const argumentosAmbiguedad = Array.isArray(datos.argumentosAmbiguedad) ? datos.argumentosAmbiguedad.join('; ') : '';
-                    url.searchParams.append('argumentosAmbiguedad', argumentosAmbiguedad);
-                    
-                    // Sección 10
-                    url.searchParams.append('observaciones', datos.observaciones || '');
-                    
-                    // Información del archivo
-                    url.searchParams.append('archivoSubido', archivoFile ? 'SI' : 'NO');
-                    url.searchParams.append('nombreArchivo', archivoFile ? archivoFile.name : '');
-                    
-                    console.log('Enviando datos...', Object.fromEntries(url.searchParams));
-                    
+
+                    // IMPORTANTE: Para archivos grandes, necesitamos enviar el payload como string JSON
+                    // porque los parámetros de URL tienen límite de tamaño
+                    const payloadString = JSON.stringify(payload);
+                    url.searchParams.append('payload', payloadString);
+
+                    // También agregar campos principales para compatibilidad
+                    url.searchParams.append('id', payload.id);
+                    url.searchParams.append('caratula', payload.caratula);
+                    url.searchParams.append('archivoSubido', payload.archivoSubido);
+                    url.searchParams.append('nombreArchivo', payload.nombreArchivo);
+
+                    console.log('Enviando payload de tamaño:', payloadString.length, 'caracteres');
+
                     // Crear script
                     const script = document.createElement('script');
                     script.src = url.toString();
-                    
+
                     // Definir callback global
                     window[callbackName] = function(response) {
                         console.log('Respuesta del servidor:', response);
-                        
+
                         // Limpiar
                         delete window[callbackName];
                         if (script.parentNode) {
                             document.body.removeChild(script);
                         }
                         clearTimeout(timeoutId);
-                        
+
                         if (response && response.success) {
+                            if (response.archivoInfo) {
+                                showStatus(`✅ Archivo guardado: ${response.archivoInfo.nombre}`, 'success');
+                            }
                             resolve({ success: true, data: response });
                         } else {
                             reject({ 
@@ -1559,8 +1522,8 @@
                             });
                         }
                     };
-                    
-                    // Timeout
+
+                    // Timeout más largo para archivos grandes (2 minutos)
                     const timeoutId = setTimeout(() => {
                         if (window[callbackName]) {
                             console.error('Timeout - No hubo respuesta');
@@ -1570,32 +1533,32 @@
                             }
                             reject({ 
                                 success: false, 
-                                error: 'Tiempo de espera agotado. Verifica la conexión.' 
+                                error: 'Tiempo de espera agotado (2 minutos). El archivo puede ser demasiado grande.' 
                             });
                         }
-                    }, 30000);
-                    
+                    }, 120000); // 2 minutos
+
                     // Error handler
                     script.onerror = function(error) {
                         console.error('Error en script:', error);
                         clearTimeout(timeoutId);
-                        
+
                         if (window[callbackName]) {
                             delete window[callbackName];
                         }
                         if (script.parentNode) {
                             document.body.removeChild(script);
                         }
-                        
+
                         reject({ 
                             success: false, 
                             error: 'Error de conexión con el servidor' 
                         });
                     };
-                    
+
                     // Agregar al DOM
                     document.body.appendChild(script);
-                    
+
                 } catch (error) {
                     console.error('Error en guardarEnSistema:', error);
                     reject({ success: false, error: error.message });
@@ -1635,7 +1598,7 @@
                     
                     // Preguntar si quiere limpiar el formulario
                     setTimeout(() => {
-                        if (confirm('¿Desea limpiar el formulario para cargar otro fallo?')) {
+                        if (confirm('✅ Fallo "${c}" guardado correctamente en el sistema del Instituto ¿Desea cargar otro fallo?')) {
                             resetForm();
                         }
                     }, 2000);
@@ -2526,7 +2489,7 @@
         }
 
         function resetForm() {
-            if (confirm('¿Limpiar todo el formulario?')) {
+            if (confirm('¿Confirma limpiar todos los datos del formulario?')) {
                 document.getElementById('fallosForm').reset();
                 document.querySelectorAll('.conditional-section, .custom-input').forEach(el => { 
                     el.classList.remove('active'); 
