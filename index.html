@@ -1408,7 +1408,7 @@
         // =====================================================
         // CONFIGURACIÓN
         // =====================================================
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw6Nupcs_9ELEuDUSZQlv2t6MfS4WR_oL7u0c3VbCIX8zPSGqmrs4npzMVtQgYlLl6tIg/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyzZyGR9ZBb2YRMlMwmYa9DHYYwHVct8PMih50L0qWsxpx6m8VQuh8rD8O3qzB7cUqWuw/exec';
         
         // =====================================================
         // FUNCIÓN PARA GENERAR ID ÚNICO
@@ -1436,205 +1436,263 @@
         }
 
         // =====================================================
-        // FUNCIÓN PARA GUARDAR EN APPS SCRIPT (JSONP - CON ARCHIVO)
+        // FUNCIÓN PARA GUARDAR EN APPS SCRIPT (HÍBRIDA)
         // =====================================================
         async function guardarEnSistema(datos, archivoFile) {
-            // Prevenir múltiples llamadas simultáneas
+            // Prevenir múltiples llamadas
             if (window.guardandoEnSistemaActivo) {
-                console.log('🚫 Llamada a guardarEnSistema ignorada - ya hay una activa');
-                showStatus('Ya hay un envío en progreso. Espere por favor...', 'warning');
+                showStatus('Ya hay un envío en progreso...', 'warning');
                 return { success: false, error: 'Operación en progreso' };
             }
 
-            // Marcar como activo
             window.guardandoEnSistemaActivo = true;
-            console.log('🔒 Iniciando guardarEnSistema - flag activado');
+            console.log('🔒 Iniciando guardarEnSistema');
 
-            return new Promise(async (resolve, reject) => {
+            try {
+                // Generar ID si no existe
+                if (!datos.id) {
+                    datos.id = generarIdUnico();
+                    document.getElementById('registroId').value = datos.id;
+                    console.log('🆔 ID generado:', datos.id);
+                }
+
+                // Si HAY archivo, usar FETCH (soporta archivos grandes)
+                if (archivoFile) {
+                    console.log('📤 Usando FETCH para archivo');
+                    return await guardarConFetch(datos, archivoFile);
+                } 
+                // Si NO hay archivo, usar JSONP (más rápido)
+                else {
+                    console.log('📤 Usando JSONP sin archivo');
+                    return await guardarConJSONP(datos);
+                }
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                showStatus(`❌ Error: ${error.message}`, 'error');
+                return { success: false, error: error.message };
+            } finally {
+                setTimeout(() => {
+                    window.guardandoEnSistemaActivo = false;
+                    console.log('🔓 Flag liberado');
+                }, 3000);
+            }
+        }
+        
+        // =====================================================
+        // GUARDAR CON FETCH (con TODOS los datos + archivo)
+        // =====================================================
+        async function guardarConFetch(datos, archivoFile) {
+            showStatus('Preparando archivo...', 'info');
+
+            // Crear FormData
+            const formData = new FormData();
+
+            // Agregar TODOS los datos como string JSON completo
+            formData.append('payload', JSON.stringify(datos));
+
+            // También agregar campos individuales por si acaso
+            formData.append('id', datos.id);
+            formData.append('caratula', datos.caratula || '');
+            formData.append('timestamp', new Date().toISOString());
+
+            // Agregar el archivo
+            formData.append('archivo', archivoFile);
+            formData.append('nombreArchivo', archivoFile.name);
+            formData.append('archivoSubido', 'SI');
+
+            showStatus('Enviando archivo al servidor...', 'info');
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('📥 Respuesta fetch:', result);
+
+                if (result.success) {
+                    if (result.archivoInfo) {
+                        showStatus(`✅ Archivo guardado en Drive`, 'success');
+                    }
+                    return { success: true, data: result };
+                } else {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+
+            } catch (error) {
+                console.error('❌ Error en fetch:', error);
+                throw error;
+            }
+        }
+        
+        // =====================================================
+        // GUARDAR CON JSONP (con TODOS los datos del formulario)
+        // =====================================================
+        function guardarConJSONP(datos) {
+            return new Promise((resolve, reject) => {
                 let timeoutId = null;
                 let script = null;
-                let callbackName = null;
+                const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
                 try {
-                    // Mostrar progreso
-                    showStatus('Preparando datos para enviar...', 'info');
-
-                    // Generar ID si no existe
-                    if (!datos.id) {
-                        datos.id = generarIdUnico();
-                        document.getElementById('registroId').value = datos.id;
-                        console.log('🆔 ID generado:', datos.id);
-                    }
-
-                    // Crear objeto base con todos los datos
-                    const payload = {
-                        ...datos,
-                        archivoSubido: archivoFile ? 'SI' : 'NO',
-                        nombreArchivo: archivoFile ? archivoFile.name : '',
-                        tipoArchivo: archivoFile ? archivoFile.type : '',
-                        tamañoArchivo: archivoFile ? archivoFile.size : 0,
-                        timestamp: new Date().toISOString()
-                    };
-
-                    // 🔴 IMPORTANTE: Si hay archivo, convertirlo a Base64 y agregarlo al payload
-                    if (archivoFile) {
-                        showStatus('Convirtiendo archivo a Base64...', 'info');
-
-                        // Validar tamaño (el límite de URL es ~2000 caracteres, Base64 aumenta el tamaño)
-                        // Para archivos pequeños funciona, para grandes necesitarías otra estrategia
-                        if (archivoFile.size > 100 * 1024) { // 100KB máximo para JSONP
-                            showStatus('⚠️ El archivo es muy grande para JSONP. Se guardarán solo los datos.', 'warning');
-                            console.log('Archivo demasiado grande para JSONP, omitiendo contenido');
-                        } else {
-                            const base64Data = await fileToBase64(archivoFile);
-                            payload.archivoBase64 = base64Data; // ← ESTO ES LO QUE FALTABA
-                            console.log(`📎 Archivo convertido: ${archivoFile.name}, Base64 length: ${base64Data.length}`);
-                        }
-                    }
-
-                    // Crear callback único
-                    callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    showStatus('Enviando datos...', 'info');
 
                     // Construir URL
                     const url = new URL(APPS_SCRIPT_URL);
                     url.searchParams.append('callback', callbackName);
 
-                    // AGREGAR TODOS LOS CAMPOS COMO PARÁMETROS INDIVIDUALES
-                    url.searchParams.append('id', payload.id);
-                    url.searchParams.append('caratula', payload.caratula || '');
-                    url.searchParams.append('numeroCausa', payload.numeroCausa || '');
-                    url.searchParams.append('fallos', payload.fallos || '');
-                    url.searchParams.append('fecha', payload.fecha || '');
-                    url.searchParams.append('integracion', payload.integracion || '');
-                    url.searchParams.append('voto', payload.voto || '');
-                    url.searchParams.append('detalleDisidencias', payload.detalleDisidencias || '');
-                    url.searchParams.append('admisibilidad', payload.admisibilidad || '');
-                    url.searchParams.append('motivoInadmisible', payload.motivoInadmisible || '');
-                    url.searchParams.append('argumentoCorte', payload.argumentoCorte || '');
-                    url.searchParams.append('materiaPrincipal', payload.materiaPrincipal || '');
-                    url.searchParams.append('subtema', payload.subtema || '');
+                    // ===== AGREGAR TODOS LOS CAMPOS DEL FORMULARIO =====
+                    // ID y metadata
+                    url.searchParams.append('id', datos.id || '');
+                    url.searchParams.append('timestamp', new Date().toISOString());
+                    url.searchParams.append('archivoSubido', 'NO');
 
-                    // Arrays como strings
-                    if (Array.isArray(payload.cuestionesFederales)) {
-                        url.searchParams.append('cuestionesFederales', payload.cuestionesFederales.join('; '));
+                    // Sección 1 - Identificación
+                    url.searchParams.append('caratula', datos.caratula || '');
+                    url.searchParams.append('numeroCausa', datos.numeroCausa || '');
+                    url.searchParams.append('fallos', datos.fallos || '');
+                    url.searchParams.append('fecha', datos.fecha || '');
+
+                    // Sección 2 - Composición del Tribunal
+                    url.searchParams.append('integracion', datos.integracion || '');
+                    url.searchParams.append('voto', datos.voto || '');
+                    url.searchParams.append('detalleDisidencias', datos.detalleDisidencias || '');
+                    url.searchParams.append('admisibilidad', datos.admisibilidad || '');
+                    url.searchParams.append('motivoInadmisible', datos.motivoInadmisible || '');
+                    url.searchParams.append('argumentoCorte', datos.argumentoCorte || '');
+
+                    // Sección 3 - Tema jurídico
+                    url.searchParams.append('materiaPrincipal', datos.materiaPrincipal || '');
+                    url.searchParams.append('subtema', datos.subtema || '');
+
+                    // Sección 4 - Cuestión federal - Arrays como strings
+                    if (Array.isArray(datos.cuestionesFederales)) {
+                        url.searchParams.append('cuestionesFederales', datos.cuestionesFederales.join('; '));
                     } else {
-                        url.searchParams.append('cuestionesFederales', payload.cuestionesFederales || '');
+                        url.searchParams.append('cuestionesFederales', datos.cuestionesFederales || '');
                     }
 
-                    url.searchParams.append('tipoDesacuerdo', payload.tipoDesacuerdo || '');
-                    url.searchParams.append('problemaJuridico', payload.problemaJuridico || '');
-                    url.searchParams.append('rolPrueba', payload.rolPrueba || '');
-                    url.searchParams.append('tipoInferencias', payload.tipoInferencias || '');
-                    url.searchParams.append('metodoInterpretativo', payload.metodoInterpretativo || '');
-                    url.searchParams.append('colisionPrincipios', payload.colisionPrincipios || '');
-                    url.searchParams.append('principioA', payload.principioA || '');
-                    url.searchParams.append('principioB', payload.principioB || '');
-                    url.searchParams.append('estructuraPonderacion', payload.estructuraPonderacion || '');
-                    url.searchParams.append('tipoRazonamiento', payload.tipoRazonamiento || '');
-                    url.searchParams.append('erroresSilogismo', payload.erroresSilogismo || '');
-                    url.searchParams.append('argumentosAtinencia', payload.argumentosAtinencia || '');
-                    url.searchParams.append('argumentosAmbiguedad', payload.argumentosAmbiguedad || '');
-                    url.searchParams.append('observaciones', payload.observaciones || '');
-                    url.searchParams.append('archivoSubido', payload.archivoSubido);
-                    url.searchParams.append('nombreArchivo', payload.nombreArchivo);
-                    url.searchParams.append('timestamp', payload.timestamp);
-
-                    // 🔴 IMPORTANTE: Si hay archivoBase64, agregarlo a la URL
-                    if (payload.archivoBase64) {
-                        url.searchParams.append('archivoBase64', payload.archivoBase64);
-                        url.searchParams.append('tipoArchivo', payload.tipoArchivo);
+                    if (Array.isArray(datos.arbitrariedadCausales)) {
+                        url.searchParams.append('tipoArbitrariedad', datos.arbitrariedadCausales.join('; '));
                     }
 
-                    console.log('📤 Enviando JSONP a:', url.toString().substring(0, 200) + '...');
-                    console.log('📤 Tamaño total URL:', url.toString().length, 'caracteres');
+                    // Sección 5 - Tipo de desacuerdo
+                    url.searchParams.append('tipoDesacuerdo', datos.tipoDesacuerdo || '');
 
-                    // Verificar límite de URL (aprox 2000 caracteres)
+                    // Sección 6 - Problema jurídico
+                    url.searchParams.append('problemaJuridico', datos.problemaJuridico || '');
+                    url.searchParams.append('rolPrueba', datos.rolPrueba || '');
+                    if (Array.isArray(datos.tipoInferencias)) {
+                        url.searchParams.append('tipoInferencias', datos.tipoInferencias.join('; '));
+                    } else {
+                        url.searchParams.append('tipoInferencias', datos.tipoInferencias || '');
+                    }
+
+                    // Sección 7 - Método interpretativo
+                    if (Array.isArray(datos.metodoInterpretativo)) {
+                        url.searchParams.append('metodoInterpretativo', datos.metodoInterpretativo.join('; '));
+                    } else {
+                        url.searchParams.append('metodoInterpretativo', datos.metodoInterpretativo || '');
+                    }
+
+                    // Sección 8 - Ponderación
+                    url.searchParams.append('colisionPrincipios', datos.colisionPrincipios || '');
+                    url.searchParams.append('principioA', datos.principioA || '');
+                    url.searchParams.append('principioB', datos.principioB || '');
+
+                    if (Array.isArray(datos.estructuraPonderacion)) {
+                        url.searchParams.append('estructuraPonderacion', datos.estructuraPonderacion.join('; '));
+                    } else {
+                        url.searchParams.append('estructuraPonderacion', datos.estructuraPonderacion || '');
+                    }
+
+                    if (Array.isArray(datos.tipoRazonamiento)) {
+                        url.searchParams.append('tipoRazonamiento', datos.tipoRazonamiento.join('; '));
+                    } else {
+                        url.searchParams.append('tipoRazonamiento', datos.tipoRazonamiento || '');
+                    }
+
+                    // Sección 9 - Errores
+                    if (Array.isArray(datos.erroresSilogismo)) {
+                        url.searchParams.append('erroresSilogismo', datos.erroresSilogismo.join('; '));
+                    } else {
+                        url.searchParams.append('erroresSilogismo', datos.erroresSilogismo || '');
+                    }
+
+                    if (Array.isArray(datos.argumentosAtinencia)) {
+                        url.searchParams.append('argumentosAtinencia', datos.argumentosAtinencia.join('; '));
+                    } else {
+                        url.searchParams.append('argumentosAtinencia', datos.argumentosAtinencia || '');
+                    }
+
+                    if (Array.isArray(datos.argumentosAmbiguedad)) {
+                        url.searchParams.append('argumentosAmbiguedad', datos.argumentosAmbiguedad.join('; '));
+                    } else {
+                        url.searchParams.append('argumentosAmbiguedad', datos.argumentosAmbiguedad || '');
+                    }
+
+                    // Sección 10 - Observaciones
+                    url.searchParams.append('observaciones', datos.observaciones || '');
+
+                    console.log('📤 JSONP URL completa, longitud:', url.toString().length, 'caracteres');
+
+                    // Verificar límite de URL
                     if (url.toString().length > 2000) {
-                        console.warn('⚠️ La URL es muy larga, podría fallar');
-                        showStatus('⚠️ La URL es muy larga, el archivo podría no enviarse', 'warning');
+                        console.warn('⚠️ La URL es muy larga (' + url.toString().length + ' caracteres). Puede fallar.');
+                        showStatus('⚠️ La URL es muy larga. Algunos datos podrían no enviarse.', 'warning');
                     }
 
                     // Crear script
                     script = document.createElement('script');
                     script.src = url.toString();
 
-                    // Definir callback global
+                    // Definir callback
                     window[callbackName] = function(response) {
-                        console.log('📥 Respuesta del servidor:', response);
+                        console.log('📥 Respuesta JSONP:', response);
 
-                        // Limpiar
                         delete window[callbackName];
-                        if (script && script.parentNode) {
-                            document.body.removeChild(script);
-                        }
-                        if (timeoutId) clearTimeout(timeoutId);
+                        if (script.parentNode) document.body.removeChild(script);
+                        clearTimeout(timeoutId);
 
-                        // Liberar flag
-                        setTimeout(() => {
-                            window.guardandoEnSistemaActivo = false;
-                            console.log('🔓 Flag liberado');
-                        }, 3000);
-
-                        if (response && response.success) {
-                            if (response.archivoInfo) {
-                                showStatus(`✅ Archivo guardado en Drive`, 'success');
-                            }
+                        if (response?.success) {
                             resolve({ success: true, data: response });
                         } else {
-                            reject({ 
-                                success: false, 
-                                error: response?.error || 'Error en la respuesta del servidor' 
-                            });
+                            reject({ success: false, error: response?.error || 'Error en respuesta' });
                         }
                     };
 
                     // Timeout
                     timeoutId = setTimeout(() => {
                         if (window[callbackName]) {
-                            console.error('⏰ Timeout - No hubo respuesta');
                             delete window[callbackName];
-                            if (script && script.parentNode) {
-                                document.body.removeChild(script);
-                            }
-                            window.guardandoEnSistemaActivo = false;
-                            reject({ 
-                                success: false, 
-                                error: 'Tiempo de espera agotado' 
-                            });
+                            if (script.parentNode) document.body.removeChild(script);
+                            reject({ success: false, error: 'Timeout - El servidor no respondió' });
                         }
-                    }, 60000); // 60 segundos para archivos
+                    }, 30000);
 
                     // Error handler
-                    script.onerror = function(error) {
-                        console.error('❌ Error en script:', error);
+                    script.onerror = function() {
                         clearTimeout(timeoutId);
-
-                        if (window[callbackName]) {
-                            delete window[callbackName];
-                        }
-                        if (script && script.parentNode) {
-                            document.body.removeChild(script);
-                        }
-
-                        window.guardandoEnSistemaActivo = false;
-                        reject({ 
-                            success: false, 
-                            error: 'Error de conexión con el servidor. Verifica la URL del script.' 
-                        });
+                        delete window[callbackName];
+                        if (script.parentNode) document.body.removeChild(script);
+                        reject({ success: false, error: 'Error de conexión' });
                     };
 
-                    // Agregar al DOM
                     document.body.appendChild(script);
-                    console.log('✅ Script JSONP agregado al DOM');
 
                 } catch (error) {
-                    console.error('❌ Error en guardarEnSistema:', error);
-                    window.guardandoEnSistemaActivo = false;
+                    console.error('Error en JSONP:', error);
                     reject({ success: false, error: error.message });
                 }
             });
         }
-        
+
         // =====================================================
         // FUNCIÓN PRINCIPAL PARA GUARDAR
         // =====================================================
