@@ -1743,9 +1743,14 @@
                 // Recopilar datos
                 const datosCompletos = recopilarDatosCompletos();
 
-                // Obtener archivo
+                // Obtener archivo (si existe el elemento)
                 const archivoInput = document.getElementById('archivoFallo');
-                const archivoFile = archivoInput.files.length > 0 ? archivoInput.files[0] : null;
+                let archivoFile = null;
+                if (archivoInput) {
+                    archivoFile = archivoInput.files.length > 0 ? archivoInput.files[0] : null;
+                } else {
+                    console.log('📁 Campo de archivo no disponible (comentado)');
+                }
 
                 // Guardar en el sistema
                 const resultado = await guardarEnSistema(datosCompletos, archivoFile);
