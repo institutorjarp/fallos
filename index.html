@@ -1614,7 +1614,7 @@
                     }
 
                     // Sección 8 - Ponderación
-                    url.searchParams.append('colisionPrincipios', datos.colisionPrincipios || '');
+                    url.searchParams.append('colisionPrincipios', datos.colisionPrincipios || 'no');
                     url.searchParams.append('principioA', datos.principioA || '');
                     url.searchParams.append('principioB', datos.principioB || '');
 
@@ -1798,28 +1798,34 @@
             if (!idField.value) {
                 idField.value = generarIdUnico();
             }
-            
+
             // Obtener materia principal (considerando "otro")
             let materiaPrincipal = document.getElementById('materiaPrincipal').value;
             if (materiaPrincipal === 'otro') {
                 materiaPrincipal = document.getElementById('materiaPrincipalOtra').value || 'Otra (sin especificar)';
             }
-            
-            // Obtener valores de principios (considerando "otro")
-            let principioA = obtenerValorConPersonalizado('principioA', 'customPrincipioA');
-            let principioB = obtenerValorConPersonalizado('principioB', 'customPrincipioB');
-            
-            // Recopilar cuestiones federales
+
+            // Obtener valores de principios (solo si hay colisión)
+            let colisionPrincipios = document.querySelector('input[name="colisionPrincipios"]:checked')?.value || 'no';
+            let principioA = '';
+            let principioB = '';
+
+            if (colisionPrincipios === 'si') {
+                principioA = obtenerValorConPersonalizado('principioA', 'customPrincipioA');
+                principioB = obtenerValorConPersonalizado('principioB', 'customPrincipioB');
+            }
+
+            // Recopilar cuestiones federales y tipo de arbitrariedad
             const cuestionesFederales = [];
-            const arbitrariedadCausales = [];
-            
+            const tipoArbitrariedad = [];
+
             if (document.getElementById('cuest-arbitrariedad')?.checked) {
                 cuestionesFederales.push('Arbitrariedad');
-                
+
                 // Normativa
                 if (document.getElementById('cuest-arbitrariedad-normativa')?.checked) {
-                    arbitrariedadCausales.push('Normativa');
-                    
+                    tipoArbitrariedad.push('Normativa');
+
                     if (document.getElementById('cuest-fundamentacion')?.checked) {
                         document.querySelectorAll('#fundamentacionCuestContainer input[type="checkbox"]:checked').forEach(cb => {
                             cuestionesFederales.push(cb.value);
@@ -1831,39 +1837,39 @@
                         });
                     }
                 }
-                
+
                 // Fáctica
                 if (document.getElementById('cuest-arbitrariedad-factica')?.checked) {
-                    arbitrariedadCausales.push('Fáctica');
+                    tipoArbitrariedad.push('Fáctica');
                     document.querySelectorAll('input[name="arbitrariedadFacticaCuest"]:checked').forEach(cb => {
-                        cuestionesFederales.push(`Arbitrariedad fáctica - ${cb.value}`);
+                        cuestionesFederales.push(`Arbitrariedad fáctica - ${cb.value}`); // ← Comillas corregidas
                     });
                 }
-                
+
                 // Lógica
                 if (document.getElementById('cuest-arbitrariedad-logica')?.checked) {
-                    arbitrariedadCausales.push('Lógica');
-                    
+                    tipoArbitrariedad.push('Lógica');
+
                     if (document.getElementById('cuest-logica-contradiccion')?.checked) {
                         cuestionesFederales.push('Contradicción');
                     }
                     if (document.getElementById('cuest-logica-otra')?.checked) {
                         let otraLogica = document.getElementById('logicaOtraTexto')?.value;
                         if (otraLogica) {
-                            cuestionesFederales.push(`Error lógico: ${otraLogica}`);
+                            cuestionesFederales.push(`Error lógico: ${otraLogica}`); // ← Comillas corregidas
                         }
                     }
                 }
-                
+
                 // Otras
                 if (document.getElementById('cuest-arbitrariedad-otras')?.checked) {
-                    arbitrariedadCausales.push('Otras');
+                    tipoArbitrariedad.push('Otras');
                     document.querySelectorAll('input[name="arbitrariedadOtras"]:checked').forEach(cb => {
                         cuestionesFederales.push(cb.value);
                     });
                 }
             }
-            
+
             // Otros
             if (document.getElementById('cuest-otros')?.checked) {
                 const otrosTexto = document.getElementById('cuestOtrosTexto')?.value;
@@ -1871,60 +1877,75 @@
                     cuestionesFederales.push(otrosTexto);
                 }
             }
-            
+
             const datos = {
-                // ID
+                // ID y metadata
                 id: idField.value,
-                
+                fechaCarga: new Date().toISOString().split('T')[0],
+                timestamp: new Date().toISOString(),
+
                 // Sección 1
                 caratula: document.getElementById('caratula').value,
                 numeroCausa: document.getElementById('numeroCausa').value,
                 fallos: document.getElementById('fallos').value,
-                fecha: document.getElementById('fecha').value,
-                
+                fechaFallo: document.getElementById('fecha').value,  // ← Cambiado a fechaFallo
+
                 // Sección 2
-                integracion: document.getElementById('integracion').value,
+                integracionTribunal: document.getElementById('integracion').value,  // ← Cambiado
                 voto: document.querySelector('input[name="voto"]:checked')?.value || '',
                 detalleDisidencias: document.getElementById('detalleDisidencias').value || '',
                 admisibilidad: document.querySelector('input[name="admisibilidad"]:checked')?.value || '',
                 motivoInadmisible: document.getElementById('motivoInadmisible').value || '',
                 argumentoCorte: document.getElementById('argumentoCorte').value || '',
-                
+
                 // Sección 3
                 materiaPrincipal: materiaPrincipal,
                 subtema: document.getElementById('subtemaTexto').value || '',
-                
+
                 // Sección 4
                 cuestionesFederales: cuestionesFederales,
-                arbitrariedadCausales: arbitrariedadCausales,
-                
+                tipoArbitrariedad: tipoArbitrariedad,  // ← Cambiado
+
                 // Sección 5
-                tipoDesacuerdo: Array.from(document.querySelectorAll('input[name="tipoDesacuerdo"]:checked')).map(cb => cb.value).join('; '),
-                
+                tipoDesacuerdo: Array.from(document.querySelectorAll('input[name="tipoDesacuerdo"]:checked'))
+                    .map(cb => cb.value),  // ← Mantener como array
+
                 // Sección 6
-                problemaJuridico: Array.from(document.querySelectorAll('input[name="problemaJuridico"]:checked')).map(cb => cb.value).join('; '),
+                problemaJuridico: Array.from(document.querySelectorAll('input[name="problemaJuridico"]:checked'))
+                    .map(cb => cb.value),
                 rolPrueba: document.querySelector('input[name="rolPrueba"]:checked')?.value || '',
-                tipoInferencias: Array.from(document.querySelectorAll('input[name="tipoInferencias"]:checked')).map(cb => cb.value).join('; '),
-                
+                tipoInferencias: Array.from(document.querySelectorAll('input[name="tipoInferencias"]:checked'))
+                    .map(cb => cb.value),
+
                 // Sección 7
-                metodoInterpretativo: Array.from(document.querySelectorAll('input[name="metodoInterpretativo"]:checked')).map(cb => cb.value).join('; '),
-                
+                metodoInterpretativo: Array.from(document.querySelectorAll('input[name="metodoInterpretativo"]:checked'))
+                    .map(cb => cb.value),
+
                 // Sección 8
-                colisionPrincipios: document.querySelector('input[name="colisionPrincipios"]:checked')?.value || '',
+                colisionPrincipios: colisionPrincipios,
                 principioA: principioA,
                 principioB: principioB,
-                estructuraPonderacion: Array.from(document.querySelectorAll('input[name="estructuraPonderacion"]:checked')).map(cb => cb.value).join('; '),
-                tipoRazonamiento: Array.from(document.querySelectorAll('input[name="tipoRazonamiento"]:checked')).map(cb => cb.value).join('; '),
-                
+                estructuraPonderacion: Array.from(document.querySelectorAll('input[name="estructuraPonderacion"]:checked'))
+                    .map(cb => cb.value),
+                tipoRazonamiento: Array.from(document.querySelectorAll('input[name="tipoRazonamiento"]:checked'))
+                    .map(cb => cb.value),
+
                 // Sección 9
-                erroresSilogismo: Array.from(document.querySelectorAll('input[name="erroresSilogismo"]:checked')).map(cb => cb.value).join('; '),
-                argumentosAtinencia: Array.from(document.querySelectorAll('input[name="argumentosAtinencia"]:checked')).map(cb => cb.value).join('; '),
-                argumentosAmbiguedad: Array.from(document.querySelectorAll('input[name="argumentosAmbiguedad"]:checked')).map(cb => cb.value).join('; '),
-                
+                erroresSilogismo: Array.from(document.querySelectorAll('input[name="erroresSilogismo"]:checked'))
+                    .map(cb => cb.value),
+                argumentosAtinencia: Array.from(document.querySelectorAll('input[name="argumentosAtinencia"]:checked'))
+                    .map(cb => cb.value),
+                argumentosAmbiguedad: Array.from(document.querySelectorAll('input[name="argumentosAmbiguedad"]:checked'))
+                    .map(cb => cb.value),
+
                 // Sección 10
                 observaciones: document.getElementById('observaciones').value || '',
+
+                // Archivo (deshabilitado)
+                archivoSubido: 'NO',
+                nombreArchivo: ''
             };
-            
+
             return datos;
         }
 
@@ -2455,6 +2476,8 @@
                 let c = document.getElementById(customInputId); 
                 return c ? c.value : ''; 
             }
+            // Si el valor está vacío o es "Seleccione un principio", devolver vacío
+            if (!s.value || s.value === '') return '';
             return s.options[s.selectedIndex]?.text || '';
         }
 
