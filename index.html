@@ -1408,7 +1408,7 @@
         // =====================================================
         // CONFIGURACIÓN
         // =====================================================
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyzZyGR9ZBb2YRMlMwmYa9DHYYwHVct8PMih50L0qWsxpx6m8VQuh8rD8O3qzB7cUqWuw/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4ESkbDlP3c6qlJ9poQRMcoumt6BdyOtp6xeRtShAiyvA1AI4O0M2qY5SoeDB0atKGIQ/exec';
         
         // =====================================================
         // FUNCIÓN PARA GENERAR ID ÚNICO
@@ -1750,7 +1750,7 @@
                     if (!preguntandoLimpiar) {
                         preguntandoLimpiar = true;
                         setTimeout(() => {
-                            if (confirm('¿Desea limpiar el formulario para cargar otro fallo?')) {
+                            if (confirm('Registro correcto. ¿Desea cargar otro fallo?')) {
                                 resetForm();
                             }
                             preguntandoLimpiar = false;
@@ -2656,7 +2656,7 @@
             if (window.reseteandoFormulario) return;
             window.reseteandoFormulario = true;
 
-            if (confirm('¿Limpiar todo el formulario?')) {
+            if (confirm('Se limpiarán todos los datos del formulario')) {
                 document.getElementById('fallosForm').reset();
 
                 // Ocultar todas las secciones condicionales
