@@ -1480,38 +1480,50 @@
         }
         
         // =====================================================
-        // GUARDAR CON FETCH (con TODOS los datos + archivo)
+        // GUARDAR CON FETCH (VERSIÓN CORREGIDA)
         // =====================================================
         async function guardarConFetch(datos, archivoFile) {
             showStatus('Preparando archivo...', 'info');
-
+        
+            // Crear FormData
             const formData = new FormData();
-
-            // Enviar todos los datos como JSON
-            formData.append('payload', JSON.stringify(datos));
-
-            // ENVIAR EL ARCHIVO CON DIFERENTES NOMBRES (por si acaso)
+        
+            // 1. AGREGAR PAYLOAD (todos los datos como JSON)
+            const payloadString = JSON.stringify(datos);
+            formData.append('payload', payloadString);
+            console.log('📦 Payload JSON:', payloadString.substring(0, 100) + '...');
+        
+            // 2. AGREGAR ARCHIVO - SOLO CON EL NOMBRE 'archivo'
             formData.append('archivo', archivoFile);
-            formData.append('file', archivoFile);  // nombre alternativo
-            formData.append('archivoBlob', archivoFile);  // otro nombre
             formData.append('nombreArchivo', archivoFile.name);
             formData.append('tipoArchivo', archivoFile.type);
             formData.append('archivoSubido', 'SI');
-
-            console.log('📎 Archivo adjunto con múltiples nombres');
-
+            
+            console.log('📎 Archivo adjunto como "archivo":', archivoFile.name);
+            console.log('📎 Tamaño:', archivoFile.size, 'bytes');
+            console.log('📎 Tipo:', archivoFile.type);
+        
             try {
+                console.log('📤 Enviando fetch a:', APPS_SCRIPT_URL);
+                
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     body: formData
                 });
-
+        
+                console.log('📥 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+        
                 const result = await response.json();
-                console.log('📥 Respuesta:', result);
+                console.log('📥 Respuesta completa:', result);
+                
                 return { success: true, data: result };
-
+        
             } catch (error) {
-                console.error('❌ Error:', error);
+                console.error('❌ Error en fetch:', error);
                 throw error;
             }
         }
