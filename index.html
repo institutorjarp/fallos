@@ -1931,10 +1931,12 @@
         // Función para mostrar nombre del archivo
         function mostrarNombreArchivo(input) {
             const fileName = document.getElementById('archivoNombre');
-            if (input.files.length > 0) {
-                fileName.textContent = `Archivo seleccionado: ${input.files[0].name}`;
-            } else {
-                fileName.textContent = '';
+            if (fileName) {
+                if (input.files.length > 0) {
+                    fileName.textContent = `Archivo seleccionado: ${input.files[0].name}`;
+                } else {
+                    fileName.textContent = '';
+                }
             }
         }
 
@@ -2692,7 +2694,11 @@
 
                 // Limpiar ID y archivo
                 document.getElementById('registroId').value = '';
-                document.getElementById('archivoNombre').textContent = '';
+                // Limpiar nombre de archivo si existe el elemento
+                const archivoNombre = document.getElementById('archivoNombre');
+                if (archivoNombre) {
+                    archivoNombre.textContent = '';
+                }
 
                 // Reactivar secciones
                 deshabilitarSecciones(false);
