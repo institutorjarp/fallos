@@ -1480,7 +1480,7 @@
         }
         
         // =====================================================
-        // GUARDAR CON FETCH (VERSIÓN CORREGIDA)
+        // GUARDAR CON FETCH (VERSIÓN DEFINITIVA)
         // =====================================================
         async function guardarConFetch(datos, archivoFile) {
             showStatus('Preparando archivo...', 'info');
@@ -1488,30 +1488,38 @@
             // Crear FormData
             const formData = new FormData();
         
-            // 1. AGREGAR PAYLOAD (todos los datos como JSON)
+            // 1. AGREGAR PAYLOAD
             const payloadString = JSON.stringify(datos);
             formData.append('payload', payloadString);
             console.log('📦 Payload JSON:', payloadString.substring(0, 100) + '...');
         
-            // 2. AGREGAR ARCHIVO - SOLO CON EL NOMBRE 'archivo'
-            formData.append('archivo', archivoFile);
+            // 2. AGREGAR ARCHIVO - DE UNA SOLA MANERA, SIN COMPLICACIONES
+            formData.append('archivo', archivoFile, archivoFile.name);
             formData.append('nombreArchivo', archivoFile.name);
-            formData.append('tipoArchivo', archivoFile.type);
             formData.append('archivoSubido', 'SI');
             
-            console.log('📎 Archivo adjunto como "archivo":', archivoFile.name);
-            console.log('📎 Tamaño:', archivoFile.size, 'bytes');
-            console.log('📎 Tipo:', archivoFile.type);
+            // 3. DEBUG: Ver qué hay en formData
+            console.log('📎 FormData entries:');
+            for (let pair of formData.entries()) {
+                if (pair[0] === 'archivo') {
+                    console.log('  - archivo:', pair[1].name, 'tipo:', pair[1].type, 'tamaño:', pair[1].size);
+                } else {
+                    console.log('  -', pair[0], ':', pair[1]);
+                }
+            }
         
             try {
                 console.log('📤 Enviando fetch a:', APPS_SCRIPT_URL);
                 
+                // Importante: NO establecer Content-Type, que fetch lo haga automáticamente
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     body: formData
+                    // No poner headers, fetch los pone automáticamente con el boundary correcto
                 });
         
                 console.log('📥 Response status:', response.status);
+                console.log('📥 Response headers:', [...response.headers.entries()]);
                 
                 if (!response.ok) {
                     throw new Error(`Error HTTP: ${response.status}`);
@@ -1520,10 +1528,17 @@
                 const result = await response.json();
                 console.log('📥 Respuesta completa:', result);
                 
+                if (result.tieneArchivo) {
+                    showStatus('✅ Archivo recibido por el servidor', 'success');
+                } else {
+                    showStatus('⚠️ El servidor no recibió el archivo', 'warning');
+                }
+                
                 return { success: true, data: result };
         
             } catch (error) {
                 console.error('❌ Error en fetch:', error);
+                showStatus(`❌ Error: ${error.message}`, 'error');
                 throw error;
             }
         }
