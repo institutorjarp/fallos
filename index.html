@@ -1408,7 +1408,7 @@
         // =====================================================
         // CONFIGURACIÓN
         // =====================================================
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4ESkbDlP3c6qlJ9poQRMcoumt6BdyOtp6xeRtShAiyvA1AI4O0M2qY5SoeDB0atKGIQ/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzha_EHsU-U2ONhzz4TLD5_jR9Sc-JBaG3NzP2HcMZy03l1bpMmpytJcOanVgwT-AvvbQ/exec';
         
         // =====================================================
         // FUNCIÓN PARA GENERAR ID ÚNICO
@@ -1485,23 +1485,20 @@
         async function guardarConFetch(datos, archivoFile) {
             showStatus('Preparando archivo...', 'info');
 
-            // Crear FormData
             const formData = new FormData();
 
-            // Agregar TODOS los datos como string JSON completo
+            // Enviar todos los datos como JSON
             formData.append('payload', JSON.stringify(datos));
 
-            // También agregar campos individuales por si acaso
-            formData.append('id', datos.id);
-            formData.append('caratula', datos.caratula || '');
-            formData.append('timestamp', new Date().toISOString());
-
-            // Agregar el archivo
+            // ENVIAR EL ARCHIVO CON DIFERENTES NOMBRES (por si acaso)
             formData.append('archivo', archivoFile);
+            formData.append('file', archivoFile);  // nombre alternativo
+            formData.append('archivoBlob', archivoFile);  // otro nombre
             formData.append('nombreArchivo', archivoFile.name);
+            formData.append('tipoArchivo', archivoFile.type);
             formData.append('archivoSubido', 'SI');
 
-            showStatus('Enviando archivo al servidor...', 'info');
+            console.log('📎 Archivo adjunto con múltiples nombres');
 
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
@@ -1509,24 +1506,12 @@
                     body: formData
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
-
                 const result = await response.json();
-                console.log('📥 Respuesta fetch:', result);
-
-                if (result.success) {
-                    if (result.archivoInfo) {
-                        showStatus(`✅ Archivo guardado en Drive`, 'success');
-                    }
-                    return { success: true, data: result };
-                } else {
-                    throw new Error(result.error || 'Error desconocido');
-                }
+                console.log('📥 Respuesta:', result);
+                return { success: true, data: result };
 
             } catch (error) {
-                console.error('❌ Error en fetch:', error);
+                console.error('❌ Error:', error);
                 throw error;
             }
         }
