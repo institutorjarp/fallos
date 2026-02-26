@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
+        /* (mismo estilo que tenías) */
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #34495e;
@@ -133,7 +134,7 @@
         }
         
         .kpi-info p {
-            color: var(--gray-600);
+            color: #718096;
             font-size: 0.9rem;
         }
         
@@ -274,8 +275,24 @@
             text-align: center;
             margin-top: 40px;
             padding: 20px;
-            color: var(--gray-600);
+            color: #718096;
             border-top: 1px solid var(--border-color);
+        }
+        
+        /* Loader */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         @media (max-width: 768px) {
@@ -313,6 +330,15 @@
                     <i class="fas fa-chart-bar"></i> Estadísticas
                 </a>
             </div>
+        </div>
+        
+        <!-- Loader -->
+        <div id="loader" class="loader" style="display: none;"></div>
+        
+        <!-- Mensaje de error -->
+        <div id="errorMessage" style="display: none; background: #f8d7da; color: #721c24; padding: 15px; border-radius: var(--border-radius); margin-bottom: 20px; text-align: center;">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <span id="errorText">Error al cargar los datos</span>
         </div>
         
         <!-- KPIs -->
@@ -361,15 +387,15 @@
         <!-- Filtros de período -->
         <div class="periodo-filtros">
             <div class="periodo-buttons">
-                <button class="periodo-btn active" onclick="cambiarPeriodo('todo')">Todo</button>
-                <button class="periodo-btn" onclick="cambiarPeriodo('mes')">Último mes</button>
-                <button class="periodo-btn" onclick="cambiarPeriodo('trimestre')">Último trimestre</button>
-                <button class="periodo-btn" onclick="cambiarPeriodo('año')">Último año</button>
+                <button class="periodo-btn active" onclick="cambiarPeriodo('todo', event)">Todo</button>
+                <button class="periodo-btn" onclick="cambiarPeriodo('mes', event)">Último mes</button>
+                <button class="periodo-btn" onclick="cambiarPeriodo('trimestre', event)">Último trimestre</button>
+                <button class="periodo-btn" onclick="cambiarPeriodo('año', event)">Último año</button>
             </div>
             <div class="periodo-custom">
-                <input type="date" id="fechaDesde" onchange="cambiarPeriodo('custom')">
+                <input type="date" id="fechaDesde" onchange="cambiarPeriodo('custom', event)">
                 <span>a</span>
-                <input type="date" id="fechaHasta" onchange="cambiarPeriodo('custom')">
+                <input type="date" id="fechaHasta" onchange="cambiarPeriodo('custom', event)">
             </div>
         </div>
         
@@ -486,16 +512,19 @@
     </div>
 
     <script>
+        // ============ CONFIGURACIÓN ============
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzc6fru6NqaaFdUM4ZiYzhdHMbAeTqPtJHSUy6XO0ahRDGLfI8Xfm9U7O8mUnUyWy7W3w/exec';
+        
         // ============ VARIABLES GLOBALES ============
         let fallosData = [];
         let fallosFiltrados = [];
         let periodoActual = 'todo';
         let charts = {};
+        let cargando = false;
         
         // ============ INICIALIZACIÓN ============
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('current-year').textContent = new Date().getFullYear();
-            cargarDatos();
             
             // Establecer fechas por defecto (últimos 30 días)
             const hoy = new Date();
@@ -504,98 +533,125 @@
             
             document.getElementById('fechaDesde').valueAsDate = hace30Dias;
             document.getElementById('fechaHasta').valueAsDate = hoy;
+            
+            // Cargar datos desde Sheets
+            cargarDatosDesdeSheets();
         });
         
-        function cargarDatos() {
-            // Intentar cargar desde localStorage
-            const stored = localStorage.getItem('fallosJudiciales');
-            if (stored) {
-                try {
-                    fallosData = JSON.parse(stored);
-                } catch (e) {
-                    console.error('Error al cargar datos:', e);
-                    fallosData = generarDatosEjemplo();
-                }
-            } else {
-                fallosData = generarDatosEjemplo();
-                localStorage.setItem('fallosJudiciales', JSON.stringify(fallosData));
-            }
+        // ============ FUNCIÓN PARA CARGAR DATOS DESDE SHEETS ============
+        async function cargarDatosDesdeSheets() {
+            mostrarLoader(true);
+            ocultarError();
             
-            fallosFiltrados = [...fallosData];
-            actualizarEstadisticas();
+            try {
+                // Construir URL para consulta
+                const url = new URL(APPS_SCRIPT_URL);
+                url.searchParams.append('path', 'consulta');
+                
+                console.log('📤 Solicitando datos a:', url.toString());
+                
+                const response = await fetch(url.toString());
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('📥 Datos recibidos:', result);
+                
+                if (result.success) {
+                    // Procesar los datos recibidos
+                    fallosData = procesarDatosDesdeSheets(result.datos || []);
+                    
+                    if (fallosData.length === 0) {
+                        mostrarError('No hay fallos cargados en el sistema');
+                        fallosFiltrados = [];
+                    } else {
+                        fallosFiltrados = [...fallosData];
+                    }
+                    
+                    // Actualizar todas las estadísticas
+                    actualizarEstadisticas();
+                } else {
+                    throw new Error(result.error || 'Error al cargar datos');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                mostrarError('Error al cargar los datos: ' + error.message);
+                
+                // Mostrar datos de ejemplo como fallback
+                console.log('Usando datos de ejemplo como fallback');
+                fallosData = generarDatosEjemplo();
+                fallosFiltrados = [...fallosData];
+                actualizarEstadisticas();
+            } finally {
+                mostrarLoader(false);
+            }
         }
         
-        function generarDatosEjemplo() {
-            // Generar más datos para estadísticas
-            const datos = [];
-            const materias = [
-                'Violación al debido proceso',
-                'Garantía de defensa en juicio',
-                'Detención ilegal',
-                'Supremacía constitucional',
-                'Prisión preventiva',
-                'Prohibición de autoincriminación',
-                'Violación del plazo razonable'
-            ];
-            
-            const votos = ['unanimidad', 'mayoria', 'disidencias'];
-            const admisibilidades = ['si', 'no'];
-            const arbitrariedades = [
-                { tipo: 'Arbitrariedad normativa', factica: [] },
-                { tipo: 'Arbitrariedad fáctica', factica: ['Conceptual'] },
-                { tipo: 'Arbitrariedad fáctica', factica: ['Normativa'] },
-                { tipo: 'Arbitrariedad fáctica', factica: ['Epistémica'] },
-                { tipo: 'Contradicción', factica: [] },
-                { tipo: 'Exceso ritual manifiesto', factica: [] },
-                { tipo: 'Falta de fundamentación suficiente', factica: [] }
-            ];
-            
-            // Generar 50 fallos de ejemplo
-            for (let i = 0; i < 50; i++) {
-                const fecha = new Date();
-                fecha.setDate(fecha.getDate() - Math.floor(Math.random() * 365));
-                
-                const tieneArbitrariedad = Math.random() > 0.5;
-                const arbIndex = Math.floor(Math.random() * arbitrariedades.length);
-                const arb = tieneArbitrariedad ? arbitrariedades[arbIndex] : null;
-                
-                datos.push({
-                    caratula: `Fallo Ejemplo ${i+1}`,
-                    numeroCausa: `${10000 + i}/${2023 - Math.floor(i/12)}`,
-                    fecha: fecha.toISOString().split('T')[0],
-                    fallos: `${330 + Math.floor(i/10)}:${1000 + i}`,
-                    materiaPrincipal: materias[Math.floor(Math.random() * materias.length)],
-                    subtema: 'Subtema ejemplo',
-                    integracion: 'Jueces ejemplo',
-                    voto: votos[Math.floor(Math.random() * votos.length)],
-                    admisibilidad: admisibilidades[Math.floor(Math.random() * admisibilidades.length)],
-                    motivoInadmisible: '',
-                    argumentoCorte: '',
-                    cuestionesFederales: [materias[Math.floor(Math.random() * materias.length)]],
-                    arbitrariedadCausales: arb ? [arb.tipo] : [],
-                    arbitrariedadFactica: arb?.factica || [],
-                    opcionesFundamentacion: [],
-                    opcionesNormativa: [],
-                    desacuerdos: ['Normativo'],
-                    problemas: ['Interpretativo'],
-                    metodoInterpretativo: ['Sistemático'],
-                    estructuraPonderacion: ['Necesidad'],
-                    tipoRazonamiento: ['Balance explícito'],
-                    erroresSilogismo: [],
-                    argumentosAtinencia: [],
-                    argumentosAmbiguedad: [],
-                    observaciones: ''
-                });
+        // ============ PROCESAR DATOS DESDE SHEETS ============
+        function procesarDatosDesdeSheets(datos) {
+            return datos.map(item => {
+                // Convertir a formato esperado por las estadísticas
+                return {
+                    caratula: item['caratula'] || '',
+                    numeroCausa: item['numeroCausa'] || '',
+                    fecha: item['fechaFallo'] || item['fecha'] || '',
+                    fallos: item['fallos'] || '',
+                    materiaPrincipal: item['materiaPrincipal'] || '',
+                    subtema: item['subtema'] || '',
+                    integracion: item['integracionTribunal'] || '',
+                    voto: item['voto'] || '',
+                    detalleDisidencias: item['detalleDisidencias'] || '',
+                    admisibilidad: item['admisibilidad'] || '',
+                    motivoInadmisible: item['motivoInadmisible'] || '',
+                    argumentoCorte: item['argumentoCorte'] || '',
+                    
+                    // Procesar cuestiones federales (puede ser string o array)
+                    cuestionesFederales: procesarCampoArray(item['cuestionesFederales']),
+                    
+                    // Procesar arbitrariedad (viene como tipoArbitrariedad)
+                    arbitrariedadCausales: procesarCampoArray(item['tipoArbitrariedad']),
+                    
+                    tipoDesacuerdo: procesarCampoArray(item['tipoDesacuerdo']),
+                    problemaJuridico: procesarCampoArray(item['problemaJuridico']),
+                    rolPrueba: item['rolPrueba'] || '',
+                    tipoInferencias: procesarCampoArray(item['tipoInferencias']),
+                    metodoInterpretativo: procesarCampoArray(item['metodoInterpretativo']),
+                    colisionPrincipios: item['colisionPrincipios'] || '',
+                    principioA: item['principioA'] || '',
+                    principioB: item['principioB'] || '',
+                    estructuraPonderacion: procesarCampoArray(item['estructuraPonderacion']),
+                    tipoRazonamiento: procesarCampoArray(item['tipoRazonamiento']),
+                    erroresSilogismo: procesarCampoArray(item['erroresSilogismo']),
+                    argumentosAtinencia: procesarCampoArray(item['argumentosAtinencia']),
+                    argumentosAmbiguedad: procesarCampoArray(item['argumentosAmbiguedad']),
+                    observaciones: item['observaciones'] || '',
+                    archivoSubido: item['archivoSubido'] || 'NO',
+                    nombreArchivo: item['nombreArchivo'] || '',
+                    urlArchivo: item['urlArchivo'] || ''
+                };
+            });
+        }
+        
+        // ============ FUNCIÓN AUXILIAR PARA PROCESAR CAMPOS QUE PUEDEN SER ARRAYS ============
+        function procesarCampoArray(campo) {
+            if (!campo) return [];
+            if (Array.isArray(campo)) return campo;
+            if (typeof campo === 'string') {
+                return campo.split(';').map(v => v.trim()).filter(v => v);
             }
-            
-            return datos;
+            return [];
         }
         
         // ============ FUNCIONES DE FILTRADO POR PERÍODO ============
-        function cambiarPeriodo(periodo) {
+        function cambiarPeriodo(periodo, event) {
             // Actualizar botones
             document.querySelectorAll('.periodo-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
             
             periodoActual = periodo;
             
@@ -608,23 +664,33 @@
                     break;
                 case 'mes':
                     desde.setMonth(hoy.getMonth() - 1);
-                    fallosFiltrados = fallosData.filter(f => new Date(f.fecha) >= desde);
+                    fallosFiltrados = fallosData.filter(f => {
+                        if (!f.fecha) return false;
+                        return new Date(f.fecha) >= desde;
+                    });
                     break;
                 case 'trimestre':
                     desde.setMonth(hoy.getMonth() - 3);
-                    fallosFiltrados = fallosData.filter(f => new Date(f.fecha) >= desde);
+                    fallosFiltrados = fallosData.filter(f => {
+                        if (!f.fecha) return false;
+                        return new Date(f.fecha) >= desde;
+                    });
                     break;
                 case 'año':
                     desde.setFullYear(hoy.getFullYear() - 1);
-                    fallosFiltrados = fallosData.filter(f => new Date(f.fecha) >= desde);
+                    fallosFiltrados = fallosData.filter(f => {
+                        if (!f.fecha) return false;
+                        return new Date(f.fecha) >= desde;
+                    });
                     break;
                 case 'custom':
                     const fechaDesde = document.getElementById('fechaDesde').value;
                     const fechaHasta = document.getElementById('fechaHasta').value;
                     if (fechaDesde && fechaHasta) {
-                        fallosFiltrados = fallosData.filter(f => 
-                            f.fecha >= fechaDesde && f.fecha <= fechaHasta
-                        );
+                        fallosFiltrados = fallosData.filter(f => {
+                            if (!f.fecha) return false;
+                            return f.fecha >= fechaDesde && f.fecha <= fechaHasta;
+                        });
                     }
                     break;
             }
@@ -647,7 +713,11 @@
             const total = fallosFiltrados.length;
             const admitidos = fallosFiltrados.filter(f => f.admisibilidad === 'si').length;
             const inadmisibles = fallosFiltrados.filter(f => f.admisibilidad === 'no').length;
-            const conArbitrariedad = fallosFiltrados.filter(f => f.arbitrariedadCausales?.length > 0).length;
+            
+            // Contar fallos con alguna causal de arbitrariedad
+            const conArbitrariedad = fallosFiltrados.filter(f => 
+                f.arbitrariedadCausales && f.arbitrariedadCausales.length > 0
+            ).length;
             
             document.getElementById('kpiTotal').textContent = total;
             document.getElementById('kpiAdmitidos').textContent = admitidos;
@@ -767,7 +837,7 @@
         function actualizarGraficoArbitrariedad() {
             const tipos = {};
             fallosFiltrados.forEach(f => {
-                if (f.arbitrariedadCausales) {
+                if (f.arbitrariedadCausales && f.arbitrariedadCausales.length > 0) {
                     f.arbitrariedadCausales.forEach(causal => {
                         tipos[causal] = (tipos[causal] || 0) + 1;
                     });
@@ -816,6 +886,7 @@
             // Agrupar por mes
             const meses = {};
             fallosFiltrados.forEach(f => {
+                if (!f.fecha) return;
                 const fecha = new Date(f.fecha);
                 const mesKey = `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}`;
                 meses[mesKey] = (meses[mesKey] || 0) + 1;
@@ -889,7 +960,7 @@
             const tbody = document.querySelector('#tablaTopMaterias tbody');
             
             tbody.innerHTML = sorted.map(([materia, count]) => {
-                const porcentaje = ((count / total) * 100).toFixed(1);
+                const porcentaje = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
                 return `
                     <tr>
                         <td>${materia}</td>
@@ -912,17 +983,17 @@
                 <tr>
                     <td>Unanimidad</td>
                     <td>${unanimidad}</td>
-                    <td>${((unanimidad/total)*100).toFixed(1)}%</td>
+                    <td>${total > 0 ? ((unanimidad/total)*100).toFixed(1) : 0}%</td>
                 </tr>
                 <tr>
                     <td>Mayoría</td>
                     <td>${mayoria}</td>
-                    <td>${((mayoria/total)*100).toFixed(1)}%</td>
+                    <td>${total > 0 ? ((mayoria/total)*100).toFixed(1) : 0}%</td>
                 </tr>
                 <tr>
                     <td>Con disidencias</td>
                     <td>${disidencias}</td>
-                    <td>${((disidencias/total)*100).toFixed(1)}%</td>
+                    <td>${total > 0 ? ((disidencias/total)*100).toFixed(1) : 0}%</td>
                 </tr>
             `;
         }
@@ -930,7 +1001,7 @@
         function actualizarTablaArbitrariedad() {
             const causales = {};
             fallosFiltrados.forEach(f => {
-                if (f.arbitrariedadCausales) {
+                if (f.arbitrariedadCausales && f.arbitrariedadCausales.length > 0) {
                     f.arbitrariedadCausales.forEach(causal => {
                         causales[causal] = (causales[causal] || 0) + 1;
                     });
@@ -938,12 +1009,12 @@
             });
             
             const sorted = Object.entries(causales).sort((a, b) => b[1] - a[1]);
-            const total = sorted.reduce((sum, [,count]) => sum + count, 0);
+            const totalCausales = sorted.reduce((sum, [,count]) => sum + count, 0);
             
             const tbody = document.querySelector('#tablaArbitrariedad tbody');
             
             tbody.innerHTML = sorted.map(([causal, count]) => {
-                const porcentaje = ((count / total) * 100).toFixed(1);
+                const porcentaje = totalCausales > 0 ? ((count / totalCausales) * 100).toFixed(1) : 0;
                 return `
                     <tr>
                         <td>${causal}</td>
@@ -952,6 +1023,86 @@
                     </tr>
                 `;
             }).join('');
+        }
+        
+        // ============ DATOS DE EJEMPLO (FALLBACK) ============
+        function generarDatosEjemplo() {
+            const datos = [];
+            const materias = [
+                'Violación al debido proceso',
+                'Garantía de defensa en juicio',
+                'Detención ilegal',
+                'Supremacía constitucional',
+                'Prisión preventiva',
+                'Prohibición de autoincriminación',
+                'Violación del plazo razonable'
+            ];
+            
+            const votos = ['unanimidad', 'mayoria', 'disidencias'];
+            const admisibilidades = ['si', 'no'];
+            const arbitrariedades = [
+                'Arbitrariedad normativa',
+                'Arbitrariedad fáctica',
+                'Contradicción',
+                'Exceso ritual manifiesto',
+                'Falta de fundamentación suficiente'
+            ];
+            
+            for (let i = 0; i < 50; i++) {
+                const fecha = new Date();
+                fecha.setDate(fecha.getDate() - Math.floor(Math.random() * 365));
+                
+                const tieneArbitrariedad = Math.random() > 0.5;
+                const causales = tieneArbitrariedad ? 
+                    [arbitrariedades[Math.floor(Math.random() * arbitrariedades.length)]] : [];
+                
+                datos.push({
+                    caratula: `Fallo Ejemplo ${i+1}`,
+                    numeroCausa: `${10000 + i}/${2023 - Math.floor(i/12)}`,
+                    fecha: fecha.toISOString().split('T')[0],
+                    fallos: `${330 + Math.floor(i/10)}:${1000 + i}`,
+                    materiaPrincipal: materias[Math.floor(Math.random() * materias.length)],
+                    subtema: 'Subtema ejemplo',
+                    integracion: 'Jueces ejemplo',
+                    voto: votos[Math.floor(Math.random() * votos.length)],
+                    admisibilidad: admisibilidades[Math.floor(Math.random() * admisibilidades.length)],
+                    motivoInadmisible: '',
+                    argumentoCorte: '',
+                    cuestionesFederales: [],
+                    arbitrariedadCausales: causales,
+                    tipoDesacuerdo: ['Normativo'],
+                    problemaJuridico: ['Interpretativo'],
+                    metodoInterpretativo: ['Sistemático'],
+                    estructuraPonderacion: ['Necesidad'],
+                    tipoRazonamiento: ['Balance explícito']
+                });
+            }
+            
+            return datos;
+        }
+        
+        // ============ FUNCIONES AUXILIARES ============
+        function mostrarLoader(mostrar) {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.style.display = mostrar ? 'block' : 'none';
+            }
+        }
+        
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            if (errorDiv && errorText) {
+                errorText.textContent = mensaje;
+                errorDiv.style.display = 'block';
+            }
+        }
+        
+        function ocultarError() {
+            const errorDiv = document.getElementById('errorMessage');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
         }
     </script>
 </body>
