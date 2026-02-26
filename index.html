@@ -1408,7 +1408,7 @@
         // =====================================================
         // CONFIGURACIÓN
         // =====================================================
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzz_XbqLZqw3DC4ea5Nr6b52W5JIBRWAgGeZuhs1xZFxkks-mslrnh2fV4Js_ZmEUMt0w/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzsHiWg_WP8ZOTE0LgPQF4I9SRqknf7KVM-95B33f_FSXSSAyhLsQJgqKgbY-ZsdaybPg/exec';
         
         // =====================================================
         // FUNCIÓN PARA GENERAR ID ÚNICO
@@ -1483,67 +1483,58 @@
         // GUARDAR CON FETCH
         // =====================================================
         async function guardarConFetch(datos, archivoFile) {
-            showStatus('Preparando archivo...', 'info');
-        
-            // Crear FormData
-            const formData = new FormData();
-        
-            // 1. AGREGAR PAYLOAD
-            const payloadString = JSON.stringify(datos);
-            formData.append('payload', payloadString);
-            console.log('📦 Payload JSON:', payloadString.substring(0, 100) + '...');
-        
-            // 2. AGREGAR ARCHIVO - DE UNA SOLA MANERA, SIN COMPLICACIONES
+
+            showStatus('Procesando archivo...', 'info');
+
             if (archivoFile instanceof File) {
-              formData.append('archivo', archivoFile, archivoFile.name);
-              //formData.append('nombreArchivo', archivoFile.name);
-              //formData.append('archivoSubido', 'SI');
-            }    
-            
-            // 3. DEBUG: Ver qué hay en formData
-            console.log('📎 FormData entries:');
-            for (let pair of formData.entries()) {
-                if (pair[0] === 'archivo') {
-                    console.log('  - archivo:', pair[1].name, 'tipo:', pair[1].type, 'tamaño:', pair[1].size);
-                } else {
-                    console.log('  -', pair[0], ':', pair[1]);
-                }
-            }
-        
-            try {
-                console.log('📤 Enviando fetch a:', APPS_SCRIPT_URL);
-                
-                // Importante: NO establecer Content-Type, que fetch lo haga automáticamente
+
+                const reader = new FileReader();
+
+                return new Promise((resolve, reject) => {
+
+                    reader.onload = async function(e) {
+
+                        datos.archivoBase64 = e.target.result;
+                        datos.nombreArchivo = archivoFile.name;
+                        datos.tipoArchivo = archivoFile.type;
+
+                        try {
+
+                            const response = await fetch(APPS_SCRIPT_URL, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(datos)
+                            });
+
+                            const result = await response.json();
+
+                            resolve({ success: true, data: result });
+
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+
+                    reader.readAsDataURL(archivoFile);
+                });
+
+            } else {
+
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    body: formData
-                    // No poner headers, fetch los pone automáticamente con el boundary correcto
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
                 });
-        
-                console.log('📥 Response status:', response.status);
-                console.log('📥 Response headers:', [...response.headers.entries()]);
-                
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
-        
+
                 const result = await response.json();
-                console.log('📥 Respuesta completa:', result);
-                
-                if (result.tieneArchivo) {
-                    showStatus('✅ Archivo recibido por el servidor', 'success');
-                } else {
-                    showStatus('⚠️ El servidor no recibió el archivo', 'warning');
-                }
-                
                 return { success: true, data: result };
-        
-            } catch (error) {
-                console.error('❌ Error en fetch:', error);
-                showStatus(`❌ Error: ${error.message}`, 'error');
-                throw error;
             }
         }
+
         
         // =====================================================
         // GUARDAR CON JSONP (con TODOS los datos del formulario)
