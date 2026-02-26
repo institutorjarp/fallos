@@ -1494,9 +1494,11 @@
             console.log('📦 Payload JSON:', payloadString.substring(0, 100) + '...');
         
             // 2. AGREGAR ARCHIVO - DE UNA SOLA MANERA, SIN COMPLICACIONES
-            formData.append('archivo', archivoFile, archivoFile.name);
-            formData.append('nombreArchivo', archivoFile.name);
-            formData.append('archivoSubido', 'SI');
+            if (archivoFile instanceof File) {
+              formData.append('archivo', archivoFile, archivoFile.name);
+              //formData.append('nombreArchivo', archivoFile.name);
+              //formData.append('archivoSubido', 'SI');
+            }    
             
             // 3. DEBUG: Ver qué hay en formData
             console.log('📎 FormData entries:');
