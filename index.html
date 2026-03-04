@@ -747,6 +747,74 @@
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
             loginBtn.disabled = true;
         
+            console.log('🔍 Intentando login para:', usuario);
+            
+            // Verificar que google.script.run existe
+            console.log('google.script disponible:', typeof google !== 'undefined' && !!google.script);
+            
+            google.script.run
+                .withSuccessHandler(function(respuesta) {
+                    console.log('✅ Respuesta recibida:', respuesta);
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.disabled = false;
+                    
+                    if (respuesta.success) {
+                        sesionActiva = true;
+                        usuarioActual = usuario;
+                        
+                        const sesion = {
+                            usuario: usuario,
+                            token: respuesta.token,
+                            expira: Date.now() + (8 * 60 * 60 * 1000)
+                        };
+                        localStorage.setItem('irj_sesion', JSON.stringify(sesion));
+                        
+                        mostrarDashboard();
+                        
+                        document.getElementById('username').value = '';
+                        document.getElementById('password').value = '';
+                        document.getElementById('loginError').classList.remove('show');
+                    } else {
+                        document.getElementById('loginError').textContent = respuesta.error || 'Credenciales incorrectas';
+                        document.getElementById('loginError').classList.add('show');
+                        document.getElementById('password').value = '';
+                        document.getElementById('password').focus();
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('❌ Error en la llamada:', error);
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.disabled = false;
+                    document.getElementById('loginError').textContent = 'Error al conectar con el servidor: ' + error.message;
+                    document.getElementById('loginError').classList.add('show');
+                })
+                .validarLogin(usuario, password);
+            
+            // Timeout por si no hay respuesta
+            setTimeout(function() {
+                if (loginBtn.disabled) {
+                    console.error('❌ Timeout - No hubo respuesta después de 10 segundos');
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.disabled = false;
+                    document.getElementById('loginError').textContent = 'El servidor no responde. Intente nuevamente.';
+                    document.getElementById('loginError').classList.add('show');
+                }
+            }, 10000);
+            /*const usuario = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+        
+            if (!usuario || !password) {
+                document.getElementById('loginError').textContent = 'Complete ambos campos';
+                document.getElementById('loginError').classList.add('show');
+                return;
+            }
+            
+            // Mostrar mensaje de carga
+            const loginBtn = document.querySelector('.login-btn');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+            loginBtn.disabled = true;
+        
             google.script.run
                 .withSuccessHandler(function(respuesta) {
                     // Restaurar botón
@@ -787,7 +855,7 @@
                     document.getElementById('loginError').textContent = 'Error al conectar con el servidor';
                     document.getElementById('loginError').classList.add('show');
                 })
-                .validarLogin(usuario, password); // ← Llama directamente a la función en Code.gs
+                .validarLogin(usuario, password);*/ // ← Llama directamente a la función en Code.gs
         }
         
         // Función auxiliar para mostrar mensajes (opcional)
@@ -833,3 +901,4 @@
 </body>
 
 </html>
+
