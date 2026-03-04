@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <base target="_top">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instituto de Recursos Judiciales - Acceso</title>
     
@@ -731,7 +732,7 @@
         }
         
         // ============ VERIFICAR LOGIN (versión segura) ============
-        function verificarLogin() {
+        async function verificarLogin() {
             const usuario = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
         
@@ -747,115 +748,62 @@
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
             loginBtn.disabled = true;
         
-            console.log('🔍 Intentando login para:', usuario);
-            
-            // Verificar que google.script.run existe
-            console.log('google.script disponible:', typeof google !== 'undefined' && !!google.script);
-            
-            google.script.run
-                .withSuccessHandler(function(respuesta) {
-                    console.log('✅ Respuesta recibida:', respuesta);
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                    
-                    if (respuesta.success) {
-                        sesionActiva = true;
-                        usuarioActual = usuario;
-                        
-                        const sesion = {
-                            usuario: usuario,
-                            token: respuesta.token,
-                            expira: Date.now() + (8 * 60 * 60 * 1000)
-                        };
-                        localStorage.setItem('irj_sesion', JSON.stringify(sesion));
-                        
-                        mostrarDashboard();
-                        
-                        document.getElementById('username').value = '';
-                        document.getElementById('password').value = '';
-                        document.getElementById('loginError').classList.remove('show');
-                    } else {
-                        document.getElementById('loginError').textContent = respuesta.error || 'Credenciales incorrectas';
-                        document.getElementById('loginError').classList.add('show');
-                        document.getElementById('password').value = '';
-                        document.getElementById('password').focus();
-                    }
-                })
-                .withFailureHandler(function(error) {
-                    console.error('❌ Error en la llamada:', error);
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                    document.getElementById('loginError').textContent = 'Error al conectar con el servidor: ' + error.message;
-                    document.getElementById('loginError').classList.add('show');
-                })
-                .validarLogin(usuario, password);
-            
-            // Timeout por si no hay respuesta
-            setTimeout(function() {
-                if (loginBtn.disabled) {
-                    console.error('❌ Timeout - No hubo respuesta después de 10 segundos');
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                    document.getElementById('loginError').textContent = 'El servidor no responde. Intente nuevamente.';
-                    document.getElementById('loginError').classList.add('show');
+            try {
+                // Llamar al endpoint de validación en Apps Script
+                const response = await fetch('https://script.google.com/macros/s/AKfycbz_NDJW3osyitSQVDb5Pk79XHePDhD-iMx74gO3M9O3uXAEP8Z_lzeNPl8sN8wgqxpKSQ/exec', {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        accion: 'validarLogin',
+                        usuario: usuario,
+                        password: password
+                    })
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
                 }
-            }, 10000);
-            /*const usuario = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
         
-            if (!usuario || !password) {
-                document.getElementById('loginError').textContent = 'Complete ambos campos';
-                document.getElementById('loginError').classList.add('show');
-                return;
-            }
-            
-            // Mostrar mensaje de carga
-            const loginBtn = document.querySelector('.login-btn');
-            const originalText = loginBtn.innerHTML;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
-            loginBtn.disabled = true;
+                const respuesta = await response.json();
+                console.log('Respuesta:', respuesta);
+                
+                if (respuesta.success) {
+                    // Login exitoso
+                    sesionActiva = true;
+                    usuarioActual = usuario;
         
-            google.script.run
-                .withSuccessHandler(function(respuesta) {
-                    // Restaurar botón
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
+                    // Guardar sesión local
+                    const sesion = {
+                        usuario: usuario,
+                        token: respuesta.token,
+                        expira: Date.now() + (8 * 60 * 60 * 1000)
+                    };
+                    localStorage.setItem('irj_sesion', JSON.stringify(sesion));
+        
+                    mostrarDashboard();
                     
-                    if (respuesta.success) {
-                        // Login exitoso
-                        sesionActiva = true;
-                        usuarioActual = usuario;
-        
-                        // Guardar sesión local (solo el usuario, no la contraseña)
-                        const sesion = {
-                            usuario: usuario,
-                            token: respuesta.token,
-                            expira: Date.now() + (8 * 60 * 60 * 1000)
-                        };
-                        localStorage.setItem('irj_sesion', JSON.stringify(sesion));
-        
-                        mostrarDashboard();
-                        
-                        // Limpiar campos
-                        document.getElementById('username').value = '';
-                        document.getElementById('password').value = '';
-                        document.getElementById('loginError').classList.remove('show');
-                    } else {
-                        // Login fallido
-                        document.getElementById('loginError').textContent = respuesta.error || 'Credenciales incorrectas';
-                        document.getElementById('loginError').classList.add('show');
-                        document.getElementById('password').value = '';
-                        document.getElementById('password').focus();
-                    }
-                })
-                .withFailureHandler(function(error) {
-                    console.error('Error:', error);
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                    document.getElementById('loginError').textContent = 'Error al conectar con el servidor';
+                    // Limpiar campos
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                    document.getElementById('loginError').classList.remove('show');
+                } else {
+                    // Login fallido
+                    document.getElementById('loginError').textContent = respuesta.error || 'Credenciales incorrectas';
                     document.getElementById('loginError').classList.add('show');
-                })
-                .validarLogin(usuario, password);*/ // ← Llama directamente a la función en Code.gs
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loginError').textContent = 'Error al conectar con el servidor';
+                document.getElementById('loginError').classList.add('show');
+            } finally {
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+            }
         }
         
         // Función auxiliar para mostrar mensajes (opcional)
@@ -901,4 +849,5 @@
 </body>
 
 </html>
+
 
