@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instituto de Recursos Judiciales - Acceso</title>
+    
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0b1f3a 0%, #1a3a5f 50%, #2b4c7c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        /* Estado de login */
+        .login-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,20,50,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+            font-size: 0.9rem;
+        }
+        
+        .login-status .user-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #1a3a5f;
+        }
+        
+        .login-status .user-info i {
+            color: #2b4c7c;
+        }
+        
+        .login-status .logout-btn {
+            background: #c01f2e;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s;
+        }
+        
+        .login-status .logout-btn:hover {
+            background: #8b1621;
+            transform: scale(1.05);
+        }
+        
+        /* Header principal - VERSIÓN MÁS COMPACTA */
+        .main-header {
+            text-align: center;
+            margin-bottom: 25px;
+            color: white;
+        }
+        
+        .main-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .main-header h1 i {
+            margin-right: 10px;
+            color: #e6b12e;
+        }
+        
+        .main-header .excellence-box {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 25px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .main-header .excellence-box h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+            color: #e6b12e;
+        }
+        
+        .main-header .excellence-box h2 i {
+            margin-right: 8px;
+            color: #e6b12e;
+            font-size: 1.3rem;
+        }
+        
+        .main-header .excellence-box .main-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            opacity: 0.95;
+        }
+        
+        .main-header .excellence-box .features {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .main-header .excellence-box .features span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .main-header .excellence-box .features i {
+            color: #e6b12e;
+            font-size: 1rem;
+        }
+        
+        /* Mini tarjetas de opciones */
+        .mini-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .mini-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            flex: 0 1 auto;
+            min-width: 180px;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+        }
+        
+        .mini-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            /*transform: translateY(-3px);
+            border-color: rgba(230, 177, 46, 0.5);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);*/
+        }
+        
+        .mini-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(230, 177, 46, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #e6b12e;
+        }
+        
+        .mini-info h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .mini-info p {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+        
+        /* Card de login */
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            max-width: 380px;
+            margin: 0 auto 30px;
+            box-shadow: 0 20px 40px rgba(0,10,30,0.4);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .login-card.hidden {
+            display: none;
+        }
+        
+        .login-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #1a3a5f 0%, #2b4c7c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2.2rem;
+            box-shadow: 0 8px 15px rgba(26,58,95,0.3);
+        }
+        
+        .login-card h2 {
+            color: #0b1f3a;
+            margin-bottom: 6px;
+            font-size: 1.6rem;
+        }
+        
+        .login-card p {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2d3748;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .form-group label i {
+            color: #2b4c7c;
+            margin-right: 5px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #2b4c7c;
+            box-shadow: 0 0 0 3px rgba(43,76,124,0.1);
+        }
+        
+        .form-group input.error {
+            border-color: #c01f2e;
+        }
+        
+        .error-message {
+            color: #c01f2e;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #1a3a5f 0%, #2b4c7c 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(26,58,95,0.3);
+        }
+        
+        .login-btn i {
+            margin-right: 6px;
+        }
+        
+        /* Nota de soporte */
+        .support-note {
+            margin-top: 18px;
+            font-size: 0.8rem;
+            color: #718096;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+        }
+        
+        .support-note i {
+            color: #2b4c7c;
+            margin-right: 5px;
+        }
+        
+        .single-access-note {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #718096;
+        }
+        
+        .single-access-note i {
+            color: #27ae60;
+            margin-right: 5px;
+        }
+        
+        /* Dashboard (después del login) */
+        .dashboard {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .dashboard.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .welcome-message {
+            background: linear-gradient(135deg, rgba(26,58,95,0.9) 0%, rgba(43,76,124,0.9) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            color: white;
+            text-align: center;
+            border: 1px solid rgba(230,177,46,0.3);
+        }
+        
+        .welcome-message h2 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .welcome-message h2 i {
+            color: #e6b12e;
+        }
+        
+        .welcome-message p {
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 15px 25px rgba(0,10,30,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 35px rgba(0,10,30,0.25);
+            border-color: #e6b12e;
+        }
+        
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #1a3a5f 0%, #2b4c7c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2.5rem;
+            box-shadow: 0 8px 15px rgba(26,58,95,0.3);
+        }
+        
+        .card h3 {
+            color: #0b1f3a;
+            margin-bottom: 12px;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .card p {
+            color: #4a5568;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+        
+        .card .btn {
+            background: linear-gradient(135deg, #1a3a5f 0%, #2b4c7c 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .card .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(26,58,95,0.3);
+        }
+        
+        .card .btn i {
+            font-size: 1rem;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+        }
+        
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        
+        .footer a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+        
+        .footer i {
+            color: #e6b12e;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .main-header .excellence-box {
+                padding: 18px 15px;
+            }
+            
+            .main-header .excellence-box h2 {
+                font-size: 1.3rem;
+            }
+            
+            .main-header .excellence-box .main-text {
+                font-size: 0.9rem;
+            }
+            
+            .main-header .excellence-box .features {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+            
+            .mini-card {
+                min-width: 100%;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 25px 20px;
+            }
+            
+            .login-status {
+                top: 10px;
+                right: 10px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Estado de login (visible solo cuando hay sesión) -->
+        <div class="login-status" id="loginStatus" style="display: none;">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="userName">Usuario</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </button>
+        </div>
+        
+        <!-- HEADER PRINCIPAL - VERSIÓN MÁS COMPACTA -->
+        <div class="main-header">
+            <h1>
+                <i class="fas fa-university"></i>
+                Instituto de Recursos Judiciales
+            </h1>
+            
+            <!-- CAJA DE EXCELENCIA (texto principal) - MÁS COMPACTA -->
+            <div class="excellence-box">
+                <h2>
+                    <i class="fas fa-star"></i> Excelencia en Análisis Judicial
+                </h2>
+                <p class="main-text">
+                    Plataforma especializada en el análisis profundo de fallos, con herramientas diseñadas para investigadores, abogados y académicos del derecho.
+                </p>
+                <div class="features">
+                    <span><i class="fas fa-shield-alt"></i> Acceso seguro</span>
+                    <span><i class="fas fa-database"></i> Datos protegidos</span>
+                    <span><i class="fas fa-chart-line"></i> Estadísticas en tiempo real</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MINI TARJETAS DE OPCIONES -->
+        <div class="mini-options">
+            <div class="mini-card">
+                <div class="mini-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="mini-info">
+                    <h3>Carga de Fallos</h3>
+                    <p>Ingreso y análisis de jurisprudencia</p>
+                </div>
+            </div>
+            
+            <div class="mini-card">
+                <div class="mini-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="mini-info">
+                    <h3>Consulta</h3>
+                    <p>Búsqueda avanzada de fallos</p>
+                </div>
+            </div>
+            
+            <div class="mini-card">
+                <div class="mini-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="mini-info">
+                    <h3>Estadísticas</h3>
+                    <p>Métricas y análisis de datos</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card de login -->
+        <div class="login-card" id="loginCard">
+            <div class="login-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h2>Acceso al Sistema</h2>
+            <p>Ingrese sus credenciales institucionales</p>
+            
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Usuario</label>
+                <input type="text" id="username" placeholder="Ingrese su usuario" onkeypress="if(event.key==='Enter') verificarLogin()">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Contraseña</label>
+                <input type="password" id="password" placeholder="Ingrese su contraseña" onkeypress="if(event.key==='Enter') verificarLogin()">
+                <div class="error-message" id="loginError">Usuario o contraseña incorrectos</div>
+            </div>
+            
+            <button class="login-btn" onclick="verificarLogin()">
+                <i class="fas fa-sign-in-alt"></i> Ingresar
+            </button>
+            
+            <div class="support-note">
+                <i class="fas fa-headset"></i> ¿Problemas de acceso? Contacte al área de sistemas
+            </div>
+            
+            <div class="single-access-note">
+                <i class="fas fa-check-circle"></i> Un solo acceso para todos los módulos
+            </div>
+        </div>
+        
+        <!-- Dashboard (después del login) -->
+        <div class="dashboard" id="dashboard">
+            <div class="welcome-message">
+                <h2><i class="fas fa-hand-peace"></i> ¡Bienvenido!</h2>
+                <p>Seleccione el módulo al que desea acceder</p>
+            </div>
+            
+            <div class="options-grid">
+                <!-- Opción Carga de Fallos -->
+                <div class="card" onclick="irA('carga')">
+                    <div class="card-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>Carga de Fallos</h3>
+                    <p>Ingrese nuevos fallos judiciales al sistema con análisis detallado de jurisprudencia.</p>
+                    <button class="btn" onclick="event.stopPropagation(); irA('carga')">
+                        <i class="fas fa-arrow-right"></i> Ir a Carga
+                    </button>
+                </div>
+                
+                <!-- Opción Consulta -->
+                <div class="card" onclick="irA('consulta')">
+                    <div class="card-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Consulta de Fallos</h3>
+                    <p>Busque y consulte fallos existentes con múltiples filtros y opciones de visualización.</p>
+                    <button class="btn" onclick="event.stopPropagation(); irA('consulta')">
+                        <i class="fas fa-arrow-right"></i> Ir a Consulta
+                    </button>
+                </div>
+                
+                <!-- Opción Estadísticas -->
+                <div class="card" onclick="irA('estadisticas')">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Estadísticas</h3>
+                    <p>Visualice estadísticas y métricas avanzadas sobre los fallos cargados en el sistema.</p>
+                    <button class="btn" onclick="event.stopPropagation(); irA('estadisticas')">
+                        <i class="fas fa-arrow-right"></i> Ir a Estadísticas
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; 2026 Instituto de Recursos Judiciales - Todos los derechos reservados</p>
+            <p style="margin-top: 8px; font-size: 0.75rem;">
+                <a href="#"><i class="fas fa-info-circle"></i> Acerca de</a> · 
+                <a href="#"><i class="fas fa-lock"></i> Privacidad</a> · 
+                <a href="#"><i class="fas fa-envelope"></i> Contacto</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // URLs de destino
+        const BASE_URL = 'https://script.google.com/macros/s/AKfycbz_NDJW3osyitSQVDb5Pk79XHePDhD-iMx74gO3M9O3uXAEP8Z_lzeNPl8sN8wgqxpKSQ/exec';
+        
+        // Estado de sesión
+        let sesionActiva = false;
+        let usuarioActual = '';
+        
+        // Verificar si ya hay sesión guardada
+        function verificarSesion() {
+            const sesionGuardada = localStorage.getItem('irj_sesion');
+            if (sesionGuardada) {
+                const sesion = JSON.parse(sesionGuardada);
+                if (sesion.expira > Date.now()) {
+                    sesionActiva = true;
+                    usuarioActual = sesion.usuario;
+                    mostrarDashboard();
+                    return true;
+                } else {
+                    localStorage.removeItem('irj_sesion');
+                }
+            }
+            return false;
+        }
+        
+        // Mostrar dashboard
+        function mostrarDashboard() {
+            document.getElementById('loginCard').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            document.getElementById('loginStatus').style.display = 'flex';
+            document.getElementById('userName').textContent = usuarioActual;
+        }
+        
+        // Mostrar login
+        function mostrarLogin() {
+            document.getElementById('loginCard').style.display = 'block';
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('loginStatus').style.display = 'none';
+        }
+        
+        // ============ VERIFICAR LOGIN (versión segura) ============
+        function verificarLogin() {
+            const usuario = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!usuario || !password) {
+                document.getElementById('loginError').textContent = 'Complete ambos campos';
+                document.getElementById('loginError').classList.add('show');
+                return;
+            }
+            mostrarMensaje('Verificando credenciales...', 'info');
+
+            google.script.run
+                .withSuccessHandler(function(respuesta) {
+                    if (respuesta.success) {
+                        // Login exitoso
+                        sesionActiva = true;
+                        usuarioActual = usuario;
+
+                        // Guardar sesión local (solo el usuario, no la contraseña)
+                        const sesion = {
+                            usuario: usuario,
+                            token: respuesta.token,
+                            expira: Date.now() + (8 * 60 * 60 * 1000)
+                        };
+                        localStorage.setItem('irj_sesion', JSON.stringify(sesion));
+
+                        mostrarDashboard();
+                        mostrarMensaje('¡Bienvenido!', 'success');
+
+                        // Limpiar campos
+                        document.getElementById('username').value = '';
+                        document.getElementById('password').value = '';
+                        document.getElementById('loginError').classList.remove('show');
+                    } else {
+                        // Login fallido
+                        document.getElementById('loginError').textContent = respuesta.error || 'Credenciales incorrectas';
+                        document.getElementById('loginError').classList.add('show');
+                        document.getElementById('password').value = '';
+                        document.getElementById('password').focus();
+                    }
+                })
+                    .withFailureHandler(function(error) {
+                    console.error('Error de conexión:', error);
+                    document.getElementById('loginError').textContent = 'Error al conectar con el servidor';
+                    document.getElementById('loginError').classList.add('show');
+                })
+                .validarLogin(usuario, password);
+        }
+        
+        // Función auxiliar para mostrar mensajes (opcional)
+        function mostrarMensaje(texto, tipo) {
+            const statusEl = document.getElementById('statusMessage');
+            if (statusEl) {
+                statusEl.textContent = texto;
+                statusEl.className = 'status-message status-' + tipo;
+                statusEl.style.display = 'block';
+                setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+            }
+        }
+        
+        // Cerrar sesión
+        function logout() {
+            sesionActiva = false;
+            usuarioActual = '';
+            localStorage.removeItem('irj_sesion');
+            mostrarLogin();
+        }
+        
+        // Ir a página específica
+        function irA(pagina) {
+            let urlDestino = BASE_URL;
+            if (pagina === 'carga') {
+                // Para carga, solo la URL base (sin parámetros)
+                urlDestino = BASE_URL;
+            } else if (pagina === 'consulta') {
+                urlDestino = BASE_URL + '?page=consulta';
+            } else if (pagina === 'estadisticas') {
+                urlDestino = BASE_URL + '?page=estadisticas';
+            }
+            window.location.href = urlDestino;
+        }
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!verificarSesion()) {
+                mostrarLogin();
+            }
+        });
+    </script>
+</body>
+</html>
