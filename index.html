@@ -731,8 +731,8 @@
             document.getElementById('loginStatus').style.display = 'none';
         }
         
-        // ============ VERIFICAR LOGIN (versión segura) ============
-        async function verificarLogin() {
+        // ============ VERIFICAR LOGIN (versión JSONP) ============
+        function verificarLogin() {
             const usuario = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
         
@@ -748,34 +748,39 @@
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
             loginBtn.disabled = true;
         
-            try {
-                // Llamar al endpoint de validación en Apps Script
-                const response = await fetch('https://script.google.com/macros/s/AKfycbz_NDJW3osyitSQVDb5Pk79XHePDhD-iMx74gO3M9O3uXAEP8Z_lzeNPl8sN8wgqxpKSQ/exec', {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        accion: 'validarLogin',
-                        usuario: usuario,
-                        password: password
-                    })
-                });
-        
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
-        
-                const respuesta = await response.json();
-                console.log('Respuesta:', respuesta);
+            console.log('🔍 Intentando login para:', usuario);
+            
+            // Crear callback único
+            const callbackName = 'jsonp_login_' + Date.now();
+            
+            // Construir URL
+            const url = new URL('https://script.google.com/macros/s/AKfycbz_NDJW3osyitSQVDb5Pk79XHePDhD-iMx74gO3M9O3uXAEP8Z_lzeNPl8sN8wgqxpKSQ/exec');
+            url.searchParams.append('callback', callbackName);
+            url.searchParams.append('accion', 'validarLogin');
+            url.searchParams.append('usuario', usuario);
+            url.searchParams.append('password', password);
+            
+            console.log('📤 Enviando JSONP:', url.toString());
+            
+            // Definir callback global
+            window[callbackName] = function(respuesta) {
+                console.log('📥 Respuesta recibida:', respuesta);
                 
-                if (respuesta.success) {
+                // Limpiar
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.body.removeChild(script);
+                }
+                clearTimeout(timeoutId);
+                
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+                
+                if (respuesta && respuesta.success) {
                     // Login exitoso
                     sesionActiva = true;
                     usuarioActual = usuario;
         
-                    // Guardar sesión local
                     const sesion = {
                         usuario: usuario,
                         token: respuesta.token,
@@ -785,25 +790,54 @@
         
                     mostrarDashboard();
                     
-                    // Limpiar campos
                     document.getElementById('username').value = '';
                     document.getElementById('password').value = '';
                     document.getElementById('loginError').classList.remove('show');
                 } else {
-                    // Login fallido
-                    document.getElementById('loginError').textContent = respuesta.error || 'Credenciales incorrectas';
+                    document.getElementById('loginError').textContent = respuesta?.error || 'Credenciales incorrectas';
                     document.getElementById('loginError').classList.add('show');
                     document.getElementById('password').value = '';
                     document.getElementById('password').focus();
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('loginError').textContent = 'Error al conectar con el servidor';
-                document.getElementById('loginError').classList.add('show');
-            } finally {
+            };
+            
+            // Timeout por si el servidor no responde
+            const timeoutId = setTimeout(() => {
+                if (window[callbackName]) {
+                    console.error('⏰ Timeout - No hubo respuesta');
+                    delete window[callbackName];
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.disabled = false;
+                    document.getElementById('loginError').textContent = 'El servidor no responde. Intente nuevamente.';
+                    document.getElementById('loginError').classList.add('show');
+                }
+            }, 10000);
+            
+            // Crear script
+            const script = document.createElement('script');
+            script.src = url.toString();
+            
+            // Error handler
+            script.onerror = function(error) {
+                console.error('❌ Error en script:', error);
+                clearTimeout(timeoutId);
+                if (window[callbackName]) {
+                    delete window[callbackName];
+                }
+                if (script.parentNode) {
+                    document.body.removeChild(script);
+                }
                 loginBtn.innerHTML = originalText;
                 loginBtn.disabled = false;
-            }
+                document.getElementById('loginError').textContent = 'Error de conexión con el servidor';
+                document.getElementById('loginError').classList.add('show');
+            };
+            
+            // Agregar al DOM
+            document.body.appendChild(script);
         }
         
         // Función auxiliar para mostrar mensajes (opcional)
@@ -849,5 +883,6 @@
 </body>
 
 </html>
+
 
 
